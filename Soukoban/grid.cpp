@@ -124,7 +124,6 @@ void setGridTemplate(int grid[][GRID_SIZE]) {
 	char str[16];
 
 	sprintf_s(filename, 100, "GridTemplate/grid%d.txt", grid_num);
-	printf("%s\n", filename);
 
 	if (fopen_s(&fp, filename, "r") != 0) {
 		printf("ファイルを開けませんでした。\n");
@@ -133,7 +132,6 @@ void setGridTemplate(int grid[][GRID_SIZE]) {
 
 	for (int y = 0; y < GRID_SIZE; y++) {
 		fgets(str, 16, fp);
-		printf("%s", str);
 		for (int i = 0, x = 0; i < (GRID_SIZE * 3) - 1; i++) {
 			switch (str[i])
 			{
