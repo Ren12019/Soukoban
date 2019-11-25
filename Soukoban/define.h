@@ -10,7 +10,7 @@ enum SETTING {
 };
 
 enum NUMBER {
-	NUMBER_OF_BOX = 3,
+	NUMBER_OF_BOX = 1,
 	NUMBER_OF_BLOCK_TYPE = 5,
 	NUMBER_OF_GRID_VERTICAL = 3,
 	NUMBER_OF_GRID_HORIZONTAL = 3,
@@ -47,3 +47,8 @@ typedef struct stagelist{
 
 extern STAGELIST*head;
 extern STAGELIST*tail;
+
+typedef struct square {
+	int x;
+	int y;
+}SQUARE;
