@@ -11,7 +11,7 @@ void initGoal(int stage[][WIDTH]) {
 
 	checkCarryInArea(stage, check_list);
 
-	for (int stage_size = countStageSize(stage); stage_size / RATE != 0; stage_size -= RATE){
+	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--){
 		while (true) {
 			x = choiceX();
 			y = choiceY();

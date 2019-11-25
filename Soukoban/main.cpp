@@ -18,7 +18,7 @@ int main(void) {
 	int stage[HEIGHT][WIDTH] = {};
 	int check_list[HEIGHT][WIDTH] = {};
 
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 10; i++) {
 		do {
 			createStageGrid(stage);
 

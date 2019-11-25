@@ -10,7 +10,7 @@ void initBox(int stage[][WIDTH]) {
 	int x = 0, y = 0;
 	int check_list[HEIGHT][WIDTH] = {};
 
-	for (int stage_size = countStageSize(stage); stage_size / RATE != 0; stage_size -= RATE) {
+	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
 		checkPutBox(stage, check_list);
 
 		while (true) {
