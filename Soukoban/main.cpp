@@ -16,7 +16,7 @@ int main(void) {
 	srand((unsigned int)time(NULL));
 
 	int stage[HEIGHT][WIDTH] = {};
-	int check_list[HEIGHT][WIDTH] = {};
+	int checklist[HEIGHT][WIDTH] = {};
 
 	for (int i = 0; i < 10; i++) {
 		do {

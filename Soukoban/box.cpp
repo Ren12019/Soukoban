@@ -1,24 +1,26 @@
 #include "box.h"
-
+#include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "define.h"
 #include "check.h"
 #include "choice.h"
 #include "count.h"
 
 void initBox(int stage[][WIDTH]) {
+	clock_t t = clock();
 	int x = 0, y = 0;
-	int check_list[HEIGHT][WIDTH] = {};
+	int checklist[HEIGHT][WIDTH] = {};
 
 	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
-		checkPutBox(stage, check_list);
+		checkPutBox(stage, checklist);
 
 		while (true) {
 			x = choiceX();
 			y = choiceY();
-			if ((stage[y][x] == PATH || stage[y][x] == GOAL )&& check_list[y][x] != CHECK) {
+			if ((stage[y][x] == PATH || stage[y][x] == GOAL )&& checklist[y][x] != CHECK) {
 				if (checkDeadlock(stage,x,y)) {
-					check_list[y][x] = CHECK;
+					checklist[y][x] = CHECK;
 				}
 				else {
 					if (stage[y][x] == PATH) {
@@ -42,6 +44,15 @@ void initBox(int stage[][WIDTH]) {
 						}
 					}
 				}
+			}
+
+			if (checkChecklist(checklist)) {
+				printf("Failed to create stage:Not Find Space\n");
+				return;
+			}
+			if (clock() - t > 2000) {
+				printf("Failed to create stage:Time Out\n");
+				return;
 			}
 		}
 	}

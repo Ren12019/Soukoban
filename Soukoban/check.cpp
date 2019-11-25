@@ -184,19 +184,19 @@ int checkCarryInSquare(int stage[][WIDTH],int x,int y) {
 	return 0;
 }
 
-void checkCarryInArea(int stage[][WIDTH], int check_list[][WIDTH]) {
+void checkCarryInArea(int stage[][WIDTH], int checklist[][WIDTH]) {
 	for (int y = 0; y < HEIGHT; y++){
 		for (int x = 0; x < WIDTH; x++){
 			if (stage[y][x] == PATH) {
 				if (checkCarryInSquare(stage, x, y)) {
-					check_list[y][x] = CHECK;
+					checklist[y][x] = CHECK;
 				}
 				else {
-					check_list[y][x] = PATH;
+					checklist[y][x] = PATH;
 				}
 			}
 			else if (stage[y][x] == WALL) {
-				check_list[y][x] = CHECK;
+				checklist[y][x] = CHECK;
 			}
 		}
 	}
@@ -244,22 +244,22 @@ int checkCornerSquare(int stage[][WIDTH], int x, int y) {
 	return 0;
 }
 
-void checkPutBox(int stage[][WIDTH], int check_list[][WIDTH]){
+void checkPutBox(int stage[][WIDTH], int checklist[][WIDTH]){
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == PATH) {
 				if (checkNeighborhoodWall(stage, x, y)) {
-					check_list[y][x] = CHECK;
+					checklist[y][x] = CHECK;
 				}
 				else if (checkCornerSquare(stage, x, y)) {
-					check_list[y][x] = CHECK;
+					checklist[y][x] = CHECK;
 				}
 				else {
-					check_list[y][x] = PATH;
+					checklist[y][x] = PATH;
 				}
 			}
 			else if (stage[y][x] == WALL) {
-				check_list[y][x] = CHECK;
+				checklist[y][x] = CHECK;
 			}
 		}
 	}
@@ -399,4 +399,15 @@ int checkDeadlock(int stage[][WIDTH], int x, int y) {
 		return 1;
 	}
 	return 0;
+}
+
+int checkChecklist(int checklist[][WIDTH]) {
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (checklist[y][x] != CHECK) {
+				return 0;
+			}
+		}
+	}
+	return 1;
 }
