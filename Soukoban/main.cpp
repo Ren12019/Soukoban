@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <conio.h>
+#include <windows.h>
 
 #include "define.h"
 #include "check.h"
@@ -18,7 +20,7 @@ int main(void) {
 	int stage[HEIGHT][WIDTH] = {};
 	int checklist[HEIGHT][WIDTH] = {};
 
-	for (int i = 0; i < 10; i++) {
+	while (true) {
 		do {
 			createStageGrid(stage);
 
@@ -32,8 +34,21 @@ int main(void) {
 
 		printStage(stage);
 
-		//printOutText(stage);
+		printf("Please push key\n");
+		printf("CONTINUE:Space		FINISH:Esc\n");
 
+		while (true) {
+			if (_kbhit()) {
+				if (_getch() == 0x1b) {//Esc
+					return 0;
+				}
+				if (_getch() == 0x20) {//Space
+					break;
+				}
+			}
+		}
+
+		//printOutText(stage);
 		//addStageList(stage);
 	}
 	//printStageList();
