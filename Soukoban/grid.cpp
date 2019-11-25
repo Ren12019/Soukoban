@@ -77,6 +77,7 @@ void flipGrid(int grid[][GRID_SIZE]) {
 					flipped_grid[y][x] = grid[y][x];
 			}
 		}
+		break;
 	}
 	case HORIZONTAL: {
 		for (int y = 0; y < GRID_SIZE; y++) {
@@ -91,15 +92,17 @@ void flipGrid(int grid[][GRID_SIZE]) {
 					flipped_grid[y][x] = grid[y][x];
 			}
 		}
+		break;
 	}
 	default:
 		break;
 	}
 
-
-	for (int y = 0; y < GRID_SIZE; y++) {
-		for (int x = 0; x < GRID_SIZE; x++) {
-			grid[y][x] = flipped_grid[y][x];
+	if (flip != 0) {
+		for (int y = 0; y < GRID_SIZE; y++) {
+			for (int x = 0; x < GRID_SIZE; x++) {
+				grid[y][x] = flipped_grid[y][x];
+			}
 		}
 	}
 }
@@ -156,10 +159,6 @@ void setGridTemplate(int grid[][GRID_SIZE]) {
 
 	fclose(fp);
 
-	printGrid(grid);
-
-	//rotateGrid(grid);
-	//flipGrid(grid);//–â‘è‚ ‚è
-
-	printGrid(grid);
+	rotateGrid(grid);
+	flipGrid(grid);
 }
