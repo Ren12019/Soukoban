@@ -52,3 +52,7 @@ int choiceFlip(void) {
 
 	return 0;
 }
+
+int choiceTemplateNum(void) {
+	return rand() % NUMBER_OF_GRID_TEMPLATE;
+}

@@ -8,3 +8,5 @@ int choiceWallOrPath(void);
 int choiceDirection(void);
 
 int choiceFlip(void);
+
+int choiceTemplateNum(void);

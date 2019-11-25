@@ -1,6 +1,10 @@
 #include "grid.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "define.h"
 #include "choice.h"
+#include "print.h"
 
 void rotateGrid(int grid[][GRID_SIZE]) {
 	int direction = choiceDirection();
@@ -108,4 +112,54 @@ void setGrid(int grid[][GRID_SIZE]) {
 	}
 	rotateGrid(grid);
 	flipGrid(grid);
+}
+
+void setGridTemplate(int grid[][GRID_SIZE]) {
+	FILE *fp;
+	int grid_num = choiceTemplateNum();
+	char filename[100];
+	char str[16];
+
+	sprintf_s(filename, 100, "GridTemplate/grid%d.txt", grid_num);
+	printf("%s\n", filename);
+
+	if (fopen_s(&fp, filename, "r") != 0) {
+		printf("ファイルを開けませんでした。\n");
+		return;
+	}
+
+	for (int y = 0; y < GRID_SIZE; y++) {
+		fgets(str, 16, fp);
+		printf("%s", str);
+		for (int i = 0, x = 0; i < (GRID_SIZE * 3) - 1; i++) {
+			switch (str[i])
+			{
+			case ',': {
+				break;
+			}
+			case '-': {
+				grid[y][x] = WALL;
+				x++;
+				i++;
+				break;
+			}
+			case '0': {
+				grid[y][x] = PATH;
+				x++;
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+
+	fclose(fp);
+
+	printGrid(grid);
+
+	//rotateGrid(grid);
+	//flipGrid(grid);//問題あり
+
+	printGrid(grid);
 }

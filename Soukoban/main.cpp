@@ -18,25 +18,30 @@ int main(void) {
 	int stage[HEIGHT][WIDTH] = {};
 	int check_list[HEIGHT][WIDTH] = {};
 
+	//for (int i = 0; i < 10; i++) {
+	//	do {
+	//		createStageGrid(stage);
+
+	//		while (checkTile(stage) != 0) {}
+
+	//	} while (checkSection(stage) == 1 && countPath(stage) > 8);
+
+	//	initGoal(stage);
+	//	initBox(stage);
+	//	initPlayer(stage);
+
+	//	printStage(stage);
+
+	//	//printOutText(stage);
+
+	//	//addStageList(stage);
+	//}
+	////printStageList();
+
+	int grid[GRID_SIZE][GRID_SIZE] = {};
 	for (int i = 0; i < 10; i++) {
-		do {
-			createStageGrid(stage);
-
-			while (checkTile(stage) != 0) {}
-
-		} while (checkSection(stage) == 1 && countPath(stage) > 8);
-
-		initGoal(stage);
-		initBox(stage);
-		initPlayer(stage);
-
-		printStage(stage);
-
-		//printOutText(stage);
-
-		//addStageList(stage)
+		setGridTemplate(grid);
 	}
-	//printStageList();
 
 	return 0;
 }

@@ -53,7 +53,6 @@ void createStageGrid(int stage[][WIDTH]) {
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			//if (x == 0 || x == WIDTH - 1 || y == 0 || y == HEIGHT - 1)
 				stage[y][x] = WALL;
 		}
 	}
@@ -61,7 +60,8 @@ void createStageGrid(int stage[][WIDTH]) {
 	for (int grid_num = 0, v = 0, h = 0; grid_num < (NUMBER_OF_GRID_VERTICAL * NUMBER_OF_GRID_HORIZONTAL); grid_num++) {
 		v = grid_num / NUMBER_OF_GRID_HORIZONTAL;
 		h = grid_num % NUMBER_OF_GRID_HORIZONTAL;
-		setGrid(grid);
+		//setGrid(grid);
+		setGridTemplate(grid);
 
 		for (int y = 0; y < GRID_SIZE; y++) {
 			for (int x = 0; x < GRID_SIZE; x++) {
