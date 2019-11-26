@@ -47,13 +47,13 @@ int countStageSize(int stage[][WIDTH]) {
 int countConnectionSquare(int stage[][WIDTH],SQUARE target) {
 	int count = 0;
 
-	if (stage[target.y - 1][target.x] == WALL)
+	if (stage[target.y - 1][target.x] != WALL)
 		count++;
-	if (stage[target.y + 1][target.x] == WALL)
+	if (stage[target.y + 1][target.x] != WALL)
 		count++;
-	if (stage[target.y][target.x - 1] == WALL)
+	if (stage[target.y][target.x - 1] != WALL)
 		count++;
-	if (stage[target.y][target.x + 1] == WALL)
+	if (stage[target.y][target.x + 1] != WALL)
 		count++;
 
 	return count;

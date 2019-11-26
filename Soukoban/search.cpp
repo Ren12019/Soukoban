@@ -45,7 +45,7 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	//init
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			search_stage[y][x] == stage[y][x];
+			search_stage[y][x] = stage[y][x];
 		}
 	}
 	point_box = searchBox(search_stage);
