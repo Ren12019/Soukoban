@@ -22,3 +22,5 @@ void checkPutBox(int [][WIDTH], int [][WIDTH]);
 int checkDeadlock(int [][WIDTH],int,int);
 
 int checkChecklist(int[][WIDTH]);
+
+int checkClear(int[][WIDTH]);

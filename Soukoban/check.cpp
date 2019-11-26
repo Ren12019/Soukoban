@@ -411,3 +411,25 @@ int checkChecklist(int checklist[][WIDTH]) {
 	}
 	return 1;
 }
+
+int checkClear(int stage[][WIDTH]) {
+	int cnt_remainder_goal=0;
+	int cnt_clear_goal=0;
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (stage[y][x] == GOAL) {
+				cnt_remainder_goal++;
+			}
+			else if (stage[y][x] == BOX_ON_GOAL) {
+				cnt_clear_goal++;
+			}
+		}
+	}
+
+	if (cnt_remainder_goal == 0 && cnt_clear_goal == NUMBER_OF_BOX) {
+		return 1;
+	}
+
+	return 0;
+}
