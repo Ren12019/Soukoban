@@ -39,8 +39,11 @@ SQUARE searchBox(int stage[][WIDTH]) {
 
 int searchBreadthFirst(int stage[][WIDTH]) {
 	int search_stage[HEIGHT][WIDTH] = {};
-	TargetStage Target(countPath(stage));
-	SQUARE point_box;
+	
+	SQUARE position_box;
+	int N = countSpace(stage);//í∏ì_ÇÃêî
+	int M = countConnectionAll(stage);//ï”ÇÃêî
+	TargetStage Target(N);
 
 	//init
 	for (int y = 0; y < HEIGHT; y++) {
@@ -48,7 +51,7 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 			search_stage[y][x] = stage[y][x];
 		}
 	}
-	point_box = searchBox(search_stage);
+	position_box = searchBox(search_stage);
 	 //create Graph
 
 

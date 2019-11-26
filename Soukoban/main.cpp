@@ -26,15 +26,13 @@ int main(void) {
 
 			while (checkTile(stage) != 0) {}
 
-		} while (checkSection(stage) == 1 && countPath(stage) > 8);
+		} while (checkSection(stage) == 1 && countSpace(stage) > 8);
 
 		initGoal(stage);
 		initBox(stage);
 		initPlayer(stage);
 
 		printStage(stage);
-
-		printf("%d\n", countConnectionAll(stage));
 
 		printf("Please push key\n");
 		printf("CONTINUE:Space		FINISH:Esc\n");

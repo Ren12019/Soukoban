@@ -1,12 +1,12 @@
 #include "count.h"
 #include "define.h"
 
-int countPath(int stage[][WIDTH]) {
+int countSpace(int stage[][WIDTH]) {
 	int count = 0;
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] != PATH) {
+			if (stage[y][x] != WALL) {
 				count++;
 			}
 		}

@@ -1,7 +1,7 @@
 #pragma once
 #include "define.h"
 
-int countPath(int[][WIDTH]);
+int countSpace(int[][WIDTH]);
 
 int countAroundWall(int [][WIDTH], int, int);
 
