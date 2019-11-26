@@ -2,9 +2,17 @@
 #include <vector>
 #include <queue>
 #include "define.h"
+#include "count.h"
 
 using namespace std; 
-using TargetStage = vector<vector<SQUARE>>;
+
+typedef struct edge {
+	SQUARE to;
+	int weight;
+	struct edge(SQUARE t, int w) : to(t), weight(w) { };
+}EDGE;
+
+using TargetStage = vector<vector<EDGE>>;
 
 SQUARE searchBox(int stage[][WIDTH]) {
 	SQUARE point_box;
@@ -17,12 +25,21 @@ SQUARE searchBox(int stage[][WIDTH]) {
 			}
 		}
 	}
+
+	return point_box;
 }
+
+//EDGE searchAround(int stage[][WIDTH]) {
+//	EDGE a;
+//
+//	return ;
+//}
 
 int searchBreadthFirst(int stage[][WIDTH]) {
 	int search_stage[HEIGHT][WIDTH] = {};
-	TargetStage Target;
+	TargetStage Target(countPath(stage));
 	SQUARE point_box;
+	int;
 
 	//init
 	for (int y = 0; y < HEIGHT; y++) {
@@ -32,6 +49,7 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	}
 	point_box = searchBox(search_stage);
 	 //create Graph
+
 
 	return 0;
 }
