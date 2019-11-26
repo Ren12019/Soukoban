@@ -16,6 +16,8 @@ using TargetStage = vector<vector<EDGE>>;
 
 SQUARE searchBox(int stage[][WIDTH]) {
 	SQUARE point_box;
+	point_box.x = 0;
+	point_box.y = 0;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == BOX) {
@@ -39,7 +41,6 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	int search_stage[HEIGHT][WIDTH] = {};
 	TargetStage Target(countPath(stage));
 	SQUARE point_box;
-	int;
 
 	//init
 	for (int y = 0; y < HEIGHT; y++) {

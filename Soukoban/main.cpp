@@ -34,6 +34,8 @@ int main(void) {
 
 		printStage(stage);
 
+		printf("%d\n", countConnectionAll(stage));
+
 		printf("Please push key\n");
 		printf("CONTINUE:Space		FINISH:Esc\n");
 
