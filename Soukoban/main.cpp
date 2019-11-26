@@ -13,6 +13,7 @@
 #include "box.h"
 #include "count.h"
 #include "player.h"
+#include "search.h"
 
 int main(void) {
 	srand((unsigned int)time(NULL));
@@ -26,13 +27,16 @@ int main(void) {
 
 			while (checkTile(stage) != 0) {}
 
-		} while (checkSection(stage) == 1 && countSpace(stage) > 8);
+		} while (checkSection(stage) == 1 && countSpace(stage) > 1);
 
 		initGoal(stage);
 		initBox(stage);
 		initPlayer(stage);
 
 		printStage(stage);
+
+		printf("\n");
+		searchBreadthFirst(stage);
 
 		printf("Please push key\n");
 		printf("CONTINUE:Space		FINISH:Esc\n");
