@@ -7,6 +7,7 @@
 #include "define.h"
 #include "count.h"
 #include "print.h"
+#include "check.h"
 
 using namespace std; 
 
@@ -271,45 +272,82 @@ int searchBreadthFirstSample(int stage[][WIDTH]) {
 }
 
 int searchBreadthFirst(int stage[][WIDTH]) {
+	int search_stage[HEIGHT][WIDTH] = {};//探索用のステージ	
 	SQUARE now_positon;//箱の現在座標
 	SQUARE movable_positon;//収納用
 	queue<SQUARE> search;//探索用キュー
 
+	//
+	/*初期設定*/
+	//
+	/*探索用ステージの初期化*/
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			search_stage[y][x] = stage[y][x];
+		}
+	}
 	/*荷物の座標を取得*/
-	now_positon = searchBox(stage);
-	cout << "箱の位置は(" << now_positon.x << "," << now_positon.y << ")" << endl;
-	/*周囲の移動可能な座標をキューに収納*/
-	//Left
-	if (stage[now_positon.y][now_positon.x - 1] != WALL) {
-		movable_positon.x = now_positon.x - 1;
-		movable_positon.y = now_positon.y;
-		search.push(movable_positon);
-	}
-	//Right
-	if (stage[now_positon.y][now_positon.x + 1] != WALL) {
-		movable_positon.x = now_positon.x + 1;
-		movable_positon.y = now_positon.y;
-		search.push(movable_positon);
-	}
-	//Up
-	if (stage[now_positon.y - 1][now_positon.x] != WALL) {
-		movable_positon.x = now_positon.x;
-		movable_positon.y = now_positon.y - 1;
-		search.push(movable_positon);
-	}
-	//Down
-	if (stage[now_positon.y + 1][now_positon.x] != WALL) {
-		movable_positon.x = now_positon.x;
-		movable_positon.y = now_positon.y + 1;
-		search.push(movable_positon);
-	}
+	now_positon = searchBox(search_stage);
+	cout << "箱の初期位置は(" << now_positon.x << "," << now_positon.y << ")" << endl;
 
-	cout << "移動可能な位置は" << endl;
+	//
+	/*探索*/
+	//
+	while (true)
+	{
+		/*周囲の移動可能な座標をキューに収納*/
+		//Left
+		if (search_stage[now_positon.y][now_positon.x - 1] != WALL) {
+			movable_positon.x = now_positon.x - 1;
+			movable_positon.y = now_positon.y;
+			search.push(movable_positon);
+		}
+		//Right
+		if (search_stage[now_positon.y][now_positon.x + 1] != WALL) {
+			movable_positon.x = now_positon.x + 1;
+			movable_positon.y = now_positon.y;
+			search.push(movable_positon);
+		}
+		//Up
+		if (search_stage[now_positon.y - 1][now_positon.x] != WALL) {
+			movable_positon.x = now_positon.x;
+			movable_positon.y = now_positon.y - 1;
+			search.push(movable_positon);
+		}
+		//Down
+		if (search_stage[now_positon.y + 1][now_positon.x] != WALL) {
+			movable_positon.x = now_positon.x;
+			movable_positon.y = now_positon.y + 1;
+			search.push(movable_positon);
+		}
+		/*移動*/
+		search_stage[now_positon.y][now_positon.x] = PATH;
+		if (search_stage[search.front().y][search.front().x] == PATH) {
+			search_stage[search.front().y][search.front().x] = BOX;
+		}
+		else if (search_stage[search.front().y][search.front().x] == GOAL) {
+			search_stage[search.front().y][search.front().x] = BOX_ON_GOAL;
+		}
+		search.pop();
+		now_positon = searchBox(search_stage);
+
+		/*探索の終了確認*/
+		if (checkClear(search_stage)) {
+			cout << "Clear" << endl;
+			printStage(search_stage);
+			break;
+		}
+		if (search.empty()) {
+			cout << "Not found loot" << endl;
+			break;
+		}
+	}
+	/*cout << "移動可能な位置は" << endl;
 
 	while (!search.empty()) {
 		cout << "(" << search.front().x << "," << search.front().y << ")" << ",";
 		search.pop();
-	}
+	}*/
 
 	cout << endl;
 
