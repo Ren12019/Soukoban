@@ -272,6 +272,5 @@ int searchBreadthFirstSample(int stage[][WIDTH]) {
 
 int searchBreadthFirst(int stage[][WIDTH]) {
 	
-
 	return 0;
 }
