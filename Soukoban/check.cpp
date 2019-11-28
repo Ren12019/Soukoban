@@ -435,7 +435,7 @@ int checkClear(int stage[][WIDTH]) {
 	return 0;
 }
 
-int checkPassingList(vector<SQUARE>passing_list,SQUARE square) {
+int checkPassingList(std::vector<SQUARE>passing_list,SQUARE square) {
 	for (int i = 0; i < passing_list.size(); i++) {
 		if (passing_list[i].x == square.x && passing_list[i].y == square.y) {
 			return 1;

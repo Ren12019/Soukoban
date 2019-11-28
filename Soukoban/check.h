@@ -26,4 +26,4 @@ int checkChecklist(int[][WIDTH]);
 
 int checkClear(int[][WIDTH]);
 
-int checkPassingList(vector<SQUARE>, SQUARE );
+int checkPassingList(std::vector<SQUARE>, SQUARE );
