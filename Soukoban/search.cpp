@@ -18,8 +18,8 @@ typedef struct edge {
 using TargetStage = vector<vector<EDGE>>;
 
 /* 4 方向への隣接頂点への移動を表すベクトル */
-const int dx[4] = { 1, 0, -1, 0 };
-const int dy[4] = { 0, 1, 0, -1 };
+const int dx[4] = { 1, 0, -1, 0 };//右、下、左、上
+const int dy[4] = { 0, 1, 0, -1 };//右、下、左、上
 
 SQUARE searchBox(int stage[][WIDTH]) {
 	SQUARE point_box;
@@ -294,40 +294,14 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	while (true)
 	{
 		/*周囲の移動可能な座標をキューに収納*/
-		//Left
-		if (search_stage[now_positon.y][now_positon.x - 1] != WALL) {
-			movable_positon.x = now_positon.x - 1;
-			movable_positon.y = now_positon.y;
-			//通過済みか確認
-			if (!checkPassingList(passing_list, movable_positon)) {
-				search.push(movable_positon);
-			}
-		}
-		//Right
-		if (search_stage[now_positon.y][now_positon.x + 1] != WALL) {
-			movable_positon.x = now_positon.x + 1;
-			movable_positon.y = now_positon.y;
-			//通過済みか確認
-			if (!checkPassingList(passing_list, movable_positon)) {
-				search.push(movable_positon);
-			}
-		}
-		//Up
-		if (search_stage[now_positon.y - 1][now_positon.x] != WALL) {
-			movable_positon.x = now_positon.x;
-			movable_positon.y = now_positon.y - 1;
-			//通過済みか確認
-			if (!checkPassingList(passing_list, movable_positon)) {
-				search.push(movable_positon);
-			}
-		}
-		//Down
-		if (search_stage[now_positon.y + 1][now_positon.x] != WALL) {
-			movable_positon.x = now_positon.x;
-			movable_positon.y = now_positon.y + 1;
-			//通過済みか確認
-			if (!checkPassingList(passing_list, movable_positon)) {
-				search.push(movable_positon);
+		for (int direction = 0; direction < 4; direction++) {
+			if (search_stage[now_positon.y + dy[direction]][now_positon.x + dx[direction]] != WALL) {
+				movable_positon.x = now_positon.x - 1;
+				movable_positon.y = now_positon.y;
+				//通過済みか確認
+				if (!checkPassingList(passing_list, movable_positon)) {
+					search.push(movable_positon);
+				}
 			}
 		}
 
