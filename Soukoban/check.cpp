@@ -1,5 +1,6 @@
 #include "check.h"
 #include <stdio.h>
+#include <vector>
 #include "define.h"
 #include "count.h"
 
@@ -429,6 +430,16 @@ int checkClear(int stage[][WIDTH]) {
 
 	if (cnt_remainder_goal == 0 && cnt_clear_goal == NUMBER_OF_BOX) {
 		return 1;
+	}
+
+	return 0;
+}
+
+int checkPassingList(vector<SQUARE>passing_list,SQUARE square) {
+	for (int i = 0; i < passing_list.size(); i++) {
+		if (passing_list[i].x == square.x && passing_list[i].y == square.y) {
+			return 1;
+		}
 	}
 
 	return 0;

@@ -1,5 +1,6 @@
 #pragma once
 #include "define.h"
+#include <vector>
 
 int checkTile(int[][WIDTH]);
 
@@ -24,3 +25,5 @@ int checkDeadlock(int [][WIDTH],int,int);
 int checkChecklist(int[][WIDTH]);
 
 int checkClear(int[][WIDTH]);
+
+int checkPassingList(vector<SQUARE>, SQUARE );

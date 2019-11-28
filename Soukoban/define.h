@@ -1,5 +1,7 @@
 #pragma once
 
+using namespace std;
+
 enum SETTING {
 	WIDTH = 11,
 	HEIGHT = 11,

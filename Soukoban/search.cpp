@@ -9,8 +9,6 @@
 #include "print.h"
 #include "check.h"
 
-using namespace std; 
-
 typedef struct edge {
 	SQUARE to;
 	int weight;
@@ -276,6 +274,7 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	SQUARE now_positon;//箱の現在座標
 	SQUARE movable_positon;//収納用
 	queue<SQUARE> search;//探索用キュー
+	vector<SQUARE> passing_list(HEIGHT*WIDTH);//通過した座標の履歴
 
 	//
 	/*初期設定*/
@@ -288,7 +287,6 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	}
 	/*荷物の座標を取得*/
 	now_positon = searchBox(search_stage);
-	cout << "箱の初期位置は(" << now_positon.x << "," << now_positon.y << ")" << endl;
 
 	//
 	/*探索*/
@@ -300,26 +298,39 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 		if (search_stage[now_positon.y][now_positon.x - 1] != WALL) {
 			movable_positon.x = now_positon.x - 1;
 			movable_positon.y = now_positon.y;
-			search.push(movable_positon);
+			//通過済みか確認
+			if (!checkPassingList(passing_list, movable_positon)) {
+				search.push(movable_positon);
+			}
 		}
 		//Right
 		if (search_stage[now_positon.y][now_positon.x + 1] != WALL) {
 			movable_positon.x = now_positon.x + 1;
 			movable_positon.y = now_positon.y;
-			search.push(movable_positon);
+			//通過済みか確認
+			if (!checkPassingList(passing_list, movable_positon)) {
+				search.push(movable_positon);
+			}
 		}
 		//Up
 		if (search_stage[now_positon.y - 1][now_positon.x] != WALL) {
 			movable_positon.x = now_positon.x;
 			movable_positon.y = now_positon.y - 1;
-			search.push(movable_positon);
+			//通過済みか確認
+			if (!checkPassingList(passing_list, movable_positon)) {
+				search.push(movable_positon);
+			}
 		}
 		//Down
 		if (search_stage[now_positon.y + 1][now_positon.x] != WALL) {
 			movable_positon.x = now_positon.x;
 			movable_positon.y = now_positon.y + 1;
-			search.push(movable_positon);
+			//通過済みか確認
+			if (!checkPassingList(passing_list, movable_positon)) {
+				search.push(movable_positon);
+			}
 		}
+
 		/*移動*/
 		search_stage[now_positon.y][now_positon.x] = PATH;
 		if (search_stage[search.front().y][search.front().x] == PATH) {
@@ -338,17 +349,10 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 			break;
 		}
 		if (search.empty()) {
-			cout << "Not found loot" << endl;
+			cout << "Not found route" << endl;
 			break;
 		}
 	}
-	/*cout << "移動可能な位置は" << endl;
-
-	while (!search.empty()) {
-		cout << "(" << search.front().x << "," << search.front().y << ")" << ",";
-		search.pop();
-	}*/
-
 	cout << endl;
 
 	return 0;
