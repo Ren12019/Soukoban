@@ -263,11 +263,15 @@ SQUARE searchGoal(int stage[][WIDTH]) {
 
 int searchBreadthFirst(int stage[][WIDTH]) {
 	int search_stage[HEIGHT][WIDTH] = {};//探索用のステージ	
-	SQUARE first_pos;//荷物の初期位置
+	SQUARE start_pos;//荷物の初期位置
+	SQUARE goal_pos;//荷物の初期位置
 	SQUARE movable_pos;//収納用
 	SQUARE current_pos;//荷物の現在座標
 	std::queue<SQUARE> search;//移動可能であり未到達の座標を保存（探索用キュー）
 	std::vector<std::vector<int>> dist(HEIGHT, std::vector<int>(WIDTH,-1));//通過した座標のスタートからの距離
+	// 探索中に各マスはどのマスから来たのかを表す配列 (最短経路長を知るだけなら、これは不要)
+	std::vector<std::vector<int> > prev_x(HEIGHT, std::vector<int>(WIDTH, -1));
+	std::vector<std::vector<int> > prev_y(HEIGHT, std::vector<int>(WIDTH, -1));
 	                    /*(縦のサイズ,(横のサイズ,初期化する値))*/
 
 	//
@@ -279,12 +283,15 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 			search_stage[y][x] = stage[y][x];
 		}
 	}
-	first_pos = searchBox(stage);
+	/*初期位置をセット*/
+	start_pos = searchBox(stage);
+	goal_pos = searchGoal(stage);
 	/*スタートの距離を「0」に設定*/
-	dist[first_pos.y][first_pos.x] = 0;
+	dist[start_pos.y][start_pos.x] = 0;
 	/*スタートをプッシュ*/
-	search.push(first_pos);
+	search.push(start_pos);
 	current_pos = search.front();
+
 
 	//
 	/*探索*/
@@ -316,6 +323,8 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 				if (dist[movable_pos.y][movable_pos.x] == -1) {
 					search.push(movable_pos);
 					dist[movable_pos.y][movable_pos.x] = dist[current_pos.y][current_pos.x] + 1;
+					prev_x[movable_pos.y][movable_pos.x] = current_pos.x;  // どの頂点から情報が伝播して来たか、縦方向の座標をメモ
+					prev_y[movable_pos.y][movable_pos.x] = current_pos.y;  // どの頂点から情報が伝播して来たか、横方向の座標をメモ
 				}
 			}
 		}
@@ -329,6 +338,7 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 		if (search.empty()) {
 			std::cout << "Not found route" << std::endl;
 			printStage(search_stage);
+			break;
 		}
 	}
 	
@@ -344,6 +354,23 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
+
+	/* ゴールに至るまでの最短経路を復元してみる */
+	int x = goal_pos.x, y = goal_pos.y;
+	std::cout << x << "," << y << std::endl;
+	while (x != -1 && y != -1) {
+		std::cout << "1:" << x << "," << y << std::endl;
+
+		search_stage[y][x] = CHECK; // 通過したことを示す
+
+		// 前の頂点へ行く
+		int px = prev_x[y][x];
+		int py = prev_y[y][x];
+		x = px, y = py;
+		std::cout << "2:" << x << "," << y << std::endl;
+	}
+
+	printStage(search_stage);
 
 	return 0;
 }

@@ -31,11 +31,10 @@ int main(void) {
 
 		initGoal(stage);
 		initBox(stage);
-		initPlayer(stage);
+		//initPlayer(stage);
 
 		printStage(stage);
 
-		printf("\n");
 		searchBreadthFirst(stage);
 
 		printf("Please push key\n");
