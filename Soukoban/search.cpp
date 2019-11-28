@@ -271,7 +271,7 @@ int searchBreadthFirstSample(int stage[][WIDTH]) {
 
 int searchBreadthFirst(int stage[][WIDTH]) {
 	int search_stage[HEIGHT][WIDTH] = {};//探索用のステージ	
-	SQUARE now_positon;//箱の現在座標
+	SQUARE now_positon;//荷物の現在座標
 	SQUARE movable_positon;//収納用
 	queue<SQUARE> search;//探索用キュー
 	vector<SQUARE> passing_list(HEIGHT*WIDTH);//通過した座標の履歴
@@ -296,8 +296,8 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 		/*周囲の移動可能な座標をキューに収納*/
 		for (int direction = 0; direction < 4; direction++) {
 			if (search_stage[now_positon.y + dy[direction]][now_positon.x + dx[direction]] != WALL) {
-				movable_positon.x = now_positon.x - 1;
-				movable_positon.y = now_positon.y;
+				movable_positon.x = now_positon.x + dx[direction];
+				movable_positon.y = now_positon.y + dy[direction];
 				//通過済みか確認
 				if (!checkPassingList(passing_list, movable_positon)) {
 					search.push(movable_positon);
