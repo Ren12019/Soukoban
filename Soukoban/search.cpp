@@ -62,7 +62,7 @@ SQUARE searchGoal(int stage[][WIDTH]) {
 //	return ;
 //}
 
-int searchBreadthFirst(int stage[][WIDTH]) {
+int searchBreadthFirstSample(int stage[][WIDTH]) {
 	////////////////////////////////////////
 /* “ü—ÍŽó‚¯Žæ‚è */
 ////////////////////////////////////////
@@ -266,6 +266,12 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	//	}
 	//	cout << endl;
 	//}
+
+	return 0;
+}
+
+int searchBreadthFirst(int stage[][WIDTH]) {
+	
 
 	return 0;
 }
