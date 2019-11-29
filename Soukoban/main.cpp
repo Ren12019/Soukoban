@@ -35,7 +35,7 @@ int main(void) {
 
 		printStage(stage);
 
-		searchBreadthFirst(stage);
+		searchBreadthFirstTwo(stage);
 
 		printf("Please push key\n");
 		printf("CONTINUE:Space		FINISH:Esc\n");
