@@ -47,7 +47,6 @@ void printGrid(int grid[][GRID_SIZE]) {
 }
 
 void printStageList() {
-	int flag = 0;
 	STAGELIST *nowStageList = head;
 
 	if ((head == NULL) && (tail == NULL))

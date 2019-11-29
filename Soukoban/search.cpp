@@ -8,6 +8,7 @@
 #include "count.h"
 #include "print.h"
 #include "check.h"
+#include "stage.h"
 
 /* 4 方向への隣接頂点への移動を表すベクトル */
 const int dx[4] = { 1, 0, -1, 0 };//右、下、左、上
@@ -238,12 +239,14 @@ int searchBreadthFirstTwo(int stage[][WIDTH]) {
 					search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX;
 					//移動前に居た場所を空きに
 					search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+					addStageList(search_stage);
 				}
 				else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == GOAL) {
 					//移動先がゴール
 					search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX_ON_GOAL;
 					//移動前に居た場所を空きに
 					search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+					addStageList(search_stage);
 				}
 				else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == BOX) {
 					continue;
@@ -293,6 +296,7 @@ int searchBreadthFirstTwo(int stage[][WIDTH]) {
 			//return 0;
 		}
 	}
+	printStageList();
 	printStage(search_stage);
 	//
 	/* 結果出力 */

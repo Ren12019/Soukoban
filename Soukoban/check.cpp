@@ -448,3 +448,57 @@ int checkPassingList(std::vector<SQUARE>passing_list,SQUARE square) {
 
 	return 0;
 }
+/*—š—ğ‚É‚ ‚é”Õ–Ê‚È‚çu‚Pv‚ğ•Ô‚·*/
+int checkStageList(int stage[][WIDTH]) {
+	STAGELIST *nowStageList = head;
+	std::vector < std::vector<int>> check_list(HEIGHT, std::vector<int>(WIDTH, 0));
+	int flag_check = 1;
+
+	//list‚È‚µ
+	if ((head == NULL) && (tail == NULL))
+	{
+		return 0;
+	}
+
+	while (true)
+	{
+		//‰Šú‰»
+		flag_check = 1;
+		for (int y = 0; y < GRID_SIZE; y++) {
+			for (int x = 0; x < GRID_SIZE; x++) {
+					check_list[y][x] = 0;
+			}
+		}
+		//list‚Æ”äŠr
+		for (int y = 0; y < GRID_SIZE; y++) {
+			for (int x = 0; x < GRID_SIZE; x++) {
+				if (nowStageList->stage[y][x] == stage[y][x]) {
+					check_list[y][x] = 1;
+				}
+			}
+		}
+		//”äŠrŒ‹‰Ê‚ğŠm”F
+		for (int y = 0; y < GRID_SIZE; y++) {
+			for (int x = 0; x < GRID_SIZE; x++) {
+				if (check_list[y][x] == 0) {
+					flag_check = 0;
+					break;
+				}
+			}
+			if (flag_check == 0) {
+				break;
+			}
+		}
+		//—š—ğ‚É‚ ‚Á‚½ê‡u‚Pv‚ğ•Ô‚·
+		if (flag_check == 1) {
+			return 1;
+		}
+
+		//list‚ğ‚Â‚¬‚Ö
+		if (nowStageList->next_stage == NULL)
+			break;
+		else
+			nowStageList = nowStageList->next_stage;
+	}
+	return 0;
+}
