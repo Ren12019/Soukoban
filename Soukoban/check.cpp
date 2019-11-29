@@ -1,6 +1,7 @@
 #include "check.h"
 #include <stdio.h>
 #include <vector>
+#include <iostream>
 #include "define.h"
 #include "count.h"
 
@@ -449,10 +450,48 @@ int checkPassingList(std::vector<SQUARE>passing_list,SQUARE square) {
 	return 0;
 }
 /*履歴にある盤面なら「１」を返す*/
-int checkStageList(int stage[][WIDTH]) {
+int checkStageList(int stage[][WIDTH], std::vector<SQUARE> current_pos,std::vector<SQUARE> next) {
+	using namespace std;
 	STAGELIST *nowStageList = head;
-	std::vector < std::vector<int>> check_list(HEIGHT, std::vector<int>(WIDTH, 0));
+	vector <vector<int>> target_stage(HEIGHT,vector<int>(WIDTH, 0));
+	vector <vector<int>> check_list(HEIGHT,vector<int>(WIDTH, 0));
 	int flag_check = 1;
+
+	/*初期設定*/
+	for (int y = 0; y < GRID_SIZE; y++) {
+		for (int x = 0; x < GRID_SIZE; x++) {
+			target_stage[y][x] = stage[y][x];
+		}
+	}
+
+	/*仮想移動（盤面の変更）*/
+	for (int cnt_box = 0; cnt_box < NUMBER_OF_BOX; cnt_box++) {
+		//現在地が荷物
+		if (target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX) {
+			if (target_stage[next[cnt_box].y][next[cnt_box].x] == PATH) {
+				//移動先が空き
+				target_stage[next[cnt_box].y][next[cnt_box].x] = BOX;
+				//移動前に居た場所を空きに
+				target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+			}
+			else if (target_stage[next[cnt_box].y][next[cnt_box].x] == GOAL) {
+				//移動先がゴール
+				target_stage[next[cnt_box].y][next[cnt_box].x] = BOX_ON_GOAL;
+				//移動前に居た場所を空きに
+				target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+			}
+			else if (target_stage[next[cnt_box].y][next[cnt_box].x] == BOX) {
+				continue;
+			}
+			else {
+				cout << "error" << endl;
+				cout << target_stage[next[cnt_box].y][next[cnt_box].x] << "," << next[cnt_box].x << "," << next[cnt_box].y << endl;
+			}
+		}
+		else if (target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX_ON_GOAL) {
+			continue;
+		}
+	}
 
 	//listなし
 	if ((head == NULL) && (tail == NULL))
@@ -472,7 +511,7 @@ int checkStageList(int stage[][WIDTH]) {
 		//listと比較
 		for (int y = 0; y < GRID_SIZE; y++) {
 			for (int x = 0; x < GRID_SIZE; x++) {
-				if (nowStageList->stage[y][x] == stage[y][x]) {
+				if (nowStageList->stage[y][x] == target_stage[y][x]) {
 					check_list[y][x] = 1;
 				}
 			}
