@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <time.h>
 #include <conio.h>
 #include <windows.h>
@@ -21,40 +22,45 @@ int main(void) {
 	int stage[HEIGHT][WIDTH] = {};
 	int checklist[HEIGHT][WIDTH] = {};
 
-	while (true) {
-		do {
-			createStageGrid(stage);
+	/*test*/
+	setStageTest(stage);
+	printStage(stage);
+	std::cout << checkClear(stage)<<std::endl;
 
-			while (checkTile(stage) != 0) {}
+	//while (true) {
+	//	do {
+	//		createStageGrid(stage);
 
-		} while (checkSection(stage) == 1 && countSpace(stage) > 1);
+	//		while (checkTile(stage) != 0) {}
 
-		initGoal(stage);
-		initBox(stage);
-		//initPlayer(stage);
+	//	} while (checkSection(stage) == 1 && countSpace(stage) > 1);
 
-		printStage(stage);
+	//	initGoal(stage);
+	//	initBox(stage);
+	//	//initPlayer(stage);
 
-		searchBreadthFirstTwo(stage);
+	//	printStage(stage);
 
-		printf("Please push key\n");
-		printf("CONTINUE:Space		FINISH:Esc\n");
+	//	searchBreadthFirstTwo(stage);
 
-		while (true) {
-			if (_kbhit()) {
-				if (_getch() == 0x1b) {//Esc
-					return 0;
-				}
-				if (_getch() == 0x20) {//Space
-					break;
-				}
-			}
-		}
+	//	printf("Please push key\n");
+	//	printf("CONTINUE:Space		FINISH:Esc\n");
 
-		//printOutText(stage);
-		//addStageList(stage);
-	}
-	//printStageList();
+	//	while (true) {
+	//		if (_kbhit()) {
+	//			if (_getch() == 0x1b) {//Esc
+	//				return 0;
+	//			}
+	//			if (_getch() == 0x20) {//Space
+	//				break;
+	//			}
+	//		}
+	//	}
+
+	//	//printOutText(stage);
+	//	//addStageList(stage);
+	//}
+	////printStageList();
 
 	return 0;
 }

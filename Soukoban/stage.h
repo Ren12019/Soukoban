@@ -1,6 +1,8 @@
 #pragma once
 #include "define.h"
 
+void setStageTest(int [][WIDTH]);
+
 void set_x(int* );
 
 void set_y(int* );
