@@ -5,18 +5,18 @@
 #include "print.h"
 
 /*‹@”\‚ÌŽŽ‰^“]—p*/
-void setStageTest(int stage[][WIDTH])
+void setStageTest(int stage[][WIDTH],SQUARE set)
 {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (x == 0 || y == 0 || x == WIDTH - 1 || y == HEIGHT - 1) {
 				stage[y][x] = WALL;
 			}
-			else if (x == 1 && y == 3) {
+			else if (x == set.x && y == set.y) {
 				stage[y][x]=BOX_ON_GOAL;
 			}
-			else if (x == 1 && y == 2) {
-				stage[y][x] = BOX_ON_GOAL;
+			else if (x == 7 && y == 5) {
+				stage[y][x] = BOX;
 			}
 			else {
 				stage[y][x] = PATH;
