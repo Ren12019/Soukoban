@@ -126,3 +126,15 @@ void addStageList(int stage[][WIDTH])
 
 	newStageList->next_stage = NULL;
 }
+
+void freeStageList()
+{
+	STAGELIST *p =head;
+	STAGELIST *temp;
+
+	while (p != NULL) {
+		temp = p->next_stage; //次のデータの参照を取っておく
+		free(p);
+		p = temp;       //tempを次の処理対象に
+	}
+}

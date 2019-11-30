@@ -18,6 +18,7 @@
 
 int main(void) {
 	srand((unsigned int)time(NULL));
+	clock_t t = clock();
 
 	int stage[HEIGHT][WIDTH] = {};
 	int checklist[HEIGHT][WIDTH] = {};
@@ -36,8 +37,17 @@ int main(void) {
 
 		printStage(stage);
 
-		searchBreadthFirstTwo(stage);
+		if (!searchBreadthFirstTwo(stage)) {
+			head = NULL;
+			tail = NULL;
+			if (searchBreadthFirstTwo(stage)) {
+				printf("CLRAR!\n");
+			}
+			else printf("NOT FOUND ROUTE");
+		}
+		else printf("CLRAR!\n");
 
+		printf("Runtime:%dsec\n", (clock() - t)/1000);
 		printf("Please push key\n");
 		printf("CONTINUE:Space		FINISH:Esc\n");
 
@@ -47,8 +57,10 @@ int main(void) {
 					return 0;
 				}
 				if (_getch() == 0x20) {//Space
+					freeStageList();
 					head = NULL;
 					tail = NULL;
+					t = clock();
 					break;
 				}
 			}

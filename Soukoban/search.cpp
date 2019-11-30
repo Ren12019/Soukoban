@@ -244,7 +244,8 @@ int searchBreadthFirstTwo(int stage[][WIDTH]) {
 	{
 		/*移動（盤面の変更）*/
 		if (moveBox(search_stage, current_pos, search_que.front())) {
-			printStage(search_stage);
+			//確認用
+			//printStage(search_stage);
 			//移動があればリストへ
 			addStageList(search_stage);
 			current_pos = search_que.front();
@@ -273,12 +274,11 @@ int searchBreadthFirstTwo(int stage[][WIDTH]) {
 
 		/*探索の終了確認*/
 		if (checkClear(search_stage)) {
-			cout << "Clear" << endl;
 			break;
 		}
 		if (search_que.empty()) {
 			cout << "Not found route" << endl;
-			//return 0;
+			return 0;
 		}
 	}
 
@@ -287,6 +287,7 @@ int searchBreadthFirstTwo(int stage[][WIDTH]) {
 	/* 結果出力 */
 	//
 	printStage(search_stage);
+	printStageList();
 
 	return 1;
 }

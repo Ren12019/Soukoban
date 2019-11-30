@@ -12,3 +12,5 @@ void initStage(int [][WIDTH]);
 void createStageGrid(int [][WIDTH]);
 
 void addStageList(int [][WIDTH]);
+
+void freeStageList();
