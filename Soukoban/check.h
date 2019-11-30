@@ -4,28 +4,28 @@
 
 int checkTile(int[][WIDTH]);
 
-int checkSpace(int[][WIDTH]);
+int checkSpace(const int[][WIDTH]);
 
-int checkSection(int[][WIDTH]);
+int checkSection(const int[][WIDTH]);
 
-int checkAllStage(int[][WIDTH]);
+int checkAllStage(const int[][WIDTH]);
 
-int checkCarryInSquare(int [][WIDTH], int , int );
+int checkCarryInSquare(const int [][WIDTH], const int , const int );
 
-void checkCarryInArea(int [][WIDTH], int [][WIDTH]);
+void checkCarryInArea(const int [][WIDTH],int [][WIDTH]);
 
-int checkNeighborhoodWall(int [][WIDTH], int , int );
+int checkNeighborhoodWall(const int [][WIDTH], const int , const int );
 
-int checkCornerSquare(int [][WIDTH], int , int );
+int checkCornerSquare(const int [][WIDTH], const int , const int );
 
-void checkPutBox(int [][WIDTH], int [][WIDTH]);
+void checkPutBox(const int [][WIDTH],int [][WIDTH]);
 
-int checkDeadlock(int [][WIDTH],int,int);
+int checkDeadlock(const int [][WIDTH], const int, const int);
 
-int checkChecklist(int[][WIDTH]);
+int checkChecklist(const int[][WIDTH]);
 
-int checkClear(int[][WIDTH]);
+int checkClear(const int[][WIDTH]);
 
-int checkPassingList(std::vector<SQUARE>, SQUARE );
+int checkPassingList(const std::vector<SQUARE>, SQUARE );
 
-int checkStageList(int [][WIDTH], std::vector<SQUARE> , std::vector<SQUARE>);
+int checkStageList(const int [][WIDTH], const std::vector<SQUARE> , const std::vector<SQUARE>);
