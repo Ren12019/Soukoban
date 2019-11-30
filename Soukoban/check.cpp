@@ -4,7 +4,7 @@
 #include <iostream>
 #include "define.h"
 #include "count.h"
-
+/*三方向が壁のマスを壁に変更する*/
 int checkTile(int stage[][WIDTH])
 {
   int flag = 0;
@@ -26,7 +26,7 @@ int checkTile(int stage[][WIDTH])
 
   return flag;
 }
-
+/*３×４の空きスペースが存在する場合「１」を返す*/
 int checkSpace(const int stage[][WIDTH])
 {
   int count = 0;
@@ -57,7 +57,7 @@ int checkSpace(const int stage[][WIDTH])
 
   return flag;
 }
-
+/*移動不可能なスペースが存在する場合「１」を返す*/
 int checkSection(const int stage[][WIDTH])
 {
   int checksheet[HEIGHT][WIDTH] = {};
@@ -131,7 +131,7 @@ int checkSection(const int stage[][WIDTH])
 
   return 0;
 }
-
+/*履歴と照合を行う*/
 int checkAllStage(const int stage[][WIDTH])
 {
 	int flag = 0;
@@ -169,7 +169,7 @@ int checkAllStage(const int stage[][WIDTH])
 
 	return 0;
 }
-
+/*対象マスが荷物を運びこむことが可能かを判定する*/
 int checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
 	if ((stage[y][x - 1] == PATH || stage[y][x - 1] == GOAL) && (stage[y][x + 1] == PATH || stage[y][x + 1] == GOAL)) {
 		if (stage[y][x - 2] == WALL && stage[y][x + 2] == WALL && stage[y - 1][x] == WALL && stage[y + 1][x] == WALL) {
@@ -185,7 +185,7 @@ int checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
 
 	return 0;
 }
-
+/*チェックリストに荷物が運び込めないエリアをチェックする*/
 void checkCarryInArea(const int stage[][WIDTH],int checklist[][WIDTH]) {
 	for (int y = 0; y < HEIGHT; y++){
 		for (int x = 0; x < WIDTH; x++){
@@ -203,7 +203,7 @@ void checkCarryInArea(const int stage[][WIDTH],int checklist[][WIDTH]) {
 		}
 	}
 }
-
+/*対象マスが辺に接しているか判定する*/
 int checkNeighborhoodWall(const int stage[][WIDTH], const int x, const int y) {
 	//Left
 	if (stage[y - 1][x - 1] == WALL && stage[y][x - 1] == WALL && stage[y + 1][x - 1] == WALL) {
@@ -224,7 +224,7 @@ int checkNeighborhoodWall(const int stage[][WIDTH], const int x, const int y) {
 
 	return 0;
 }
-
+/*対象マスが角であるか判定する*/
 int checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
 	//┗
 	if (stage[y][x - 1] == WALL && stage[y - 1][x + 1] == WALL && stage[y + 1][x - 1] == WALL && stage[y + 1][x] == WALL) {
@@ -245,7 +245,7 @@ int checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
 
 	return 0;
 }
-
+/*対象マスに荷物を配置できるか判定する*/
 void checkPutBox(const int stage[][WIDTH],int checklist[][WIDTH]){
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -266,7 +266,7 @@ void checkPutBox(const int stage[][WIDTH],int checklist[][WIDTH]){
 		}
 	}
 }
-
+/*そこに荷物を置くことで詰みが発生するか判定する*/
 int checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
 	/*four boxes*/
 	if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL)) {
@@ -402,7 +402,7 @@ int checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
 	}
 	return 0;
 }
-
+/*チェックリストにチェックが存在するか判定する*/
 int checkChecklist(const int checklist[][WIDTH]) {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -413,7 +413,7 @@ int checkChecklist(const int checklist[][WIDTH]) {
 	}
 	return 1;
 }
-
+/*ステージがクリア状態に至ったか判定*/
 int checkClear(const int stage[][WIDTH]) {
 	int cnt_remainder_box = 0;
 	int cnt_remainder_goal=0;
@@ -439,7 +439,7 @@ int checkClear(const int stage[][WIDTH]) {
 
 	return 0;
 }
-
+/*配列に保存した通過履歴と照合を行う*/
 int checkPassingList(const std::vector<SQUARE>passing_list, const SQUARE square) {
 	for (int i = 0; i < passing_list.size(); i++) {
 		if (passing_list[i].x == square.x && passing_list[i].y == square.y) {
