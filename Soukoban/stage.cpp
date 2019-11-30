@@ -13,10 +13,10 @@ void setStageTest(int stage[][WIDTH],SQUARE set)
 				stage[y][x] = WALL;
 			}
 			else if (x == set.x && y == set.y) {
-				stage[y][x]=BOX_ON_GOAL;
+				stage[y][x]= BOX;
 			}
 			else if (x == 7 && y == 5) {
-				stage[y][x] = BOX;
+				stage[y][x] = GOAL;
 			}
 			else {
 				stage[y][x] = PATH;

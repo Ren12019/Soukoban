@@ -458,8 +458,8 @@ int checkStageList(int stage[][WIDTH], std::vector<SQUARE> current_pos,std::vect
 	int flag_check = 1;
 
 	/*‰Šúİ’è*/
-	for (int y = 0; y < GRID_SIZE; y++) {
-		for (int x = 0; x < GRID_SIZE; x++) {
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
 			target_stage[y][x] = stage[y][x];
 		}
 	}
@@ -503,22 +503,30 @@ int checkStageList(int stage[][WIDTH], std::vector<SQUARE> current_pos,std::vect
 	{
 		//‰Šú‰»
 		flag_check = 1;
-		for (int y = 0; y < GRID_SIZE; y++) {
-			for (int x = 0; x < GRID_SIZE; x++) {
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
 					check_list[y][x] = 0;
 			}
 		}
 		//list‚Æ”äŠr
-		for (int y = 0; y < GRID_SIZE; y++) {
-			for (int x = 0; x < GRID_SIZE; x++) {
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
 				if (nowStageList->stage[y][x] == target_stage[y][x]) {
 					check_list[y][x] = 1;
 				}
 			}
 		}
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
+				cout << check_list[y][x];
+			}
+			cout << endl;
+		}
+		cout << endl;
+
 		//”äŠrŒ‹‰Ê‚ğŠm”F
-		for (int y = 0; y < GRID_SIZE; y++) {
-			for (int x = 0; x < GRID_SIZE; x++) {
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
 				if (check_list[y][x] == 0) {
 					flag_check = 0;
 					break;

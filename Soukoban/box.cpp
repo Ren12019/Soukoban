@@ -1,6 +1,7 @@
 #include "box.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <time.h>
 #include "define.h"
 #include "check.h"
@@ -53,6 +54,54 @@ void initBox(int stage[][WIDTH]) {
 			if (clock() - t > 2000) {
 				printf("Failed to create stage:Time Out\n");
 				return;
+			}
+		}
+	}
+}
+
+void moveBox(int stage[][WIDTH], std::vector<SQUARE> current_pos, std::vector<SQUARE> next) {
+	for (int cnt_box = 0; cnt_box < NUMBER_OF_BOX; cnt_box++) {
+		//現在地が荷物
+		if (stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX) {
+			if (stage[next[cnt_box].y][next[cnt_box].x] == PATH) {
+				//移動先が空き
+				stage[next[cnt_box].y][next[cnt_box].x] = BOX;
+				//移動前に居た場所を空きに
+				stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+			}
+			else if (stage[next[cnt_box].y][next[cnt_box].x] == GOAL) {
+				//移動先がゴール
+				stage[next[cnt_box].y][next[cnt_box].x] = BOX_ON_GOAL;
+				//移動前に居た場所を空きに
+				stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+			}
+			else if (stage[next[cnt_box].y][next[cnt_box].x] == BOX) {
+				continue;
+			}
+			else {
+				std::cout << "error" << std::endl;
+				std::cout << stage[next[cnt_box].y][next[cnt_box].x] << "," << next[cnt_box].x << "," << next[cnt_box].y << std::endl;
+			}
+		}
+		else if (stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX_ON_GOAL) {
+			if (stage[next[cnt_box].y][next[cnt_box].x] == PATH) {
+				//移動先が空き
+				stage[next[cnt_box].y][next[cnt_box].x] = BOX;
+				//移動前に居た場所を空きに
+				stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = GOAL;
+			}
+			else if (stage[next[cnt_box].y][next[cnt_box].x] == GOAL) {
+				//移動先がゴール
+				stage[next[cnt_box].y][next[cnt_box].x] = BOX_ON_GOAL;
+				//移動前に居た場所を空きに
+				stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = GOAL;
+			}
+			else if (stage[next[cnt_box].y][next[cnt_box].x] == BOX) {
+				continue;
+			}
+			else {
+				std::cout << "error" << std::endl;
+				std::cout << stage[next[cnt_box].y][next[cnt_box].x] << "," << next[cnt_box].x << "," << next[cnt_box].y << std::endl;
 			}
 		}
 	}
