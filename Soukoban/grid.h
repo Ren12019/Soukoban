@@ -1,10 +1,11 @@
 #pragma once
+#include <vector>
 #include "define.h"
 
-void rotateGrid(int[][GRID_SIZE]);
+void rotateGrid(std::vector <std::vector<int>>);
 
-void flipGrid(int[][GRID_SIZE]);
+void flipGrid(std::vector <std::vector<int>>);
 
-void setGrid(int [][GRID_SIZE]);
+void setGrid(std::vector <std::vector<int>>);
 
-void setGridTemplate(int [][GRID_SIZE]);
+void setGridTemplate(std::vector <std::vector<int>>);

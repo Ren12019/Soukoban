@@ -1,8 +1,9 @@
 #include "player.h"
+#include <vector>
 #include "define.h"
 #include "choice.h"
 
-void initPlayer(int stage[][WIDTH]) {
+void initPlayer(std::vector <std::vector<int>> stage) {
 	int x = 0, y = 0;
 
 	while (true) {

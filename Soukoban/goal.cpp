@@ -5,9 +5,9 @@
 #include "choice.h"
 #include "count.h"
 
-void initGoal(int stage[][WIDTH]) {
+void initGoal(std::vector <std::vector<int>> stage) {
 	int x = 0, y = 0;
-	int checklist[HEIGHT][WIDTH] = {};
+	 std::vector <std::vector<int>> checklist(HEIGHT, std::vector<int>(WIDTH, 0));
 
 	checkCarryInArea(stage, checklist);
 

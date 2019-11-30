@@ -8,10 +8,10 @@
 #include "choice.h"
 #include "count.h"
 
-void initBox(int stage[][WIDTH]) {
+void initBox(std::vector <std::vector<int>> &stage) {
 	clock_t t = clock();
 	int x = 0, y = 0;
-	int checklist[HEIGHT][WIDTH] = {};
+	 std::vector <std::vector<int>> checklist(HEIGHT, std::vector<int>(WIDTH, 0));
 
 	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
 		checkPutBox(stage, checklist);
@@ -59,7 +59,7 @@ void initBox(int stage[][WIDTH]) {
 	}
 }
 
-void moveBox(int stage[][WIDTH], std::vector<SQUARE> current_pos, std::vector<SQUARE> next) {
+void moveBox(std::vector <std::vector<int>> &stage, std::vector<SQUARE> current_pos, std::vector<SQUARE> next) {
 	for (int cnt_box = 0; cnt_box < NUMBER_OF_BOX; cnt_box++) {
 		//Œ»Ý’n‚ª‰×•¨
 		if (stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX) {

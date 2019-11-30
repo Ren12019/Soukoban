@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 #include "define.h"
 #include "choice.h"
 #include "print.h"
 
-void rotateGrid(int grid[][GRID_SIZE]) {
+void rotateGrid(std::vector <std::vector<int>> grid) {
 	int direction = choiceDirection();
-	int rotated_grid[GRID_SIZE][GRID_SIZE] = {};
+	std::vector<std::vector<int> > rotated_grid(GRID_SIZE, std::vector<int>(GRID_SIZE, 0));
 
 	while (direction != FRONT) {
 		for (int y = 0; y < GRID_SIZE; y++) {
@@ -59,9 +60,9 @@ void rotateGrid(int grid[][GRID_SIZE]) {
 	}
 }
 
-void flipGrid(int grid[][GRID_SIZE]) {
+void flipGrid(std::vector <std::vector<int>> grid) {
 	int flip = choiceFlip();
-	int flipped_grid[GRID_SIZE][GRID_SIZE] = {};
+	std::vector<std::vector<int> > flipped_grid(GRID_SIZE, std::vector<int>(GRID_SIZE, 0));
 
 	switch (flip) {
 	case VERTICAL: {
@@ -107,7 +108,7 @@ void flipGrid(int grid[][GRID_SIZE]) {
 	}
 }
 
-void setGrid(int grid[][GRID_SIZE]) {
+void setGrid(std::vector <std::vector<int>> grid) {
 	for (int y = 0; y < GRID_SIZE; y++) {
 		for (int x = 0; x < GRID_SIZE; x++) {
 			grid[y][x] = choiceWallOrPath();
@@ -117,7 +118,7 @@ void setGrid(int grid[][GRID_SIZE]) {
 	flipGrid(grid);
 }
 
-void setGridTemplate(int grid[][GRID_SIZE]) {
+void setGridTemplate(std::vector <std::vector<int>> grid) {
 	FILE *fp;
 	int grid_num = choiceTemplateNum();
 	char filename[100];

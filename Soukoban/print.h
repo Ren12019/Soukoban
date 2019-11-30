@@ -1,10 +1,11 @@
 #pragma once
+#include <vector>
 #include "define.h"
 
-void printStage(int[][WIDTH]);
+void printStage(std::vector <std::vector<int>>);
 
-void printGrid(int[][GRID_SIZE]);
+void printGrid(std::vector <std::vector<int>>);
 
 void printStageList();
 
-void printOutText(int [][WIDTH]);
+void printOutText(std::vector <std::vector<int>>);

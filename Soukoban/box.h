@@ -2,6 +2,6 @@
 #include <vector>
 #include "define.h"
 
-void initBox(int [][WIDTH]);
+void initBox(std::vector <std::vector<int>>&);
 
-void moveBox(int[][WIDTH], std::vector<SQUARE>, std::vector<SQUARE>);
+void moveBox(std::vector <std::vector<int>>&, std::vector<SQUARE>, std::vector<SQUARE>);

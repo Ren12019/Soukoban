@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 enum SETTING {
 	WIDTH = 11,
@@ -40,10 +41,11 @@ enum DIRECTION {
 	LEFT = 4
 };
 
-typedef struct stagelist{
-	struct stagelist *next_stage;
-	int stage[HEIGHT][WIDTH];
-}STAGELIST;
+class STAGELIST {
+public:
+	STAGELIST *next_stage;
+	std::vector<std::vector<int>>stage;
+};
 
 extern STAGELIST*head;
 extern STAGELIST*tail;
@@ -52,3 +54,8 @@ typedef struct square {
 	int x;
 	int y;
 }SQUARE;
+
+typedef struct stagelist2 {
+	struct stagelist *next_stage;
+	int stage[HEIGHT][WIDTH];
+}STAGELIST2;

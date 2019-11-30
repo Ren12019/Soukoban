@@ -1,6 +1,7 @@
 #pragma once
+#include <vector>
 #include "define.h"
 
-int searchBreadthFirst(int [][WIDTH]);
+int searchBreadthFirst(std::vector <std::vector<int>>);
 
-int searchBreadthFirstTwo(int [][WIDTH]);
+int searchBreadthFirstTwo(std::vector <std::vector<int>>);

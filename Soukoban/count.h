@@ -1,12 +1,13 @@
 #pragma once
+#include <vector>
 #include "define.h"
 
-int countSpace(int[][WIDTH]);
+int countSpace(std::vector <std::vector<int>>);
 
-int countAroundWall(int [][WIDTH], int, int);
+int countAroundWall(std::vector <std::vector<int>>, int, int);
 
-int countStageSize(int[][WIDTH]);
+int countStageSize(std::vector <std::vector<int>>);
 
-int countConnectionSquare(int[][WIDTH], SQUARE);
+int countConnectionSquare(std::vector <std::vector<int>>, SQUARE);
 
-int countConnectionAll(int[][WIDTH]);
+int countConnectionAll(std::vector <std::vector<int>>);

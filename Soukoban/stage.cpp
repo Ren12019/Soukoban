@@ -1,11 +1,13 @@
 #include "stage.h"
 #include <stdlib.h>
+#include <iostream>
+#include <vector>
 #include "define.h"
 #include "grid.h"
 #include "print.h"
 
 /*‹@”\‚ÌŽŽ‰^“]—p*/
-void setStageTest(int stage[][WIDTH],SQUARE set)
+void setStageTest(std::vector <std::vector<int>> &stage,SQUARE set)
 {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -23,6 +25,7 @@ void setStageTest(int stage[][WIDTH],SQUARE set)
 			}
 		}
 	}
+	printStage(stage);
 }
 
 void set_x(int* point) {
@@ -33,7 +36,7 @@ void set_y(int* point) {
 	*point = rand() % (HEIGHT - 2) + 1;
 }
 
-void initStage(int stage[][WIDTH]) {
+void initStage(std::vector <std::vector<int>> &stage) {
 	int man_x, man_y;
 	int box_x, box_y;
 	int goal_x, goal_y;
@@ -69,8 +72,8 @@ void initStage(int stage[][WIDTH]) {
 	}
 }
 
-void createStageGrid(int stage[][WIDTH]) {
-	int grid[GRID_SIZE][GRID_SIZE] = {};
+void createStageGrid(std::vector <std::vector<int>> &stage) {
+	std::vector<std::vector<int> > grid(GRID_SIZE, std::vector<int>(GRID_SIZE, 0));
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -99,20 +102,22 @@ STAGELIST*createStageList(void) {
 
 	return newStageList;
 }
-
-void addStageList(int stage[][WIDTH])
+//error
+void addStageList(std::vector <std::vector<int>> const stage)
 {
 	STAGELIST *newStageList;
 
 	newStageList = createStageList();
 
-	for (int y = 0; y < HEIGHT; y++){
-		for (int x = 0; x < WIDTH; x++){
+	std::cout << newStageList->stage.size() << std::endl;
+
+	for (int y = 0; y < HEIGHT; y++) {//error
+		for (int x = 0; x < WIDTH; x++) {
 			newStageList->stage[y][x] = stage[y][x];
 		}
 	}
 
-	if ((head == NULL) && (tail == NULL)){
+	if ((head == NULL) && (tail == NULL)) {
 		head = newStageList;
 		tail = newStageList;
 	}

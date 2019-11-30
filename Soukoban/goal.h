@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "define.h"
 
-void initGoal(int [][WIDTH]);
+void initGoal(std::vector <std::vector<int>>);

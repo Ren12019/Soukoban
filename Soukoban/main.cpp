@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <vector>
 #include <time.h>
 #include <conio.h>
 #include <windows.h>
@@ -19,8 +20,8 @@
 int main(void) {
 	srand((unsigned int)time(NULL));
 
-	int stage[HEIGHT][WIDTH] = {};
-	int checklist[HEIGHT][WIDTH] = {};
+	std::vector <std::vector<int>> stage(HEIGHT, std::vector<int>(WIDTH, 0));
+	std::vector <std::vector<int>> checklist(HEIGHT, std::vector<int>(WIDTH, 0));
 
 	/*test*/
 	std::vector<SQUARE> movable_pos(NUMBER_OF_BOX);//û”[—p
@@ -28,7 +29,8 @@ int main(void) {
 
 	//—š—ğì¬
 	SQUARE set = { 1,2 };
-	setStageTest(stage,set);
+	setStageTest(stage, set);
+	printStage(stage);
 	addStageList(stage);
 	set.x = 3;
 	set.y = 6;
@@ -49,9 +51,9 @@ int main(void) {
 	}
 	else {
 		std::cout << "ˆÚ“®‚µ‚Ü‚µ‚½" << std::endl;
-		moveBox(stage,current_pos,movable_pos);
+		moveBox(stage, current_pos, movable_pos);
 		addStageList(stage);
-		printStageList();
+		//printStageList();
 	}
 	if (checkClear(stage)) {
 		std::cout << "ƒNƒŠƒA" << std::endl;

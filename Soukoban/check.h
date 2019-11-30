@@ -2,30 +2,30 @@
 #include "define.h"
 #include <vector>
 
-int checkTile(int[][WIDTH]);
+int checkTile(std::vector <std::vector<int>>);
 
-int checkSpace(int[][WIDTH]);
+int checkSpace(std::vector <std::vector<int>>);
 
-int checkSection(int[][WIDTH]);
+int checkSection(std::vector <std::vector<int>>);
 
-int checkAllStage(int[][WIDTH]);
+int checkAllStage(std::vector <std::vector<int>>);
 
-int checkCarryInSquare(int [][WIDTH], int , int );
+int checkCarryInSquare(std::vector <std::vector<int>>, int , int );
 
-void checkCarryInArea(int [][WIDTH], int [][WIDTH]);
+void checkCarryInArea(std::vector <std::vector<int>>, std::vector <std::vector<int>>);
 
-int checkNeighborhoodWall(int [][WIDTH], int , int );
+int checkNeighborhoodWall(std::vector <std::vector<int>>, int , int );
 
-int checkCornerSquare(int [][WIDTH], int , int );
+int checkCornerSquare(std::vector <std::vector<int>>, int , int );
 
-void checkPutBox(int [][WIDTH], int [][WIDTH]);
+void checkPutBox(std::vector <std::vector<int>>, std::vector <std::vector<int>>);
 
-int checkDeadlock(int [][WIDTH],int,int);
+int checkDeadlock(std::vector <std::vector<int>>,int,int);
 
-int checkChecklist(int[][WIDTH]);
+int checkChecklist(std::vector <std::vector<int>>);
 
-int checkClear(int[][WIDTH]);
+int checkClear(std::vector <std::vector<int>>);
 
 int checkPassingList(std::vector<SQUARE>, SQUARE );
 
-int checkStageList(int [][WIDTH], std::vector<SQUARE> , std::vector<SQUARE>);
+int checkStageList(std::vector <std::vector<int>>, std::vector<SQUARE> , std::vector<SQUARE>);

@@ -1,7 +1,8 @@
 #include "count.h"
 #include "define.h"
+#include <vector>
 
-int countSpace(int stage[][WIDTH]) {
+int countSpace(std::vector <std::vector<int>> stage) {
 	int count = 0;
 
 	for (int y = 0; y < HEIGHT; y++) {
@@ -15,7 +16,7 @@ int countSpace(int stage[][WIDTH]) {
 	return count;
 }
 
-int countAroundWall(int stage[][WIDTH], int x, int y) {
+int countAroundWall(std::vector <std::vector<int>> stage, int x, int y) {
 	int count = 0;
 
 	if (stage[y - 1][x] == WALL)
@@ -30,7 +31,7 @@ int countAroundWall(int stage[][WIDTH], int x, int y) {
 	return count;
 }
 
-int countStageSize(int stage[][WIDTH]) {
+int countStageSize(std::vector <std::vector<int>> stage) {
 	int count = 0;
 
 	for (int y = 0; y < HEIGHT; y++) {
@@ -44,7 +45,7 @@ int countStageSize(int stage[][WIDTH]) {
 	return count;
 }
 
-int countConnectionSquare(int stage[][WIDTH],SQUARE target) {
+int countConnectionSquare(std::vector <std::vector<int>> stage,SQUARE target) {
 	int count = 0;
 
 	if (stage[target.y - 1][target.x] != WALL)
@@ -59,7 +60,7 @@ int countConnectionSquare(int stage[][WIDTH],SQUARE target) {
 	return count;
 }
 
-int countConnectionAll(int stage[][WIDTH]) {
+int countConnectionAll(std::vector <std::vector<int>> stage) {
 	int cnt_all_connection = 0;
 	int cnt_square_connection = 0;
 	SQUARE target;

@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "define.h"
 
-void initPlayer(int [][WIDTH]);
+void initPlayer(std::vector <std::vector<int>>);

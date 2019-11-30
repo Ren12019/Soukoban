@@ -1,8 +1,9 @@
 #include "print.h"
 #include <stdio.h>
+#include <vector>
 #include "define.h"
 
-void printStage(int stage[][WIDTH]) {
+void printStage(std::vector <std::vector<int>> stage) {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == WALL)
@@ -27,7 +28,7 @@ void printStage(int stage[][WIDTH]) {
 	printf("\n");
 }
 
-void printGrid(int grid[][GRID_SIZE]) {
+void printGrid(std::vector <std::vector<int>> grid) {
 	for (int y = 0; y < GRID_SIZE; y++) {
 		for (int x = 0; x < GRID_SIZE; x++) {
 			if (grid[y][x] == WALL)
@@ -65,7 +66,7 @@ void printStageList() {
 	}
 }
 
-void printOutText(int stage[][WIDTH]) {
+void printOutText(std::vector <std::vector<int>> stage) {
 	FILE *fp;
 
 	if (fopen_s(&fp, "StageData/stage.txt", "w") != 0) {

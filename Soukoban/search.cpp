@@ -9,12 +9,13 @@
 #include "print.h"
 #include "check.h"
 #include "stage.h"
+#include "box.h"
 
 /* 4 方向への隣接頂点への移動を表すベクトル */
 const int dx[4] = { 1, 0, -1, 0 };//右、下、左、上
 const int dy[4] = { 0, 1, 0, -1 };//右、下、左、上
 
-SQUARE searchBox(int stage[][WIDTH]) {
+SQUARE searchBox(std::vector <std::vector<int>> stage) {
 	SQUARE point_box;
 	point_box.x = 0;
 	point_box.y = 0;
@@ -31,7 +32,7 @@ SQUARE searchBox(int stage[][WIDTH]) {
 	return point_box;
 }
 
-SQUARE searchGoal(int stage[][WIDTH]) {
+SQUARE searchGoal(std::vector <std::vector<int>> stage) {
 	SQUARE point_goal;
 	point_goal.x = 0;
 	point_goal.y = 0;
@@ -48,8 +49,8 @@ SQUARE searchGoal(int stage[][WIDTH]) {
 	return point_goal;
 }
 
-int searchBreadthFirst(int stage[][WIDTH]) {
-	int search_stage[HEIGHT][WIDTH] = {};//探索用のステージ	
+int searchBreadthFirst(std::vector <std::vector<int>> stage) {
+	std::vector<std::vector<int> > search_stage(HEIGHT, std::vector<int>(WIDTH, 0));//探索用のステージ	
 	SQUARE start_pos;//荷物の初期位置
 	SQUARE goal_pos;//荷物の初期位置
 	SQUARE movable_pos;//収納用
@@ -158,7 +159,7 @@ int searchBreadthFirst(int stage[][WIDTH]) {
 	return 1;
 }
 
-std::vector<SQUARE> searchBoxTwo(int stage[][WIDTH]) {
+std::vector<SQUARE> searchBoxTwo(std::vector <std::vector<int>> stage) {
 	std::vector<SQUARE>box_pos(NUMBER_OF_BOX);
 
 	for (int y = 0,cnt_box=0; y < HEIGHT && cnt_box < NUMBER_OF_BOX; y++) {
@@ -174,7 +175,7 @@ std::vector<SQUARE> searchBoxTwo(int stage[][WIDTH]) {
 	return box_pos;
 }
 
-std::vector<SQUARE> searchGoalTwo(int stage[][WIDTH]) {
+std::vector<SQUARE> searchGoalTwo(std::vector <std::vector<int>> stage) {
 	std::vector<SQUARE>goal_pos(NUMBER_OF_BOX);
 
 	for (int y = 0, cnt_goal = 0; y < HEIGHT && cnt_goal < NUMBER_OF_BOX; y++) {
@@ -190,9 +191,9 @@ std::vector<SQUARE> searchGoalTwo(int stage[][WIDTH]) {
 	return goal_pos;
 }
 
-int searchBreadthFirstTwo(int stage[][WIDTH]) {
+int searchBreadthFirstTwo(std::vector <std::vector<int>> stage) {
 	using namespace std;
-	int search_stage[HEIGHT][WIDTH] = {};//探索用のステージ	
+	std::vector<std::vector<int> > search_stage(HEIGHT, std::vector<int>(WIDTH, 0));//探索用のステージ	
 	vector<SQUARE> start_pos(NUMBER_OF_BOX);//荷物の初期位置
 	vector<SQUARE> goal_pos(NUMBER_OF_BOX);//荷物の初期位置
 	vector<SQUARE> movable_pos(NUMBER_OF_BOX);//収納用
@@ -231,55 +232,56 @@ int searchBreadthFirstTwo(int stage[][WIDTH]) {
 	while (!search_que.empty())
 	{
 		/*移動（盤面の変更）*/
-		for (int cnt_box = 0; cnt_box < NUMBER_OF_BOX; cnt_box++) {
-			//現在地が荷物
-			if (search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX) {
-				if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == PATH) {
-					//移動先が空き
-					search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX;
-					//移動前に居た場所を空きに
-					search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
-					addStageList(search_stage);
-				}
-				else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == GOAL) {
-					//移動先がゴール
-					search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX_ON_GOAL;
-					//移動前に居た場所を空きに
-					search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
-					addStageList(search_stage);
-				}
-				else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == BOX) {
-					continue;
-				}
-				else {
-					cout << "error" << endl;
-					cout << search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] << "," << search_que.front()[cnt_box].x << "," << search_que.front()[cnt_box].y << endl;
-				}
-			}
-			else if (search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX_ON_GOAL) {
-				if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == PATH) {
-					//移動先が空き
-					search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX;
-					//移動前に居た場所をゴールに
-					search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = GOAL;
-					addStageList(search_stage);
-				}
-				else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == GOAL) {
-					//移動先がゴール
-					search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX_ON_GOAL;
-					//移動前に居た場所をゴールに
-					search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = GOAL;
-					addStageList(search_stage);
-				}
-				else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == BOX) {
-					continue;
-				}
-				else {
-					cout << "error" << endl;
-					cout << search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] << "," << search_que.front()[cnt_box].x << "," << search_que.front()[cnt_box].y << endl;
-				}
-			}
-		}
+		moveBox(search_stage, current_pos, search_que.front());
+		//for (int cnt_box = 0; cnt_box < NUMBER_OF_BOX; cnt_box++) {
+		//	//現在地が荷物
+		//	if (search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX) {
+		//		if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == PATH) {
+		//			//移動先が空き
+		//			search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX;
+		//			//移動前に居た場所を空きに
+		//			search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+		//			addStageList(search_stage);
+		//		}
+		//		else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == GOAL) {
+		//			//移動先がゴール
+		//			search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX_ON_GOAL;
+		//			//移動前に居た場所を空きに
+		//			search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+		//			addStageList(search_stage);
+		//		}
+		//		else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == BOX) {
+		//			continue;
+		//		}
+		//		else {
+		//			cout << "error" << endl;
+		//			cout << search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] << "," << search_que.front()[cnt_box].x << "," << search_que.front()[cnt_box].y << endl;
+		//		}
+		//	}
+		//	else if (search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX_ON_GOAL) {
+		//		if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == PATH) {
+		//			//移動先が空き
+		//			search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX;
+		//			//移動前に居た場所をゴールに
+		//			search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = GOAL;
+		//			addStageList(search_stage);
+		//		}
+		//		else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == GOAL) {
+		//			//移動先がゴール
+		//			search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] = BOX_ON_GOAL;
+		//			//移動前に居た場所をゴールに
+		//			search_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = GOAL;
+		//			addStageList(search_stage);
+		//		}
+		//		else if (search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] == BOX) {
+		//			continue;
+		//		}
+		//		else {
+		//			cout << "error" << endl;
+		//			cout << search_stage[search_que.front()[cnt_box].y][search_que.front()[cnt_box].x] << "," << search_que.front()[cnt_box].x << "," << search_que.front()[cnt_box].y << endl;
+		//		}
+		//	}
+		//}
 		current_pos = search_que.front();
 		search_que.pop();
 

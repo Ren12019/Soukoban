@@ -1,14 +1,15 @@
 #pragma once
+#include <vector>
 #include "define.h"
 
-void setStageTest(int [][WIDTH], SQUARE);
+void setStageTest(std::vector <std::vector<int>>&, SQUARE);
 
 void set_x(int* );
 
 void set_y(int* );
 
-void initStage(int [][WIDTH]);
+void initStage(std::vector <std::vector<int>>&);
 
-void createStageGrid(int [][WIDTH]);
+void createStageGrid(std::vector <std::vector<int>>&);
 
-void addStageList(int [][WIDTH]);
+void addStageList(std::vector <std::vector<int>>&);
