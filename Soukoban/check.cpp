@@ -450,7 +450,7 @@ int checkPassingList(const std::vector<SQUARE>passing_list, const SQUARE square)
 	return 0;
 }
 /*履歴にある盤面なら「１」を返す*/
-int checkStageList(const int stage[][WIDTH], const std::vector<SQUARE> current_pos, const std::vector<SQUARE> next) {
+int checkStageList(const int stage[][WIDTH], const std::vector<SQUARE> current_pos, const SQUARE next,const int box_num) {
 	using namespace std;
 	STAGELIST *nowStageList = head;
 	vector <vector<int>> target_stage(HEIGHT,vector<int>(WIDTH, 0));
@@ -466,30 +466,32 @@ int checkStageList(const int stage[][WIDTH], const std::vector<SQUARE> current_p
 
 	/*仮想移動（盤面の変更）*/
 	for (int cnt_box = 0; cnt_box < NUMBER_OF_BOX; cnt_box++) {
-		//現在地が荷物
-		if (target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX) {
-			if (target_stage[next[cnt_box].y][next[cnt_box].x] == PATH) {
-				//移動先が空き
-				target_stage[next[cnt_box].y][next[cnt_box].x] = BOX;
-				//移動前に居た場所を空きに
-				target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+		if (cnt_box == box_num) {
+			//現在地が荷物
+			if (target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX) {
+				if (target_stage[next.y][next.x] == PATH) {
+					//移動先が空き
+					target_stage[next.y][next.x] = BOX;
+					//移動前に居た場所を空きに
+					target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+				}
+				else if (target_stage[next.y][next.x] == GOAL) {
+					//移動先がゴール
+					target_stage[next.y][next.x] = BOX_ON_GOAL;
+					//移動前に居た場所を空きに
+					target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
+				}
+				else if (target_stage[next.y][next.x] == BOX) {
+					continue;
+				}
+				else {
+					cout << "errorcheck" << endl;
+					cout << target_stage[next.y][next.x] << "," << next.x << "," << next.y << endl;
+				}
 			}
-			else if (target_stage[next[cnt_box].y][next[cnt_box].x] == GOAL) {
-				//移動先がゴール
-				target_stage[next[cnt_box].y][next[cnt_box].x] = BOX_ON_GOAL;
-				//移動前に居た場所を空きに
-				target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] = PATH;
-			}
-			else if (target_stage[next[cnt_box].y][next[cnt_box].x] == BOX) {
+			else if (target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX_ON_GOAL) {
 				continue;
 			}
-			else {
-				cout << "error" << endl;
-				cout << target_stage[next[cnt_box].y][next[cnt_box].x] << "," << next[cnt_box].x << "," << next[cnt_box].y << endl;
-			}
-		}
-		else if (target_stage[current_pos[cnt_box].y][current_pos[cnt_box].x] == BOX_ON_GOAL) {
-			continue;
 		}
 	}
 
@@ -516,7 +518,6 @@ int checkStageList(const int stage[][WIDTH], const std::vector<SQUARE> current_p
 				}
 			}
 		}
-		cout << endl;
 
 		//比較結果を確認
 		for (int y = 0; y < HEIGHT; y++) {

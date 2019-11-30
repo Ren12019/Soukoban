@@ -28,4 +28,4 @@ int checkClear(const int[][WIDTH]);
 
 int checkPassingList(const std::vector<SQUARE>, SQUARE );
 
-int checkStageList(const int [][WIDTH], const std::vector<SQUARE> , const std::vector<SQUARE>);
+int checkStageList(const int [][WIDTH], const std::vector<SQUARE> , const SQUARE, const int);

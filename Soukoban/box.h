@@ -4,4 +4,4 @@
 
 void initBox(int [][WIDTH]);
 
-void moveBox(int[][WIDTH], std::vector<SQUARE>, std::vector<SQUARE>);
+int moveBox(int[][WIDTH],const std::vector<SQUARE>,const std::vector<SQUARE>);
