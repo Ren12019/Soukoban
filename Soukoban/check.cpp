@@ -516,12 +516,6 @@ int checkStageList(int stage[][WIDTH], std::vector<SQUARE> current_pos,std::vect
 				}
 			}
 		}
-		for (int y = 0; y < HEIGHT; y++) {
-			for (int x = 0; x < WIDTH; x++) {
-				cout << check_list[y][x];
-			}
-			cout << endl;
-		}
 		cout << endl;
 
 		//”äŠrŒ‹‰Ê‚ðŠm”F

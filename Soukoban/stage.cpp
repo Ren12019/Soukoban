@@ -18,6 +18,9 @@ void setStageTest(int stage[][WIDTH],SQUARE set)
 			else if (x == 7 && y == 5) {
 				stage[y][x] = GOAL;
 			}
+			else if (x == 4 && y == 4) {
+				stage[y][x] = BOX_ON_GOAL;
+			}
 			else {
 				stage[y][x] = PATH;
 			}

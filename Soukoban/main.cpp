@@ -42,6 +42,21 @@ int main(void) {
 	addStageList(stage);
 	printStageList();
 
+	movable_pos[0].x = 3;
+	movable_pos[0].y = 6;
+	if (checkStageList(stage, current_pos, movable_pos)) {
+		std::cout << "—š—ð‚É‘¶Ý‚·‚é‚½‚ßˆÚ“®‚Å‚«‚Ü‚¹‚ñ" << std::endl;
+	}
+	else {
+		std::cout << "ˆÚ“®‚µ‚Ü‚µ‚½" << std::endl;
+		moveBox(stage,current_pos,movable_pos);
+		addStageList(stage);
+		printStageList();
+	}
+	if (checkClear(stage)) {
+		std::cout << "ƒNƒŠƒA" << std::endl;
+	}
+
 	movable_pos[0].x = 7;
 	movable_pos[0].y = 5;
 	if (checkStageList(stage, current_pos, movable_pos)) {
@@ -49,7 +64,7 @@ int main(void) {
 	}
 	else {
 		std::cout << "ˆÚ“®‚µ‚Ü‚µ‚½" << std::endl;
-		moveBox(stage,current_pos,movable_pos);
+		moveBox(stage, current_pos, movable_pos);
 		addStageList(stage);
 		printStageList();
 	}
