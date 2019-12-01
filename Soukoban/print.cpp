@@ -72,6 +72,8 @@ void printOutText(int stage[][WIDTH]) {
 		printf("ファイルを開けませんでした。\n");
 		return;
 	}
+	/*横幅を出力*/
+	fprintf(fp, "%d\n",WIDTH);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
