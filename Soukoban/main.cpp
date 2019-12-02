@@ -42,7 +42,7 @@ struct SearchStat
 
 /* クリア状態であるかどうかを確認するために使用される関数。
  *クリア状態とは,空のゴールがないとき、ゴールを埋めるプレーヤーが存在せず、
- *ゴール上にない荷物が存在しないときです。
+ *ゴール上にない荷物が存在しないとき
  *
  *前提条件：エージェントprogの現在の状態を表す状態オブジェクト
  *事後条件：クリアの状態が見つかった場合はtrueを返し、それ以外の場合はfalseを返します
@@ -1449,13 +1449,13 @@ SearchStat bfs(State &initial_state)
 		current_state = open.front();
 		open.pop_front();
 		// NをCLOSEDにプッシュします
-		closed.push_back(current_state);
+		closed.push_back(current_state);//探索済み
 
 		//時間がかかった場合に出力し、フリーズしたかどうか確認する
 		if ((closed.size() % 5000) == 0)
 			std::cout << "...explored " << closed.size() << " nodes..." << std::endl;
 
-		//見つかった場合、レポートノードを現在のノードに設定し、探索カウントをクローズドリストサイズに設定します
+		//探索が終了した場合、レポートノードを現在のノードに設定し、探索カウントをクローズドリストサイズに設定します
 		if (is_goal(current_state))
 		{
 			report.node = current_state;
