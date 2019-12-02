@@ -1433,7 +1433,7 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 	return valid_moves;
 } //std::queue<State> gen_valid_states (const State &cur_state, const int smode = NONE)
 
-/* この関数は、初期状態で深さ優先探索アルゴリズムを実行します。
+/* この関数は、初期状態で幅優先探索アルゴリズムを実行します。
  *無限の深さを持つ倉庫番パズルのため、探索されたリストは
  *無限ループを防ぐために使用されます。
  *
@@ -1462,7 +1462,7 @@ SearchStat bfs(State &initial_state)
 		// NをCLOSEDにプッシュします
 		closed.push_back(current_state);
 
-		//時間がかかった場合に印刷し、フリーズしたかどうか疑問に思う
+		//時間がかかった場合に出力し、フリーズしたかどうか確認する
 		if ((closed.size() % 5000) == 0)
 			std::cout << "...explored " << closed.size() << " nodes..." << std::endl;
 
@@ -2013,26 +2013,30 @@ int main(int argc, char** argv)
 	////////////////////////////////
 	/*ステージ生成部分*/
 	////////////////////////////////
-	/*初期設定*/
+	//初期設定
 	srand((unsigned int)time(NULL));//乱数設定
-	int stage[HEIGHT][WIDTH] = {};//ステージ生成用
+	//int stage[HEIGHT][WIDTH] = {};//ステージ生成用
+	Level level;
+	level.createLevel();
+	level.printStage();
+	level.outputStage();
 
-	/*空部屋を作成*/
-	do {
-		/*テンプレートで空部屋を生成*/
-		createStageGrid(stage);
-		/*意味のないマスを埋め整地*/
-		while (checkTile(stage) != 0) {}
+	////空部屋を作成
+	//do {
+	//	//テンプレートで空部屋を生成
+	//	createStageGrid(stage);
+	//	//意味のないマスを埋め整地
+	//	while (checkTile(stage) != 0) {}
 
-	} while (checkSection(stage) == 1 && countSpace(stage) > 1);
-	/*ゴール、荷物、プレイヤーを配置*/
-	initGoal(stage);
-	initBox(stage);
-	initPlayer(stage);
-	/*生成したステージを表示*/
-	printStage(stage);
-	/*生成したステージをテキストへ出力*/
-	printOutText(stage);
+	//} while (checkSection(stage) == 1 && countSpace(stage) > 1);
+	////ゴール、荷物、プレイヤーを配置
+	//initGoal(stage);
+	//initBox(stage);
+	//initPlayer(stage);
+	////生成したステージを表示
+	//printStage(stage);
+	////生成したステージをテキストへ出力
+	//printOutText(stage);
 
 
 	////////////////////////////////
@@ -2051,8 +2055,6 @@ int main(int argc, char** argv)
 		std::cerr << "  usage: " << argv[0] << "<sokoban_level>.txt" << std::endl;
 		return 0;
 	}
-	//test
-	std::cout << argv[0] << "," << argv[1] << std::endl;
 	//倉庫番レベルのtxtファイルを開き、文字列として保存します
 	fs.open(argv[1]);
 	if (!fs)
@@ -2071,7 +2073,7 @@ int main(int argc, char** argv)
 		input_level.append(line) += "\n";
 	}
 	fs.close();
-
+	//初期設定
 	State init_state;
 	init_state.state_str = input_level;
 	init_state.move_list = "";
