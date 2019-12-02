@@ -4,23 +4,23 @@
 #include <time.h>
 #include "grid.h"
 
-/*コンストラクタ*/
+//コンストラクタ
 Level::Level()
 {
 }
-/*デストラクタ*/
+//デストラクタ
 Level::~Level()
 {
 }
-/*ランダムにx座標を返す*/
+//ランダムにx座標を返す
 int choiceX() {
 	return (rand() % (WIDTH - 2)) + 1;
 }
-/*ランダムにy座標を返す*/
+//ランダムにy座標を返す
 int choiceY() {
 	return (rand() % (HEIGHT - 2)) + 1;
 }
-/*対象マスが荷物を運びこむことが可能かを判定する*/
+//対象マスが荷物を運びこむことが可能かを判定する
 bool checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
 	if ((stage[y][x - 1] == PATH || stage[y][x - 1] == GOAL) && (stage[y][x + 1] == PATH || stage[y][x + 1] == GOAL)) {
 		if (stage[y][x - 2] == WALL && stage[y][x + 2] == WALL && stage[y - 1][x] == WALL && stage[y + 1][x] == WALL) {
@@ -36,7 +36,7 @@ bool checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
 
 	return false;
 }
-/*チェックリストに荷物が運び込めないエリアをチェックする*/
+//チェックリストに荷物が運び込めないエリアをチェックする
 void checkCarryInArea(const int stage[][WIDTH], int checklist[][WIDTH]) {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -54,8 +54,8 @@ void checkCarryInArea(const int stage[][WIDTH], int checklist[][WIDTH]) {
 		}
 	}
 }
-/*周囲の壁の数を数える*/
-int countAroundWall(int stage[][WIDTH], int x, int y) {
+//周囲の壁の数を数える
+int countAroundWall(const int stage[][WIDTH], const int x, const int y) {
 	int count = 0;
 
 	if (stage[y - 1][x] == WALL)
@@ -69,7 +69,7 @@ int countAroundWall(int stage[][WIDTH], int x, int y) {
 
 	return count;
 }
-/*チェックリストにチェックが存在するか判定する*/
+//チェックリストにチェックが存在するか判定する
 bool checkChecklist(const int checklist[][WIDTH]) {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -80,7 +80,7 @@ bool checkChecklist(const int checklist[][WIDTH]) {
 	}
 	return true;
 }
-/*対象マスが荷物を運びこむことが可能かを判定する*/
+//対象マスが荷物を運びこむことが可能かを判定する
 bool checkSquare(int stage[][WIDTH])
 {
 	bool flag = false;
@@ -102,7 +102,7 @@ bool checkSquare(int stage[][WIDTH])
 
 	return flag;
 }
-/*対象マスが辺に接しているか判定する*/
+//対象マスが辺に接しているか判定する
 bool checkNeighborhoodWall(const int stage[][WIDTH], const int x, const int y) {
 	//Left
 	if (stage[y - 1][x - 1] == WALL && stage[y][x - 1] == WALL && stage[y + 1][x - 1] == WALL) {
@@ -123,7 +123,7 @@ bool checkNeighborhoodWall(const int stage[][WIDTH], const int x, const int y) {
 
 	return false;
 }
-/*対象マスが角であるか判定する*/
+//対象マスが角であるか判定する
 bool checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
 	//┗
 	if (stage[y][x - 1] == WALL && stage[y - 1][x + 1] == WALL && stage[y + 1][x - 1] == WALL && stage[y + 1][x] == WALL) {
@@ -144,7 +144,7 @@ bool checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
 
 	return false;
 }
-/*対象マスに荷物を配置できるか判定する*/
+//対象マスに荷物を配置できるか判定する
 void checkPutBox(const int stage[][WIDTH], int checklist[][WIDTH]) {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -165,7 +165,7 @@ void checkPutBox(const int stage[][WIDTH], int checklist[][WIDTH]) {
 		}
 	}
 }
-/*そこに荷物を置くことで詰みが発生するか判定する*/
+//そこに荷物を置くことで詰みが発生するか判定する
 bool checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
 	/*four boxes*/
 	if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL)) {
@@ -302,7 +302,7 @@ bool checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 
-/*ステージ生成を行う*/
+//ステージ生成を行う
 void Level::createLevel() {
 	while (true)
 	{
@@ -327,7 +327,7 @@ void Level::createLevel() {
 		break;
 	}
 }
-/*空の部屋を作る*/
+//空の部屋を作る
 void Level::createEmptyRoom() {
 	Grid grid;
 
@@ -349,11 +349,11 @@ void Level::createEmptyRoom() {
 		}
 	}
 }
-/*袋小路など意味のないスペースを埋める*/
+//袋小路など意味のないスペースを埋める
 void Level::fillBlindAlley() {
 	while (checkSquare(stage) != 0) {}
 }
-/*ゴールを設置する*/
+//ゴールを設置する
 bool Level::setGoal() {
 	int x = 0, y = 0;
 	int checklist[HEIGHT][WIDTH] = {};
@@ -372,7 +372,7 @@ bool Level::setGoal() {
 	}
 	return true;
 }
-/*荷物を設置する*/
+//荷物を設置する
 bool Level::setBox() {
 	clock_t t = clock();
 	int x = 0, y = 0;
@@ -426,7 +426,7 @@ bool Level::setBox() {
 	return true;
 
 }
-/*プレイヤーを配置する*/
+//プレイヤーを配置する
 bool Level::setPlayer() {
 	int x = 0, y = 0;
 
@@ -443,7 +443,7 @@ bool Level::setPlayer() {
 		}
 	}
 }
-/*ステージをコマンドプロンプトへ出力する*/
+//ステージをコマンドプロンプトへ出力する
 void Level::printStage() {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -468,7 +468,7 @@ void Level::printStage() {
 	}
 	printf("\n");
 }
-/*ステージをテキストファイルに出力する*/
+//ステージをテキストファイルに出力する
 void Level::outputStage() {
 	FILE *fp;
 
@@ -501,7 +501,7 @@ void Level::outputStage() {
 
 	fclose(fp);
 }
-/*途切れたスペースができていればtrueを返す*/
+//途切れたスペースができていればtrueを返す
 bool Level::checkSection() {
 	int checksheet[HEIGHT][WIDTH] = {};
 	int section = 1;
@@ -574,7 +574,7 @@ bool Level::checkSection() {
 
 	return false;
 }
-/*ステージのマスをカウントし返す*/
+//ステージのマスをカウントし返す
 int Level::countSpace() {
 	int count = 0;
 

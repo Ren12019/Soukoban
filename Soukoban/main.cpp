@@ -1,9 +1,6 @@
 ﻿#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 #include <time.h>
-#include <conio.h>
-#include <windows.h>
 #include <cstdlib>
 #include <sstream>
 #include <vector>
@@ -31,8 +28,8 @@ struct State
 	int hscore;
 }; //struct State
 
-/* SearchStat量などの検索アルゴリズム情報をカウントするために使用される
- *ノード、複製ノード、フリンジノード、探索ノード。
+/* SearchStatは検索アルゴリズム情報をカウントするために使用される。
+ *上から順に、ノード量、複製ノード、フリンジノード、探索ノード。
  */
 struct SearchStat
 {
@@ -43,22 +40,22 @@ struct SearchStat
 	int explored_count;
 }; //struct SearchStat
 
-/* 状態が目標状態であるかどうかを確認するために使用される関数。目標状態は
-*少なくとも1つの空のゴールがあるとき、そのゴールを埋める同じ量のボックス、
- *および1人のプレーヤーが存在すると仮定します。
+/* クリア状態であるかどうかを確認するために使用される関数。
+ *クリア状態とは,空のゴールがないとき、ゴールを埋めるプレーヤーが存在せず、
+ *ゴール上にない荷物が存在しないときです。
  *
  *前提条件：エージェントprogの現在の状態を表す状態オブジェクト
- *事後条件：目標の状態が見つかった場合はtrueを返し、それ以外の場合はfalseを返します
+ *事後条件：クリアの状態が見つかった場合はtrueを返し、それ以外の場合はfalseを返します
  */
 bool is_goal(State &cur_state)
 {
 	//std::cout << cur_state.state_str<<std::endl;
 	bool goal = false;
-	//空の目標がない場合
+	//空のゴールがない場合
 	if ((cur_state.state_str.find_first_of('.')) == std::string::npos)
 	{
 		//空のゴールに立っているプレーヤーがいない場合、
-		//その後、目標状態になります
+		//その後、クリア状態になります
 		if ((cur_state.state_str.find_first_of('+')) == std::string::npos)
 		{
 			//そして、ゴールにない箱はありません
@@ -1920,55 +1917,54 @@ void choose_search(State &init_state, int search_choice)
 {
 	timespec start, end;
 	long long sec, nanosec;
-	//int level_size;
 	SearchStat final_stat;
 	std::string user_choice;
 
 	switch (search_choice)
 	{
-	case BFS:
+	case BFS://幅優先探索
 		std::cout << "BREADTH FIRST SEARCH:" << std::endl;
 		timespec_get(&start, TIME_UTC);
 		final_stat = bfs(init_state);
 		timespec_get(&end, TIME_UTC);
 		break;
 
-	case DFS:
+	case DFS://深さ優先探索
 		std::cout << "DEPTH FIRST SEARCH:" << std::endl;
 		timespec_get(&start, TIME_UTC);
 		final_stat = dfs(init_state);
 		timespec_get(&end, TIME_UTC);
 		break;
 
-	case UCS:
+	case UCS://均一コスト探索
 		std::cout << "UNIFORM COST SEARCH:" << std::endl;
 		timespec_get(&start, TIME_UTC);
 		final_stat = ucs(init_state);
 		timespec_get(&end, TIME_UTC);
 		break;
 
-	case GBFSH1:
+	case GBFSH1://最良優先探索１
 		std::cout << "GREEDY BEST FIRST SEARCH, HEURISTICS FUNCTION 1:" << std::endl;
 		timespec_get(&start, TIME_UTC);
 		final_stat = gbfs(init_state, GBFSH1);
 		timespec_get(&end, TIME_UTC);
 		break;
 
-	case GBFSH2:
+	case GBFSH2://最良優先探索２
 		std::cout << "GREEDY BEST FIRST SEARCH, HEURISTICS FUNCTION 2:" << std::endl;
 		timespec_get(&start, TIME_UTC);
 		final_stat = gbfs(init_state, GBFSH2);
 		timespec_get(&end, TIME_UTC);
 		break;
 
-	case ASH1:
+	case ASH1://A*探索１
 		std::cout << "A* SEARCH, HEURISTICS FUNCTION 1:" << std::endl;
 		timespec_get(&start, TIME_UTC);
 		final_stat = as(init_state, ASH1);
 		timespec_get(&end, TIME_UTC);
 		break;
 
-	case ASH2:
+	case ASH2://A*探索２
 		std::cout << "A* SEARCH, HEURISTICS FUNCTION 2:" << std::endl;
 		timespec_get(&start, TIME_UTC);
 		final_stat = as(init_state, ASH2);
@@ -1979,7 +1975,7 @@ void choose_search(State &init_state, int search_choice)
 		std::cout << "Unrecognized choice" << std::endl;
 	}
 
-	//文字列の末尾の「、」を削除するために使用されるサブストリング
+	//文字列の末尾の「,」を削除するために使用されるサブストリング
 	std::cout << "  Solution: " << std::endl;
 	std::cout << "    "
 		<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))

@@ -4,15 +4,16 @@
 #include <string.h>
 #include "define.h"
 
+//コンストラクタ
 Grid::Grid()
 {
 }
-
+//デストラクタ
 Grid::~Grid()
 {
 }
-
-int choiceWallOrPath(void) {
+//乱数により壁か道かを決定する
+int choiceWallOrPath() {
 	int choice = (rand() % 2) + 1;
 	switch (choice) {
 	case 1:
@@ -24,12 +25,12 @@ int choiceWallOrPath(void) {
 	}
 	return WALL;
 }
-
-int choiceTemplateNum(void) {
+//乱数により使用するテンプレートの番号を選ぶ
+int choiceTemplateNum() {
 	return rand() % NUMBER_OF_GRID_TEMPLATE;
 }
-
-int choiceDirection(void) {
+//設置するグリッドを回転させる方向を選ぶ
+int choiceDirection() {
 	switch (rand() % 4 + 1) {
 	case FRONT:
 		return FRONT;
@@ -45,8 +46,8 @@ int choiceDirection(void) {
 
 	return FRONT;
 }
-
-int choiceFlip(void) {
+//設置するグリッドを反転させるか決定する
+int choiceFlip() {
 	switch (rand() % 2) {
 	case VERTICAL:
 		return VERTICAL;
@@ -58,7 +59,7 @@ int choiceFlip(void) {
 
 	return 0;
 }
-
+//グリッドを回転させる
 void Grid::rotateGrid() {
 	int direction = choiceDirection();
 	int rotated_grid[GRID_SIZE][GRID_SIZE] = {};
@@ -111,7 +112,7 @@ void Grid::rotateGrid() {
 		direction--;
 	}
 }
-
+//グリッドを反転させる
 void Grid::flipGrid() {
 	int flip = choiceFlip();
 	int flipped_grid[GRID_SIZE][GRID_SIZE] = {};
@@ -159,7 +160,7 @@ void Grid::flipGrid() {
 		}
 	}
 }
-
+//乱数でグリッド内の配置を決定する
 void Grid::setGrid() {
 	for (int y = 0; y < GRID_SIZE; y++) {
 		for (int x = 0; x < GRID_SIZE; x++) {
@@ -169,7 +170,7 @@ void Grid::setGrid() {
 	rotateGrid();
 	flipGrid();
 }
-
+//テンプレートの配置を利用しグリッドを作成する
 void Grid::setGridTemplate() {
 	FILE *fp;
 	int grid_num = choiceTemplateNum();
@@ -213,7 +214,7 @@ void Grid::setGridTemplate() {
 	rotateGrid();
 	flipGrid();
 }
-
+//グリッドを表示する
 void Grid::printGrid() {
 	for (int y = 0; y < GRID_SIZE; y++) {
 		for (int x = 0; x < GRID_SIZE; x++) {
