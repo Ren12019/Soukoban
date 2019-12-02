@@ -1462,7 +1462,7 @@ SearchStat bfs(State &initial_state)
 		if (is_goal(current_state))
 		{
 			report.node = current_state;
-			report.explored_count = closed.size();
+			report.explored_count = (int)closed.size();
 			open.pop_front();
 			break;
 		}
@@ -1507,7 +1507,7 @@ SearchStat bfs(State &initial_state)
 			valid_states.pop();
 		}
 	}
-	report.fringe_node = open.size();
+	report.fringe_node = (int)open.size();
 	return report;
 } //SearchStat bfs(State &initial_state)
 
@@ -1548,7 +1548,7 @@ SearchStat dfs(State &initial_state)
 		if (is_goal(current_state))
 		{
 			report.node = current_state;
-			report.explored_count = closed.size();
+			report.explored_count = (int)closed.size();
 			open.pop_front();
 			break;
 		}
@@ -1601,7 +1601,7 @@ SearchStat dfs(State &initial_state)
 			temp_open.pop_front();
 		}
 	}
-	report.fringe_node = open.size();
+	report.fringe_node = (int)open.size();
 	return report;
 } //SearchStat dfs(State &initial_state)
 
@@ -1642,7 +1642,7 @@ SearchStat ucs(State &initial_state)
 		if (is_goal(current_state))
 		{
 			report.node = current_state;
-			report.explored_count = closed.size();
+			report.explored_count = (int)closed.size();
 			open.pop_front();
 			break;
 		}
@@ -1701,7 +1701,7 @@ SearchStat ucs(State &initial_state)
 			valid_states.pop();
 		}
 	}
-	report.fringe_node = open.size();
+	report.fringe_node = (int)open.size();
 	return report;
 } //SearchStat ucs(State &initial_state)
 
@@ -1743,7 +1743,7 @@ SearchStat gbfs(State &initial_state, int hfchoice)
 		//見つかった場合、レポートノードを現在のノードに設定し、探索カウントをクローズドリストサイズに設定します		if (is_goal(current_state))
 		{
 			report.node = current_state;
-			report.explored_count = closed.size();
+			report.explored_count = (int)closed.size();
 			open.pop_front();
 			break;
 		}
@@ -1803,7 +1803,7 @@ SearchStat gbfs(State &initial_state, int hfchoice)
 			valid_states.pop();
 		}
 	}
-	report.fringe_node = open.size();
+	report.fringe_node = (int)open.size();
 	return report;
 } //SearchStat gbfs(State &initial_state, int hfchoice)
 
@@ -1846,7 +1846,7 @@ SearchStat as(State &initial_state, int hfchoice)
 		if (is_goal(current_state))
 		{
 			report.node = current_state;
-			report.explored_count = closed.size();
+			report.explored_count = (int)closed.size();
 			open.pop_front();
 			break;
 		}
@@ -1906,7 +1906,7 @@ SearchStat as(State &initial_state, int hfchoice)
 			valid_states.pop();
 		}
 	}
-	report.fringe_node = open.size();
+	report.fringe_node = (int)open.size();
 	return report;
 } //SearchStat as(State &initial_state, int hfchoice)
 
