@@ -13,15 +13,7 @@
 #include <fstream>
 
 #include "define.h"
-#include "check.h"
-#include "grid.h"
-#include "stage.h"
-#include "print.h"
-#include "goal.h"
-#include "box.h"
-#include "count.h"
-#include "player.h"
-#include "search.h"
+#include "level.h"
 
 enum search_mode { NONE, UCS, GBFSH1, GBFSH2, ASH1, ASH2, BFS, DFS };
 
@@ -2015,29 +2007,10 @@ int main(int argc, char** argv)
 	////////////////////////////////
 	//初期設定
 	srand((unsigned int)time(NULL));//乱数設定
-	//int stage[HEIGHT][WIDTH] = {};//ステージ生成用
 	Level level;
 	level.createLevel();
 	level.printStage();
 	level.outputStage();
-
-	////空部屋を作成
-	//do {
-	//	//テンプレートで空部屋を生成
-	//	createStageGrid(stage);
-	//	//意味のないマスを埋め整地
-	//	while (checkTile(stage) != 0) {}
-
-	//} while (checkSection(stage) == 1 && countSpace(stage) > 1);
-	////ゴール、荷物、プレイヤーを配置
-	//initGoal(stage);
-	//initBox(stage);
-	//initPlayer(stage);
-	////生成したステージを表示
-	//printStage(stage);
-	////生成したステージをテキストへ出力
-	//printOutText(stage);
-
 
 	////////////////////////////////
 	/*ステージ探索部分*/

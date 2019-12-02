@@ -3,10 +3,63 @@
 #include <stdlib.h>
 #include <string.h>
 #include "define.h"
-#include "choice.h"
-#include "print.h"
 
-void rotateGrid(int grid[][GRID_SIZE]) {
+Grid::Grid()
+{
+}
+
+Grid::~Grid()
+{
+}
+
+int choiceWallOrPath(void) {
+	int choice = (rand() % 2) + 1;
+	switch (choice) {
+	case 1:
+		return WALL;
+	case 2:
+		return PATH;
+	default:
+		break;
+	}
+	return WALL;
+}
+
+int choiceTemplateNum(void) {
+	return rand() % NUMBER_OF_GRID_TEMPLATE;
+}
+
+int choiceDirection(void) {
+	switch (rand() % 4 + 1) {
+	case FRONT:
+		return FRONT;
+	case BACK:
+		return BACK;
+	case RIGHT:
+		return RIGHT;
+	case LEFT:
+		return LEFT;
+	default:
+		break;
+	}
+
+	return FRONT;
+}
+
+int choiceFlip(void) {
+	switch (rand() % 2) {
+	case VERTICAL:
+		return VERTICAL;
+	case HORIZONTAL:
+		return HORIZONTAL;
+	default:
+		return 0;
+	}
+
+	return 0;
+}
+
+void Grid::rotateGrid() {
 	int direction = choiceDirection();
 	int rotated_grid[GRID_SIZE][GRID_SIZE] = {};
 
@@ -59,7 +112,7 @@ void rotateGrid(int grid[][GRID_SIZE]) {
 	}
 }
 
-void flipGrid(int grid[][GRID_SIZE]) {
+void Grid::flipGrid() {
 	int flip = choiceFlip();
 	int flipped_grid[GRID_SIZE][GRID_SIZE] = {};
 
@@ -107,17 +160,17 @@ void flipGrid(int grid[][GRID_SIZE]) {
 	}
 }
 
-void setGrid(int grid[][GRID_SIZE]) {
+void Grid::setGrid() {
 	for (int y = 0; y < GRID_SIZE; y++) {
 		for (int x = 0; x < GRID_SIZE; x++) {
 			grid[y][x] = choiceWallOrPath();
 		}
 	}
-	rotateGrid(grid);
-	flipGrid(grid);
+	rotateGrid();
+	flipGrid();
 }
 
-void setGridTemplate(int grid[][GRID_SIZE]) {
+void Grid::setGridTemplate() {
 	FILE *fp;
 	int grid_num = choiceTemplateNum();
 	char filename[100];
@@ -157,6 +210,25 @@ void setGridTemplate(int grid[][GRID_SIZE]) {
 
 	fclose(fp);
 
-	rotateGrid(grid);
-	flipGrid(grid);
+	rotateGrid();
+	flipGrid();
+}
+
+void Grid::printGrid() {
+	for (int y = 0; y < GRID_SIZE; y++) {
+		for (int x = 0; x < GRID_SIZE; x++) {
+			if (grid[y][x] == WALL)
+				printf("##");
+			else if (grid[y][x] == MAN)
+				printf("P ");
+			else if (grid[y][x] == BOX)
+				printf("¡");
+			else if (grid[y][x] == GOAL)
+				printf("›");
+			else if (grid[y][x] == PATH)
+				printf("E");
+		}
+		printf("\n");
+	}
+	printf("\n");
 }

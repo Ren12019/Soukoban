@@ -1,10 +1,17 @@
 #pragma once
 #include "define.h"
 
-void rotateGrid(int[][GRID_SIZE]);
+class Grid
+{
+public:
+	Grid();
+	~Grid();
 
-void flipGrid(int[][GRID_SIZE]);
-
-void setGrid(int [][GRID_SIZE]);
-
-void setGridTemplate(int [][GRID_SIZE]);
+	int grid[GRID_SIZE][GRID_SIZE] = {};
+	void setGrid();
+	void setGridTemplate();
+private:
+	void rotateGrid();
+	void flipGrid();
+	void printGrid();
+};

@@ -123,31 +123,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="box.cpp" />
-    <ClCompile Include="check.cpp" />
-    <ClCompile Include="choice.cpp" />
-    <ClCompile Include="count.cpp" />
     <ClCompile Include="define.cpp" />
-    <ClCompile Include="goal.cpp" />
     <ClCompile Include="grid.cpp" />
+    <ClCompile Include="level.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="player.cpp" />
-    <ClCompile Include="print.cpp" />
-    <ClCompile Include="search.cpp" />
-    <ClCompile Include="stage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="box.h" />
-    <ClInclude Include="check.h" />
-    <ClInclude Include="choice.h" />
-    <ClInclude Include="count.h" />
     <ClInclude Include="define.h" />
-    <ClInclude Include="goal.h" />
     <ClInclude Include="grid.h" />
-    <ClInclude Include="player.h" />
-    <ClInclude Include="print.h" />
-    <ClInclude Include="search.h" />
-    <ClInclude Include="stage.h" />
+    <ClInclude Include="level.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
