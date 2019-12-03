@@ -33,6 +33,7 @@ int main(int argc, char** argv)
 
 		//初期設定
 		State init_state;
+		SearchStat final_stat;
 		init_state.state_str = input_level;
 		init_state.move_list = "";
 		init_state.moves = init_state.pushes =
@@ -46,10 +47,12 @@ int main(int argc, char** argv)
 		bool valid_input = true;
 
 		//生成したレベルに対して幅優先探索を行う
-		choose_search(init_state, BFS);
+		final_stat=choose_search(init_state, BFS);
 		////test
-		//std::cout <<"test"<<std::endl;
-		//std::cout <<init_state.move_list;
+		std::cout << "  Solution: " << std::endl;
+		std::cout << "    "
+			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))
+			<< std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		while (valid_input)
 		{

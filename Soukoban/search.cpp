@@ -1884,7 +1884,7 @@ SearchStat as(State &initial_state, int hfchoice)
  *前提条件：状態オブジェクトと、検索アルゴリズムを表すintを取り込みます
  *事後条件：検索アルゴリズムを実行し、検索統計を出力します。
  */
-void choose_search(State &init_state, int search_choice)
+SearchStat choose_search(State &init_state, int search_choice)
 {
 	timespec start, end;
 	long long sec, nanosec;
@@ -1965,4 +1965,5 @@ void choose_search(State &init_state, int search_choice)
 	nanosec = end.tv_nsec - start.tv_nsec;
 	std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
 
+	return final_stat;
 } //void choose_search(State &init_state, int search_choice)

@@ -146,4 +146,4 @@ SearchStat as(State &, int); //SearchStat as(State &initial_state, int hfchoice)
  *前提条件：状態オブジェクトと、検索アルゴリズムを表すintを取り込みます
  *事後条件：検索アルゴリズムを実行し、検索統計を出力します。
  */
-void choose_search(State &, int); //bool choose_search(State &init_state, int search_choice)
+SearchStat choose_search(State &, int); //bool choose_search(State &init_state, int search_choice)
