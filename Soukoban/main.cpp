@@ -77,6 +77,35 @@ int main(int argc, char** argv)
 			else
 				std::cout << "Invalid choice.  ";
 		}
+
+		//生成されたステージを保存するか
+		valid_input = true;
+		while (valid_input)
+		{
+			std::cout << "Save this level?[y/n]: ";
+			std::cin >> usr_input;
+			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
+			if (usr_input == "y")
+			{
+				level.outputStage();
+				valid_input = false;
+			}
+			else if (usr_input == "Y")
+			{
+				level.outputStage();
+				valid_input = false;
+			}
+			else if (usr_input == "n")
+			{
+				valid_input = false;
+			}
+			else if (usr_input == "N")
+			{
+				valid_input = false;
+			}
+			else
+				std::cout << "Invalid choice.  ";
+		}
 	}
 
 	return 0;
