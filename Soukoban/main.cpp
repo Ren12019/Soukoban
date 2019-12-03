@@ -45,6 +45,7 @@ int countMovingSolution(State &init_state, std::string solution) {
 		}
 		counter++;
 	}
+
 	while (count < solution.size()) {
 		char move_direction = solution[count];
 		char north = stage[y - 1][x];
@@ -66,22 +67,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//そうでなければ、プレーヤーはゴールに立っていた
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//空の目標に移動します
 			case '.':
@@ -90,22 +77,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				new_stage[y - 1][x] = '+';
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//フロアーのボックスに移動します
 			case '$':
@@ -136,24 +109,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -184,24 +143,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//壁に移動します
 			case '#':
@@ -223,22 +168,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//そうでなければ、プレーヤーはゴールに立っていた
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//空の目標に移動します
 			case '.':
@@ -247,22 +178,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				new_stage[y][x + 1] = '+';
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//フロアーのボックスに移動します
 			case '$':
@@ -293,24 +210,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -341,24 +244,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//壁に移動します
 			case '#':
@@ -380,22 +269,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//そうでなければ、プレーヤーはゴールに立っていた
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//空の目標に移動します
 			case '.':
@@ -404,22 +279,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				new_stage[y + 1][x] = '+';
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//フロアーのボックスに移動します
 			case '$':
@@ -450,24 +311,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -498,24 +345,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//壁に移動します
 			case '#':
@@ -537,22 +370,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//そうでなければ、プレーヤーはゴールに立っていた
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//空の目標に移動します
 			case '.':
@@ -561,22 +380,8 @@ int countMovingSolution(State &init_state, std::string solution) {
 				new_stage[y][x - 1] = '+';
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//階のボックスに移動します
 			case '$':
@@ -607,24 +412,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -655,24 +446,10 @@ int countMovingSolution(State &init_state, std::string solution) {
 				else
 					break;
 
-				//新しい状態を作成および更新します
-				new_state = cur_state;
-				new_state.state_str = "";
-				// vector <vector <char >>を文字列に戻す
-				for (unsigned int i = 0; i < new_stage.size(); i++)
-				{
-					std::vector<char> temp = new_stage[i];
-					std::vector<char>::iterator itr;
-					for (itr = temp.begin(); itr != temp.end(); itr++)
-						new_state.state_str.push_back(*itr);
-					new_state.state_str.append("\n");
-				}
-
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
 				stage = new_stage;
-				cur_state = new_state;
 				break;
 				//壁に移動します
 			case '#':
