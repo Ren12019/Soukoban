@@ -9,6 +9,8 @@
 
 int main(int argc, char** argv)
 {
+	//初期設定
+	srand((unsigned int)time(NULL));//乱数設定
 	bool repeat = true;
 
 	// whileループを使用して生成と検索アルゴリズムを繰り返します
@@ -18,7 +20,6 @@ int main(int argc, char** argv)
 		/*ステージ生成部分*/
 		////////////////////////////////
 		//初期設定
-		srand((unsigned int)time(NULL));//乱数設定
 		Level level;
 		//ステージの生成
 		level.createLevel();
@@ -49,6 +50,11 @@ int main(int argc, char** argv)
 		//生成したレベルに対して幅優先探索を行う
 		final_stat = choose_search(init_state, BFS);
 		////test
+		if (final_stat.node.move_list.empty()) {
+			std::cout << "This Level has no answer." << std::endl;
+			std::cout << "Remake Level." << std::endl;
+			continue;
+		}
 		std::cout << "  Solution: " << std::endl;
 		std::cout << "    "
 			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))//末尾の「,」を除外できる

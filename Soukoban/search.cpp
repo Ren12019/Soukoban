@@ -580,7 +580,7 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		PUSH_COST = 2;
 
 	//インデックスが移動に使用されるため、ベクトル配列を生成します
-	//より簡単です。たとえば、pos [1,2]で下に移動すると[2,2]になります
+	//扱いやすくなります。たとえば、pos [1,2]で下に移動すると[2,2]になります
 	// stageは（y、x）座標として保存されます
 	std::vector< std::vector<char> > stage;
 	while (getline(ss, line, '\n'))
@@ -1454,7 +1454,7 @@ SearchStat bfs(State &initial_state)
 					break;
 				}
 			}
-			//状態が既に閉じたリストにあるかどうかを確認します
+			//状態が探索済みリストにあるかどうかを確認します
 			for (itr = closed.begin(); itr != closed.end(); itr++)
 			{
 				if (itr->state_str == temp_state.state_str)
