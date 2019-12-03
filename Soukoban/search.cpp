@@ -169,7 +169,7 @@ int h2(const State &cur_state)
 {
 	std::stringstream ss(cur_state.state_str);
 	std::vector< std::vector<int> > box_list;
-	std::vector< std::vector<char> > level_map;
+	std::vector< std::vector<char> > stage;
 	std::string line;
 	int score = 0, counter = 0;
 
@@ -179,7 +179,7 @@ int h2(const State &cur_state)
 	while (getline(ss, line, '\n'))
 	{
 		std::vector<char> temp;
-		level_map.push_back(temp);
+		stage.push_back(temp);
 		for (unsigned int i = 0; i < line.length(); i++)
 		{
 			//ボックスが床にある場合、ボックスリストに追加
@@ -192,7 +192,7 @@ int h2(const State &cur_state)
 				box_loc.push_back(counter);
 				box_list.push_back(box_loc);
 			}
-			level_map[counter].push_back(line[i]);
+			stage[counter].push_back(line[i]);
 		}
 		counter++;
 	}
@@ -212,16 +212,16 @@ int h2(const State &cur_state)
 		int cur_box_y = box_list[i][1];
 
 		//ボックスの北に壁があるかどうかを確認します
-		if (level_map[cur_box_y - 1][cur_box_x] == '#')
+		if (stage[cur_box_y - 1][cur_box_x] == '#')
 			N_wall = true;
 		//ボックスの東側に壁があるかどうかを確認します
-		if (level_map[cur_box_y][cur_box_x + 1] == '#')
+		if (stage[cur_box_y][cur_box_x + 1] == '#')
 			E_wall = true;
 		//ボックスの南に壁があるかどうかを確認します
-		if (level_map[cur_box_y + 1][cur_box_x] == '#')
+		if (stage[cur_box_y + 1][cur_box_x] == '#')
 			S_wall = true;
 		//ボックスの西側に壁があるかどうかを確認します
-		if (level_map[cur_box_y][cur_box_x - 1] == '#')
+		if (stage[cur_box_y][cur_box_x - 1] == '#')
 			W_wall = true;
 
 		//最初にボックスが角にあるかどうかを確認します
@@ -265,25 +265,25 @@ int h2(const State &cur_state)
 				//切れ目なくアクセス可能なタイルがあるかどうかを東に検索
 				//角が見つかるまで北の壁。ボックスとプレイヤーは無視されます
 				//移動できるため、アクセス可能なタイルと見なされます
-				for (unsigned int i = cur_box_x + 1; i < level_map[cur_box_y].size(); i++)
+				for (unsigned int i = cur_box_x + 1; i < stage[cur_box_y].size(); i++)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[cur_box_y][i] == '.') ||
-						(level_map[cur_box_y][i] == '*') || (level_map[cur_box_y][i] == '+'))
+					if ((stage[cur_box_y][i] == '.') ||
+						(stage[cur_box_y][i] == '*') || (stage[cur_box_y][i] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//北のタイルが壁でない場合、安全です
-					if (level_map[cur_box_y - 1][i] != '#')
+					if (stage[cur_box_y - 1][i] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// 北東コーナーの場合
-					if ((level_map[cur_box_y][i] == '#') && (level_map[cur_box_y - 1][i] == '#'))
+					if ((stage[cur_box_y][i] == '#') && (stage[cur_box_y - 1][i] == '#'))
 					{
 						corner_E = true;
 						break;
@@ -296,22 +296,22 @@ int h2(const State &cur_state)
 				for (int i = cur_box_x - 1; i >= 0; i--)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[cur_box_y][i] == '.') ||
-						(level_map[cur_box_y][i] == '*') || (level_map[cur_box_y][i] == '+'))
+					if ((stage[cur_box_y][i] == '.') ||
+						(stage[cur_box_y][i] == '*') || (stage[cur_box_y][i] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//北のタイルが壁でない場合、安全です
-					if (level_map[cur_box_y - 1][i] != '#')
+					if (stage[cur_box_y - 1][i] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// 北西コーナーの場合
-					if ((level_map[cur_box_y][i] == '#') && (level_map[cur_box_y - 1][i] == '#'))
+					if ((stage[cur_box_y][i] == '#') && (stage[cur_box_y - 1][i] == '#'))
 					{
 						corner_W = true;
 						break;
@@ -340,22 +340,22 @@ int h2(const State &cur_state)
 				for (int i = cur_box_y - 1; i >= 0; i--)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[i][cur_box_x] == '.') ||
-						(level_map[i][cur_box_x] == '*') || (level_map[i][cur_box_x] == '+'))
+					if ((stage[i][cur_box_x] == '.') ||
+						(stage[i][cur_box_x] == '*') || (stage[i][cur_box_x] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//東のタイルが壁でない場合、安全です
-					if (level_map[i][cur_box_x + 1] != '#')
+					if (stage[i][cur_box_x + 1] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// NEコーナーの場合
-					if ((level_map[i][cur_box_x] == '#') && (level_map[i][cur_box_x + 1] == '#'))
+					if ((stage[i][cur_box_x] == '#') && (stage[i][cur_box_x + 1] == '#'))
 					{
 						corner_N = true;
 						break;
@@ -365,25 +365,25 @@ int h2(const State &cur_state)
 				//南を検索して、壊れていないタイルに沿ってアクセス可能なタイルがあるかどうかを確認します
 				//角が見つかるまで東の壁。ボックスとプレイヤーは無視されます
 				//移動できるため、アクセス可能なタイルと見なされます
-				for (unsigned int i = cur_box_y + 1; i < level_map.size(); i++)
+				for (unsigned int i = cur_box_y + 1; i < stage.size(); i++)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[i][cur_box_x] == '.') ||
-						(level_map[i][cur_box_x] == '*') || (level_map[i][cur_box_x] == '+'))
+					if ((stage[i][cur_box_x] == '.') ||
+						(stage[i][cur_box_x] == '*') || (stage[i][cur_box_x] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//東のタイルが壁でない場合、安全です
-					if (level_map[i][cur_box_x + 1] != '#')
+					if (stage[i][cur_box_x + 1] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// 南東コーナーの場合
-					if ((level_map[i][cur_box_x] == '#') && (level_map[i][cur_box_x + 1] == '#'))
+					if ((stage[i][cur_box_x] == '#') && (stage[i][cur_box_x + 1] == '#'))
 					{
 						corner_S = true;
 						break;
@@ -407,25 +407,25 @@ int h2(const State &cur_state)
 
 				//切れ目なくアクセス可能なタイルがあるかどうかを東に検索
 				//角が見つかるまで南壁。ボックスとプレイヤーは無視されます
-				//移動できるため、アクセス可能なタイルと見なされます				for (int i = cur_box_x + 1; i < level_map[cur_box_y].size(); i++)
+				//移動できるため、アクセス可能なタイルと見なされます				for (int i = cur_box_x + 1; i < stage[cur_box_y].size(); i++)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[cur_box_y][i] == '.') ||
-						(level_map[cur_box_y][i] == '*') || (level_map[cur_box_y][i] == '+'))
+					if ((stage[cur_box_y][i] == '.') ||
+						(stage[cur_box_y][i] == '*') || (stage[cur_box_y][i] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//南のタイルが壁でない場合、安全です
-					if (level_map[cur_box_y + 1][i] != '#')
+					if (stage[cur_box_y + 1][i] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// 南東コーナーの場合
-					if ((level_map[cur_box_y][i] == '#') && (level_map[cur_box_y + 1][i] == '#'))
+					if ((stage[cur_box_y][i] == '#') && (stage[cur_box_y + 1][i] == '#'))
 					{
 						corner_E = true;
 						break;
@@ -438,22 +438,22 @@ int h2(const State &cur_state)
 				for (int i = cur_box_x - 1; i >= 0; i--)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[cur_box_y][i] == '.') ||
-						(level_map[cur_box_y][i] == '*') || (level_map[cur_box_y][i] == '+'))
+					if ((stage[cur_box_y][i] == '.') ||
+						(stage[cur_box_y][i] == '*') || (stage[cur_box_y][i] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//南のタイルが壁でない場合、安全です
-					if (level_map[cur_box_y + 1][i] != '#')
+					if (stage[cur_box_y + 1][i] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// 南西コーナーの場合
-					if ((level_map[cur_box_y][i] == '#') && (level_map[cur_box_y + 1][i] == '#'))
+					if ((stage[cur_box_y][i] == '#') && (stage[cur_box_y + 1][i] == '#'))
 					{
 						corner_W = true;
 						break;
@@ -482,22 +482,22 @@ int h2(const State &cur_state)
 				for (int i = cur_box_y - 1; i >= 0; i--)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[i][cur_box_x] == '.') ||
-						(level_map[i][cur_box_x] == '*') || (level_map[i][cur_box_x] == '+'))
+					if ((stage[i][cur_box_x] == '.') ||
+						(stage[i][cur_box_x] == '*') || (stage[i][cur_box_x] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//東のタイルが壁でない場合、安全です
-					if (level_map[i][cur_box_x - 1] != '#')
+					if (stage[i][cur_box_x - 1] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// 北西コーナーの場合
-					if ((level_map[i][cur_box_x] == '#') && (level_map[i][cur_box_x - 1] == '#'))
+					if ((stage[i][cur_box_x] == '#') && (stage[i][cur_box_x - 1] == '#'))
 					{
 						corner_N = true;
 						break;
@@ -507,25 +507,25 @@ int h2(const State &cur_state)
 				//南を検索して、壊れていないタイルに沿ってアクセス可能なタイルがあるかどうかを確認します
 				//角が見つかるまで東の壁。ボックスとプレイヤーは無視されます
 				//移動できるため、アクセス可能なタイルと見なされます
-				for (unsigned int i = cur_box_y + 1; i < level_map.size(); i++)
+				for (unsigned int i = cur_box_y + 1; i < stage.size(); i++)
 				{
 					//途中で目標が見つかった場合、安全でない位置にはなりません
-					if ((level_map[i][cur_box_x] == '.') ||
-						(level_map[i][cur_box_x] == '*') || (level_map[i][cur_box_x] == '+'))
+					if ((stage[i][cur_box_x] == '.') ||
+						(stage[i][cur_box_x] == '*') || (stage[i][cur_box_x] == '+'))
 					{
 						safe = true;
 						break;
 					}
 
 					//東のタイルが壁でない場合、安全です
-					if (level_map[i][cur_box_x - 1] != '#')
+					if (stage[i][cur_box_x - 1] != '#')
 					{
 						safe = true;
 						break;
 					}
 
 					// 南西コーナーの場合
-					if ((level_map[i][cur_box_x] == '#') && (level_map[i][cur_box_x - 1] == '#'))
+					if ((stage[i][cur_box_x] == '#') && (stage[i][cur_box_x - 1] == '#'))
 					{
 						corner_S = true;
 						break;
@@ -568,7 +568,7 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 {
 	std::queue<State> valid_moves;
 	std::stringstream ss(cur_state.state_str);
-	std::vector< std::vector<char> > new_level_map;
+	std::vector< std::vector<char> > new_stage;
 	State new_state;
 	std::string line;
 	bool found = false;
@@ -581,12 +581,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 
 	//インデックスが移動に使用されるため、ベクトル配列を生成します
 	//より簡単です。たとえば、pos [1,2]で下に移動すると[2,2]になります
-	// level_mapは（y、x）座標として保存されます
-	std::vector< std::vector<char> > level_map;
+	// stageは（y、x）座標として保存されます
+	std::vector< std::vector<char> > stage;
 	while (getline(ss, line, '\n'))
 	{
 		std::vector<char> temp;
-		level_map.push_back(temp);
+		stage.push_back(temp);
 		for (unsigned int i = 0; i < line.length(); i++)
 		{
 			if (!found)
@@ -601,7 +601,7 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 					found = true;
 				}
 			}
-			level_map[counter].push_back(line[i]);
+			stage[counter].push_back(line[i]);
 		}
 		counter++;
 	}
@@ -613,25 +613,25 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 
 	//北タイルpos = x、y-1
 	//北の動きを生成
-	char north = level_map[y - 1][x];
+	char north = stage[y - 1][x];
 	switch (north)
 	{
 		//空の場所に移動します
 	case ' ':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_level_map[y - 1][x] = '@';
+		new_stage[y - 1][x] = '@';
 		//プレイヤー= @の場合、空の床に立っていた
 		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -654,18 +654,18 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//空の目標に移動します
 	case '.':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_level_map[y - 1][x] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y - 1][x] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -688,13 +688,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//フロアーのボックスに移動します
 	case '$':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_level_map[y - 1][x] = '@';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y - 1][x] = '@';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの北のタイルを調整します
-		box_move = new_level_map[y - 2][x];
+		box_move = new_stage[y - 2][x];
 		//ボックスの北が壁または別のボックスの場合
 		if (box_move == '#')
 			break;
@@ -705,12 +705,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの北が空の床である場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y - 2][x] = '$';
+			new_stage[y - 2][x] = '$';
 		}
 		//ボックスの北が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y - 2][x] = '*';
+			new_stage[y - 2][x] = '*';
 		}
 		else
 			break;
@@ -719,9 +719,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -744,13 +744,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//ゴールでボックスに移動
 	case '*':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_level_map[y - 1][x] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y - 1][x] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの北のタイルを調整します
-		box_move = new_level_map[y - 2][x];
+		box_move = new_stage[y - 2][x];
 		//ボックスの北が壁または別のボックスの場合
 		if (box_move == '#')
 			break;
@@ -761,12 +761,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの北が空の床である場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y - 2][x] = '$';
+			new_stage[y - 2][x] = '$';
 		}
 		//ボックスの北が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y - 2][x] = '*';
+			new_stage[y - 2][x] = '*';
 		}
 		else
 			break;
@@ -775,9 +775,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -807,25 +807,25 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 
 	//東タイルpos = x、y-1
 	//東の動きを生成します
-	char east = level_map[y][x + 1];
+	char east = stage[y][x + 1];
 	switch (east)
 	{
 		//空の場所に移動します
 	case ' ':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_level_map[y][x + 1] = '@';
+		new_stage[y][x + 1] = '@';
 		//プレイヤー= @の場合、空の床に立っていた
 		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -849,18 +849,18 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//空の目標に移動します
 	case '.':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_level_map[y][x + 1] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y][x + 1] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -883,13 +883,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//フロアーのボックスに移動します
 	case '$':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_level_map[y][x + 1] = '@';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y][x + 1] = '@';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの東のタイルの調整
-		box_move = new_level_map[y][x + 2];
+		box_move = new_stage[y][x + 2];
 		//ボックスの東が壁または別のボックスである場合
 		if (box_move == '#')
 			break;
@@ -900,12 +900,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの東が空の床の場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y][x + 2] = '$';
+			new_stage[y][x + 2] = '$';
 		}
 		//ボックスの東が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y][x + 2] = '*';
+			new_stage[y][x + 2] = '*';
 		}
 		else
 			break;
@@ -914,9 +914,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -939,13 +939,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//ゴールでボックスに移動
 	case '*':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_level_map[y][x + 1] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y][x + 1] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの東のタイルの調整
-		box_move = new_level_map[y][x + 2];
+		box_move = new_stage[y][x + 2];
 		//ボックスの東が壁または別のボックスである場合
 		if (box_move == '#')
 			break;
@@ -956,12 +956,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの東が空の床の場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y][x + 2] = '$';
+			new_stage[y][x + 2] = '$';
 		}
 		//ボックスの東が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y][x + 2] = '*';
+			new_stage[y][x + 2] = '*';
 		}
 		else
 			break;
@@ -970,9 +970,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1002,25 +1002,25 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 
 	//南タイルpos = x、y-1
 	//南に移動します
-	char south = level_map[y + 1][x];
+	char south = stage[y + 1][x];
 	switch (south)
 	{
 		//空の場所に移動します
 	case ' ':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_level_map[y + 1][x] = '@';
+		new_stage[y + 1][x] = '@';
 		//プレイヤー= @の場合、空の床に立っていた
 		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1043,18 +1043,18 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//空の目標に移動します
 	case '.':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_level_map[y + 1][x] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y + 1][x] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1077,13 +1077,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//フロアーのボックスに移動します
 	case '$':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_level_map[y + 1][x] = '@';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y + 1][x] = '@';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの南側のタイルの調整
-		box_move = new_level_map[y + 2][x];
+		box_move = new_stage[y + 2][x];
 		//ボックスの南が壁または別のボックスである場合
 		if (box_move == '#')
 			break;
@@ -1094,12 +1094,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの南が空の床の場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y + 2][x] = '$';
+			new_stage[y + 2][x] = '$';
 		}
 		//ボックスの南が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y + 2][x] = '*';
+			new_stage[y + 2][x] = '*';
 		}
 		else
 			break;
@@ -1108,9 +1108,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1133,13 +1133,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//ゴールでボックスに移動
 	case '*':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_level_map[y + 1][x] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y + 1][x] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの南側のタイルの調整
-		box_move = new_level_map[y + 2][x];
+		box_move = new_stage[y + 2][x];
 		//ボックスの南が壁または別のボックスである場合
 		if (box_move == '#')
 			break;
@@ -1150,12 +1150,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの南が空の床の場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y + 2][x] = '$';
+			new_stage[y + 2][x] = '$';
 		}
 		//ボックスの南が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y + 2][x] = '*';
+			new_stage[y + 2][x] = '*';
 		}
 		else
 			break;
@@ -1164,9 +1164,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1196,25 +1196,25 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 
 	//西タイルpos = x、y-1
 	//西の動きを生成します
-	char west = level_map[y][x - 1];
+	char west = stage[y][x - 1];
 	switch (west)
 	{
 		//空の場所に移動します
 	case ' ':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_level_map[y][x - 1] = '@';
+		new_stage[y][x - 1] = '@';
 		//プレイヤー= @の場合、空の床に立っていた
 		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1237,18 +1237,18 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//空の目標に移動します
 	case '.':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_level_map[y][x - 1] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y][x - 1] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//新しい状態を作成および更新します
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1271,13 +1271,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//階のボックスに移動します
 	case '$':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_level_map[y][x - 1] = '@';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y][x - 1] = '@';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの西側のタイルの調整
-		box_move = new_level_map[y][x - 2];
+		box_move = new_stage[y][x - 2];
 		//ボックスの西が壁または別のボックスの場合
 		if (box_move == '#')
 			break;
@@ -1288,12 +1288,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの西が空の床の場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y][x - 2] = '$';
+			new_stage[y][x - 2] = '$';
 		}
 		//ボックスの西が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y][x - 2] = '*';
+			new_stage[y][x - 2] = '*';
 		}
 		else
 			break;
@@ -1302,9 +1302,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);
@@ -1327,13 +1327,13 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		break;
 		//ゴールでボックスに移動
 	case '*':
-		new_level_map = level_map;
+		new_stage = stage;
 		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_level_map[y][x - 1] = '+';
-		(player == '@') ? new_level_map[y][x] = ' ' : new_level_map[y][x] = '.';
+		new_stage[y][x - 1] = '+';
+		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 		//ボックスタイルとボックスの西側のタイルの調整
-		box_move = new_level_map[y][x - 2];
+		box_move = new_stage[y][x - 2];
 		//ボックスの西が壁または別のボックスの場合
 		if (box_move == '#')
 			break;
@@ -1344,12 +1344,12 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		//ボックスの西が空の床の場合
 		else if (box_move == ' ')
 		{
-			new_level_map[y][x - 2] = '$';
+			new_stage[y][x - 2] = '$';
 		}
 		//ボックスの西が空のゴールの場合
 		else if (box_move == '.')
 		{
-			new_level_map[y][x - 2] = '*';
+			new_stage[y][x - 2] = '*';
 		}
 		else
 			break;
@@ -1358,9 +1358,9 @@ std::queue<State> gen_valid_states(const State &cur_state, const int smode = NON
 		new_state = cur_state;
 		new_state.state_str = "";
 		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_level_map.size(); i++)
+		for (unsigned int i = 0; i < new_stage.size(); i++)
 		{
-			std::vector<char> temp = new_level_map[i];
+			std::vector<char> temp = new_stage[i];
 			std::vector<char>::iterator itr;
 			for (itr = temp.begin(); itr != temp.end(); itr++)
 				new_state.state_str.push_back(*itr);

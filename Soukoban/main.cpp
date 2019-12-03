@@ -47,11 +47,11 @@ int main(int argc, char** argv)
 		bool valid_input = true;
 
 		//生成したレベルに対して幅優先探索を行う
-		final_stat=choose_search(init_state, BFS);
+		final_stat = choose_search(init_state, BFS);
 		////test
 		std::cout << "  Solution: " << std::endl;
 		std::cout << "    "
-			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))
+			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))//末尾の「,」を除外できる
 			<< std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		while (valid_input)
