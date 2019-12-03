@@ -1412,6 +1412,7 @@ SearchStat bfs(State &initial_state)
 
 	//最初の状態をキューにプッシュします
 	open.push_back(initial_state);
+	//探索部分
 	while (!open.empty())
 	{
 		// OPENからNを取得します
@@ -1439,6 +1440,7 @@ SearchStat bfs(State &initial_state)
 		std::vector<State>::iterator itr;
 
 		//キューの状態が空でない間
+		//移動可能な状態をキューへ
 		while (!valid_states.empty())
 		{
 			bool already_seen = false;
@@ -1963,4 +1965,4 @@ void choose_search(State &init_state, int search_choice)
 	nanosec = end.tv_nsec - start.tv_nsec;
 	std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
 
-} //bool choose_search(State &init_state, int search_choice)
+} //void choose_search(State &init_state, int search_choice)

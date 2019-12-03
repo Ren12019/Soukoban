@@ -47,7 +47,9 @@ int main(int argc, char** argv)
 
 		//生成したレベルに対して幅優先探索を行う
 		choose_search(init_state, BFS);
-
+		////test
+		//std::cout <<"test"<<std::endl;
+		//std::cout <<init_state.move_list;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		while (valid_input)
 		{

@@ -385,7 +385,7 @@ bool Level::setBox() {
 		while (true) {
 			x = choiceX();
 			y = choiceY();
-			if ((stage[y][x] == PATH || stage[y][x] == GOAL) && checklist[y][x] != CHECK) {
+			if ((stage[y][x] == PATH) && checklist[y][x] != CHECK) {
 				if (checkDeadlock(stage, x, y)) {
 					checklist[y][x] = CHECK;
 				}
@@ -395,16 +395,6 @@ bool Level::setBox() {
 						if (checkSection())
 						{
 							stage[y][x] = PATH;
-						}
-						else {
-							break;
-						}
-					}
-					else if (stage[y][x] == GOAL) {
-						stage[y][x] = BOX_ON_GOAL;
-						if (checkSection())
-						{
-							stage[y][x] = GOAL;
 						}
 						else {
 							break;
