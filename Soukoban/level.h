@@ -8,6 +8,8 @@ public:
 	~Level();
 	int stage[HEIGHT][WIDTH] = {};
 	void createLevel();//ステージ生成を行う
+	void setStage();//空の部屋に配置物をすべてセットする
+	void resetStage();//空の部屋はそのままで配置物をリセットする
 	void printStage();//ステージを表示する
 	void outputStage();//ステージをテキストファイルとして出力
 private:

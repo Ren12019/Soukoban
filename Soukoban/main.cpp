@@ -17,6 +17,10 @@ int main(int argc, char** argv)
 	Level level;
 	level.createLevel();
 	level.printStage();
+	level.resetStage();
+	level.printStage();
+	level.setStage();
+	level.printStage();
 	level.outputStage();
 
 	////////////////////////////////

@@ -588,3 +588,31 @@ int Level::countSpace() {
 
 	return count;
 }
+//空の部屋はそのままで配置物をリセットする
+void Level::resetStage() {
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (stage[y][x] != WALL) {
+				stage[y][x] = PATH;
+			}
+		}
+	}
+}
+//空の部屋に配置物をすべてセットする
+void Level::setStage() {
+	while (true)
+	{
+		//ゴール、荷物、プレイヤーを配置
+		if (!setGoal()) {
+			continue;
+		}
+		if (!setBox()) {
+			continue;
+		}
+		if (!setPlayer()) {
+			continue;
+		}
+
+		break;
+	}
+}
