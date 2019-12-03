@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 {
 	bool repeat = true;
 
-	// whileループを使用して検索アルゴリズムを繰り返します
+	// whileループを使用して生成と検索アルゴリズムを繰り返します
 	while (repeat)
 	{
 		////////////////////////////////
@@ -20,43 +20,17 @@ int main(int argc, char** argv)
 		//初期設定
 		srand((unsigned int)time(NULL));//乱数設定
 		Level level;
+		//ステージの生成
 		level.createLevel();
-		level.printStage();
-		level.outputStage();
 
 		////////////////////////////////
 		/*ステージ探索部分*/
 		////////////////////////////////
-		int level_size;
 		std::string usr_input;
 		std::ifstream fs;
 		std::string line;
-		std::string input_level = "";
+		std::string input_level = level.outputString();//生成したステージをインプット
 
-		//引数が存在するかどうかを確認します。txtファイルがない場合はレベルを入力できません
-		if (argc != 2)
-		{
-			std::cerr << "  usage: " << argv[0] << "<sokoban_level>.txt" << std::endl;
-			return 0;
-		}
-		//倉庫番レベルのtxtファイルを開き、文字列として保存します
-		fs.open(argv[1]);
-		if (!fs)
-		{
-			std::cerr << "  error opening file " << argv[1] << std::endl;
-			return 0;
-		}
-
-		//入力レベルの最初の行から配列のサイズを取得します
-		std::getline(fs, line, '\n');
-		level_size = atoi(line.c_str());
-
-		//文字列に行を追加します
-		while (std::getline(fs, line))
-		{
-			input_level.append(line) += "\n";
-		}
-		fs.close();
 		//初期設定
 		State init_state;
 		init_state.state_str = input_level;
@@ -66,7 +40,6 @@ int main(int argc, char** argv)
 			init_state.hscore = 0;
 
 		std::cout << "Sokoban level input:" << std::endl;
-		std::cout << level_size << std::endl;
 		std::cout << init_state.state_str;
 
 

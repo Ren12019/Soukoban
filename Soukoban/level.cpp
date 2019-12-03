@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
 #include "grid.h"
 
 //コンストラクタ
@@ -476,8 +477,6 @@ void Level::outputStage() {
 		printf("ファイルを開けませんでした。\n");
 		return;
 	}
-	//横幅を出力
-	fprintf(fp, "%d\n", WIDTH);
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -615,4 +614,29 @@ void Level::setStage() {
 
 		break;
 	}
+}
+//ステージをstring型で出力
+std::string Level::outputString() {
+	std::string line = {};
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (stage[y][x] == WALL)
+				line+="#";
+			else if (stage[y][x] == MAN)
+				line += "@";
+			else if (stage[y][x] == MAN_ON_GOAL)
+				line += "+";
+			else if (stage[y][x] == BOX)
+				line += "$";
+			else if (stage[y][x] == BOX_ON_GOAL)
+				line += "*";
+			else if (stage[y][x] == GOAL)
+				line += ".";
+			else if (stage[y][x] == PATH)
+				line += " ";
+		}
+		line += "\n";
+	}
+
+	return line;
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "define.h"
 
 class Level
@@ -12,6 +13,7 @@ public:
 	void resetStage();//空の部屋はそのままで配置物をリセットする
 	void printStage();//ステージを表示する
 	void outputStage();//ステージをテキストファイルとして出力
+	std::string outputString();//ステージをstring型で出力
 private:
 	void createEmptyRoom();//空の部屋を作る
 	void fillBlindAlley();//ステージの袋小路をつぶす
