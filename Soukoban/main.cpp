@@ -8,6 +8,7 @@
 #include "level.h"
 #include "search.h"
 
+//荷物の移動回数をカウント
 int countMovingSolution(State &init_state, std::string solution) {
 	unsigned int count = 0;
 	int cnt_move = 0;
@@ -45,14 +46,14 @@ int countMovingSolution(State &init_state, std::string solution) {
 		}
 		counter++;
 	}
-
+	//経路の再現
 	while (count < solution.size()) {
+		//初期設定
 		char move_direction = solution[count];
 		char north = stage[y - 1][x];
 		char east = stage[y][x + 1];
 		char south = stage[y + 1][x];
 		char west = stage[y][x - 1];
-
 		switch (move_direction) {
 		case'u':
 			//北の動きを生成
@@ -68,7 +69,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				y--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//空の目標に移動します
 			case '.':
@@ -78,7 +81,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				y--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//フロアーのボックスに移動します
 			case '$':
@@ -112,7 +117,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				y--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -146,7 +153,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				y--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//壁に移動します
 			case '#':
@@ -169,7 +178,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				x++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//空の目標に移動します
 			case '.':
@@ -179,7 +190,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				x++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//フロアーのボックスに移動します
 			case '$':
@@ -213,7 +226,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				x++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -247,7 +262,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				x++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//壁に移動します
 			case '#':
@@ -270,7 +287,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				y++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//空の目標に移動します
 			case '.':
@@ -280,7 +299,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				y++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//フロアーのボックスに移動します
 			case '$':
@@ -314,7 +335,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				y++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -348,7 +371,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				y++;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//壁に移動します
 			case '#':
@@ -371,7 +396,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				x--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//空の目標に移動します
 			case '.':
@@ -381,7 +408,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
 				//変更した状態を現在の状態へ
+				x--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//階のボックスに移動します
 			case '$':
@@ -415,7 +444,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				x--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//ゴールでボックスに移動
 			case '*':
@@ -449,7 +480,9 @@ int countMovingSolution(State &init_state, std::string solution) {
 				//箱を移動させたらカウント
 				cnt_move++;
 				//変更した状態を現在の状態へ
+				x--;
 				stage = new_stage;
+				player = stage[y][x];
 				break;
 				//壁に移動します
 			case '#':
@@ -509,14 +542,14 @@ int main(int argc, char** argv)
 
 		//生成したレベルに対して幅優先探索を行う
 		final_stat = choose_search(init_state, BFS);
-		////test
+	
 		if (final_stat.node.move_list.empty()) {
 			std::cout << "This Level has no answer." << std::endl;
 			std::cout << "Remake Level." << std::endl;
 			continue;
 		}
 		//人の移動回数を表示
-		std::cout << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
+		std::cout << "Times of moving :" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
 			<< std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		while (valid_input)
