@@ -1945,25 +1945,26 @@ SearchStat choose_search(State &init_state, int search_choice)
 	default:
 		std::cout << "Unrecognized choice" << std::endl;
 	}
-
-	//文字列の末尾の「,」を削除するために使用されるサブストリング
-	std::cout << "  Solution: " << std::endl;
-	std::cout << "    "
-		<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))
-		<< std::endl;
-	std::cout << "    # of nodes generated: ";
-	std::cout << final_stat.node_count << std::endl;
-	std::cout << "    # of duplicate states generated: ";
-	std::cout << final_stat.rep_node_count << std::endl;
-	std::cout << "    # of fringe nodes when termination occured: ";
-	std::cout << final_stat.fringe_node << std::endl;
-	std::cout << "    # of explored nodes: ";
-	std::cout << final_stat.explored_count << std::endl;
-	//検索アルゴリズムのランタイムを報告する
-	std::cout << "  Actual run time: ";
-	sec = end.tv_sec - start.tv_sec;
-	nanosec = end.tv_nsec - start.tv_nsec;
-	std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
+	if (!final_stat.node.move_list.empty()) {
+		//文字列の末尾の「,」を削除するために使用されるサブストリング
+		std::cout << "  Solution: " << std::endl;
+		std::cout << "    "
+			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))
+			<< std::endl;
+		std::cout << "    # of nodes generated: ";
+		std::cout << final_stat.node_count << std::endl;
+		std::cout << "    # of duplicate states generated: ";
+		std::cout << final_stat.rep_node_count << std::endl;
+		std::cout << "    # of fringe nodes when termination occured: ";
+		std::cout << final_stat.fringe_node << std::endl;
+		std::cout << "    # of explored nodes: ";
+		std::cout << final_stat.explored_count << std::endl;
+		//検索アルゴリズムのランタイムを報告する
+		std::cout << "  Actual run time: ";
+		sec = end.tv_sec - start.tv_sec;
+		nanosec = end.tv_nsec - start.tv_nsec;
+		std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
+	}
 
 	return final_stat;
 } //void choose_search(State &init_state, int search_choice)

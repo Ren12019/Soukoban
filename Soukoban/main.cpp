@@ -2,10 +2,693 @@
 #include <iostream>
 #include <time.h>
 #include <fstream>
+#include <sstream>
 
 #include "define.h"
 #include "level.h"
 #include "search.h"
+
+int countMovingSolution(State &init_state, std::string solution) {
+	unsigned int count = 0;
+	int cnt_move = 0;
+	State cur_state = init_state;
+	std::stringstream ss(init_state.state_str);
+	std::vector< std::vector<char> > new_stage;
+	State new_state;
+	std::string line;
+	bool found = false;
+	char player, box_move;
+	int x, y, counter = 0, MOVE_COST = 1, PUSH_COST = 1;
+	//インデックスが移動に使用されるため、ベクトル配列を生成します
+	//扱いやすくなります。たとえば、pos [1,2]で下に移動すると[2,2]になります
+	// stageは（y、x）座標として保存されます
+	std::vector< std::vector<char> > stage;
+	while (getline(ss, line, '\n'))
+	{
+		std::vector<char> temp;
+		stage.push_back(temp);
+		for (unsigned int i = 0; i < line.length(); i++)
+		{
+			if (!found)
+			{
+				//任意の状態でプレイヤーが1人だけ存在すると仮定します
+				//ユーザーが見つかった場合、foundをtrueに設定し、x、yの位置
+				if (line[i] == '@' || line[i] == '+')
+				{
+					player = line[i];
+					x = i;
+					y = counter;
+					found = true;
+				}
+			}
+			stage[counter].push_back(line[i]);
+		}
+		counter++;
+	}
+	while (count < solution.size()) {
+		char move_direction = solution[count];
+		char north = stage[y - 1][x];
+		char east = stage[y][x + 1];
+		char south = stage[y + 1][x];
+		char west = stage[y][x - 1];
+
+		switch (move_direction) {
+		case'u':
+			//北の動きを生成
+			switch (north)
+			{
+				//空の場所に移動します
+			case ' ':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの北のタイルの調整
+				new_stage[y - 1][x] = '@';
+				//プレイヤー= @の場合、空の床に立っていた
+				//そうでなければ、プレーヤーはゴールに立っていた
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//空の目標に移動します
+			case '.':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの北のタイルの調整
+				new_stage[y - 1][x] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//フロアーのボックスに移動します
+			case '$':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの北のタイルの調整
+				new_stage[y - 1][x] = '@';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの北のタイルを調整します
+				box_move = new_stage[y - 2][x];
+				//ボックスの北が壁または別のボックスの場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの北が空の床である場合
+				else if (box_move == ' ')
+				{
+					new_stage[y - 2][x] = '$';
+				}
+				//ボックスの北が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y - 2][x] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//ゴールでボックスに移動
+			case '*':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの北のタイルの調整
+				new_stage[y - 1][x] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの北のタイルを調整します
+				box_move = new_stage[y - 2][x];
+				//ボックスの北が壁または別のボックスの場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの北が空の床である場合
+				else if (box_move == ' ')
+				{
+					new_stage[y - 2][x] = '$';
+				}
+				//ボックスの北が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y - 2][x] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//壁に移動します
+			case '#':
+				break;
+			default:
+				break;
+			}
+			break;
+		case'r':
+			//東の動きを生成します
+			switch (east)
+			{
+				//空の場所に移動します
+			case ' ':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの東のタイルを調整します
+				new_stage[y][x + 1] = '@';
+				//プレイヤー= @の場合、空の床に立っていた
+				//そうでなければ、プレーヤーはゴールに立っていた
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//空の目標に移動します
+			case '.':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの東のタイルを調整します
+				new_stage[y][x + 1] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//フロアーのボックスに移動します
+			case '$':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの東のタイルを調整します
+				new_stage[y][x + 1] = '@';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの東のタイルの調整
+				box_move = new_stage[y][x + 2];
+				//ボックスの東が壁または別のボックスである場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの東が空の床の場合
+				else if (box_move == ' ')
+				{
+					new_stage[y][x + 2] = '$';
+				}
+				//ボックスの東が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y][x + 2] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//ゴールでボックスに移動
+			case '*':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの東のタイルを調整します
+				new_stage[y][x + 1] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの東のタイルの調整
+				box_move = new_stage[y][x + 2];
+				//ボックスの東が壁または別のボックスである場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの東が空の床の場合
+				else if (box_move == ' ')
+				{
+					new_stage[y][x + 2] = '$';
+				}
+				//ボックスの東が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y][x + 2] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//壁に移動します
+			case '#':
+				break;
+			default:
+				break;
+			}
+			break;
+		case'd':
+			//南に移動します
+			switch (south)
+			{
+				//空の場所に移動します
+			case ' ':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの南のタイルの調整
+				new_stage[y + 1][x] = '@';
+				//プレイヤー= @の場合、空の床に立っていた
+				//そうでなければ、プレーヤーはゴールに立っていた
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//空の目標に移動します
+			case '.':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの南のタイルの調整
+				new_stage[y + 1][x] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//フロアーのボックスに移動します
+			case '$':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの南のタイルの調整
+				new_stage[y + 1][x] = '@';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの南側のタイルの調整
+				box_move = new_stage[y + 2][x];
+				//ボックスの南が壁または別のボックスである場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの南が空の床の場合
+				else if (box_move == ' ')
+				{
+					new_stage[y + 2][x] = '$';
+				}
+				//ボックスの南が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y + 2][x] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//ゴールでボックスに移動
+			case '*':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの南のタイルの調整
+				new_stage[y + 1][x] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの南側のタイルの調整
+				box_move = new_stage[y + 2][x];
+				//ボックスの南が壁または別のボックスである場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの南が空の床の場合
+				else if (box_move == ' ')
+				{
+					new_stage[y + 2][x] = '$';
+				}
+				//ボックスの南が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y + 2][x] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//壁に移動します
+			case '#':
+				break;
+			default:
+				break;
+			}
+			break;
+		case'l':
+			//西の動きを生成します
+			switch (west)
+			{
+				//空の場所に移動します
+			case ' ':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの西のタイルの調整
+				new_stage[y][x - 1] = '@';
+				//プレイヤー= @の場合、空の床に立っていた
+				//そうでなければ、プレーヤーはゴールに立っていた
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//空の目標に移動します
+			case '.':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの西のタイルの調整
+				new_stage[y][x - 1] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//階のボックスに移動します
+			case '$':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの西のタイルの調整
+				new_stage[y][x - 1] = '@';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの西側のタイルの調整
+				box_move = new_stage[y][x - 2];
+				//ボックスの西が壁または別のボックスの場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの西が空の床の場合
+				else if (box_move == ' ')
+				{
+					new_stage[y][x - 2] = '$';
+				}
+				//ボックスの西が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y][x - 2] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//ゴールでボックスに移動
+			case '*':
+				new_stage = stage;
+				//プレーヤーのタイルとプレーヤーの西のタイルの調整
+				new_stage[y][x - 1] = '+';
+				(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+				//ボックスタイルとボックスの西側のタイルの調整
+				box_move = new_stage[y][x - 2];
+				//ボックスの西が壁または別のボックスの場合
+				if (box_move == '#')
+					break;
+				else if (box_move == '$')
+					break;
+				else if (box_move == '*')
+					break;
+				//ボックスの西が空の床の場合
+				else if (box_move == ' ')
+				{
+					new_stage[y][x - 2] = '$';
+				}
+				//ボックスの西が空のゴールの場合
+				else if (box_move == '.')
+				{
+					new_stage[y][x - 2] = '*';
+				}
+				else
+					break;
+
+				//新しい状態を作成および更新します
+				new_state = cur_state;
+				new_state.state_str = "";
+				// vector <vector <char >>を文字列に戻す
+				for (unsigned int i = 0; i < new_stage.size(); i++)
+				{
+					std::vector<char> temp = new_stage[i];
+					std::vector<char>::iterator itr;
+					for (itr = temp.begin(); itr != temp.end(); itr++)
+						new_state.state_str.push_back(*itr);
+					new_state.state_str.append("\n");
+				}
+
+				//箱を移動させたらカウント
+				cnt_move++;
+				//変更した状態を現在の状態へ
+				stage = new_stage;
+				cur_state = new_state;
+				break;
+				//壁に移動します
+			case '#':
+				break;
+			default:
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+		count += 3;
+	}
+
+	return cnt_move;
+}
 
 int main(int argc, char** argv)
 {
@@ -55,9 +738,8 @@ int main(int argc, char** argv)
 			std::cout << "Remake Level." << std::endl;
 			continue;
 		}
-		std::cout << "  Solution: " << std::endl;
-		std::cout << "    "
-			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))//末尾の「,」を除外できる
+		//人の移動回数を表示
+		std::cout << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
 			<< std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		while (valid_input)
@@ -88,7 +770,6 @@ int main(int argc, char** argv)
 			else
 				std::cout << "Invalid choice.  ";
 		}
-
 		//生成されたステージを保存するか
 		valid_input = true;
 		while (valid_input)
