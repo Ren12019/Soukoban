@@ -549,7 +549,7 @@ int main(int argc, char** argv)
 			continue;
 		}
 		//人の移動回数を表示
-		std::cout << "Times of moving :" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
+		std::cout << "Times of moving (Box):" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
 			<< std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		while (valid_input)
