@@ -1,8 +1,8 @@
 #include "level.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string>
+#include <vector>
 #include "grid.h"
 
 //コンストラクタ
@@ -38,22 +38,22 @@ bool checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 //チェックリストに荷物が運び込めないエリアをチェックする
-void checkCarryInArea(const int stage[][WIDTH], int checklist[][WIDTH]) {
+std::vector<SQUARE> checkCarryInArea(const int stage[][WIDTH]) {
+	std::vector<SQUARE>checklist;
+	SQUARE square;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == PATH) {
-				if (checkCarryInSquare(stage, x, y)) {
-					checklist[y][x] = CHECK;
+				if (!checkCarryInSquare(stage, x, y)) {
+					square.x = x;
+					square.y = y;
+					checklist.push_back(square);
 				}
-				else {
-					checklist[y][x] = PATH;
-				}
-			}
-			else if (stage[y][x] == WALL) {
-				checklist[y][x] = CHECK;
 			}
 		}
 	}
+
+	return checklist;
 }
 //周囲の壁の数を数える
 int countAroundWall(const int stage[][WIDTH], const int x, const int y) {
@@ -127,44 +127,45 @@ bool checkNeighborhoodWall(const int stage[][WIDTH], const int x, const int y) {
 //対象マスが角であるか判定する
 bool checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
 	//┗
-	if (stage[y][x - 1] == WALL && stage[y - 1][x + 1] == WALL && stage[y + 1][x - 1] == WALL && stage[y + 1][x] == WALL) {
+	if (stage[y][x - 1] == WALL && stage[y + 1][x] == WALL) {
 		return true;
 	}
 	//┛
-	if (stage[y - 1][x - 1] == WALL && stage[y][x + 1] == WALL && stage[y + 1][x] == WALL && stage[y + 1][x + 1] == WALL) {
+	if (stage[y][x + 1] == WALL && stage[y + 1][x] == WALL) {
 		return true;
 	}
 	//┏
-	if (stage[y - 1][x - 1] == WALL && stage[y - 1][x] == WALL && stage[y][x - 1] == WALL && stage[y + 1][x + 1] == WALL) {
+	if (stage[y - 1][x] == WALL && stage[y][x - 1] == WALL) {
 		return true;
 	}
 	//┓
-	if (stage[y - 1][x] == WALL && stage[y - 1][x + 1] == WALL && stage[y][x + 1] == WALL && stage[y + 1][x - 1] == WALL) {
+	if (stage[y - 1][x] == WALL && stage[y][x + 1] == WALL) {
 		return true;
 	}
 
 	return false;
 }
 //対象マスに荷物を配置できるか判定する
-void checkPutBox(const int stage[][WIDTH], int checklist[][WIDTH]) {
+std::vector<SQUARE> checkPutBox(const int stage[][WIDTH]) {
+	std::vector<SQUARE>checklist;
+	SQUARE square;
+
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == PATH) {
-				if (checkNeighborhoodWall(stage, x, y)) {
+				/*if (checkNeighborhoodWall(stage, x, y)) {
 					checklist[y][x] = CHECK;
 				}
-				else if (checkCornerSquare(stage, x, y)) {
-					checklist[y][x] = CHECK;
+				else */if (!checkCornerSquare(stage, x, y)) {
+					square.x = x;
+					square.y = y;
+					checklist.push_back(square);
 				}
-				else {
-					checklist[y][x] = PATH;
-				}
-			}
-			else if (stage[y][x] == WALL) {
-				checklist[y][x] = CHECK;
 			}
 		}
 	}
+
+	return checklist;
 }
 //そこに荷物を置くことで詰みが発生するか判定する
 bool checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
@@ -307,12 +308,7 @@ bool checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
 void Level::createLevel() {
 	while (true)
 	{
-		do {
-			//テンプレートで空部屋を生成
-			createEmptyRoom();
-			//意味のないマスを埋め整地
-			fillBlindAlley();
-		} while (checkSection() == 1 && countSpace() > 4);
+		setEmptyRoom();
 
 		//ゴール、荷物、プレイヤーを配置
 		if (!setGoal()) {
@@ -350,72 +346,61 @@ void Level::createEmptyRoom() {
 		}
 	}
 }
+//空の部屋を作る
+void Level::setEmptyRoom() {
+	do {
+		//テンプレートで空部屋を生成
+		createEmptyRoom();
+		//意味のないマスを埋め整地
+		fillBlindAlley();
+	} while (checkSection() == 1 && countSpace() > 4);
+}
 //袋小路など意味のないスペースを埋める
 void Level::fillBlindAlley() {
 	while (checkSquare(stage) != 0) {}
 }
 //ゴールを設置する
 bool Level::setGoal() {
-	int x = 0, y = 0;
-	int checklist[HEIGHT][WIDTH] = {};
-
-	checkCarryInArea(stage, checklist);
-
-	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
-		while (true) {
-			x = choiceX();
-			y = choiceY();
-			if (stage[y][x] == PATH && checklist[y][x] != CHECK) {
-				stage[y][x] = GOAL;
-				break;
-			}
-		}
+	std::vector<SQUARE>checklist;
+	//配置可能な座標をvectorに
+	checklist = checkCarryInArea(stage);
+	//配置できる場所が存在しない
+	if (checklist.empty()) {
+		printf("荷物の配置に失敗しました。\n");
+		return false;
 	}
+	//リストの中からランダムに
+	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
+		SQUARE set_square = checklist[rand() % checklist.size()];
+		int x = set_square.x;
+		int y = set_square.y;
+		if (stage[y][x] == PATH) 
+			stage[y][x] = GOAL;
+	}
+
 	return true;
 }
 //荷物を設置する
 bool Level::setBox() {
-	clock_t t = clock();
-	int x = 0, y = 0;
-	int checklist[HEIGHT][WIDTH] = {};
-
 	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
-		checkPutBox(stage, checklist);
-
-		while (true) {
-			x = choiceX();
-			y = choiceY();
-			if ((stage[y][x] == PATH) && checklist[y][x] != CHECK) {
-				if (checkDeadlock(stage, x, y)) {
-					checklist[y][x] = CHECK;
-				}
-				else {
-					if (stage[y][x] == PATH) {
-						stage[y][x] = BOX;
-						if (checkSection())
-						{
-							stage[y][x] = PATH;
-						}
-						else {
-							break;
-						}
-					}
-				}
-			}
-
-			if (checkChecklist(checklist)) {
-				printf("Failed to create stage:Not Find Space\n");
-				return false;
-			}
-			if (clock() - t > 2000) {
-				printf("Failed to create stage:Time Out\n");
-				return false;
-			}
+		//配置可能な座標をvectorに
+		std::vector<SQUARE> checklist = checkPutBox(stage);
+		//配置できる場所が存在しない
+		if (checklist.empty()) {
+			printf("荷物の配置に失敗しました。\n");
+			return false;
+		}
+		//リストの中からランダムに
+		SQUARE set_square = checklist[rand() % checklist.size()];
+		int x = set_square.x;
+		int y = set_square.y;
+		//詰みを作らなければ配置
+		if (!checkDeadlock(stage, x, y)) {
+			stage[y][x] = BOX;
 		}
 	}
 
 	return true;
-
 }
 //プレイヤーを配置する
 bool Level::setPlayer() {
@@ -589,16 +574,20 @@ void Level::resetStage() {
 }
 //空の部屋に配置物をすべてセットする
 void Level::setStage() {
+	printStage();
 	while (true)
 	{
 		//ゴール、荷物、プレイヤーを配置
 		if (!setGoal()) {
+			setEmptyRoom();
 			continue;
 		}
 		if (!setBox()) {
+			resetStage();
 			continue;
 		}
 		if (!setPlayer()) {
+			resetStage();
 			continue;
 		}
 

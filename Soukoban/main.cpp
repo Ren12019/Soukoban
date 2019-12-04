@@ -10,7 +10,7 @@
 
 //レベルの評価用
 struct Evaluation {
-	std::vector <std::vector<char>>stage;//ステージの内容
+	std::string stage;//ステージの内容
 	int cnt_pushes;//クリアするのに必要な荷物を押す回数
 	int cnt_switching_box;//クリアするのに必要な荷物を押す回数
 };
@@ -516,52 +516,79 @@ int main(int argc, char** argv)
 	// whileループを使用して生成と検索アルゴリズムを繰り返します
 	while (repeat)
 	{
-		////////////////////////////////
-		/*ステージ生成部分*/
-		////////////////////////////////
 		//初期設定
+		bool compare_end = false;
 		Level level;
+		std::queue<Evaluation> compare;//レベルの評価用
+		
 		//ステージの生成
-		level.createLevel();
+		level.setEmptyRoom();
 
-		////////////////////////////////
-		/*ステージ探索部分*/
-		////////////////////////////////
-		std::string usr_input;
-		std::ifstream fs;
-		std::string line;
-		std::string input_level = level.outputString();//生成したステージをインプット
+		//ゴールと荷物の配置を比較
+		while (!compare_end) {
+			////////////////////////////////
+			/*ステージ生成部分*/
+			////////////////////////////////
+			level.setStage();
+			////////////////////////////////
+			/*ステージ探索部分*/
+			////////////////////////////////
+			std::ifstream fs;
+			std::string line;
+			std::string input_level = level.outputString();//生成したステージをインプット
 
-		//初期設定
-		State init_state;//初期状態
-		SearchStat final_stat;//探索終了状態
-		//初期化
-		init_state.state_str = input_level;
-		init_state.move_list = "";
-		init_state.moves = init_state.pushes =
-			init_state.total_cost = init_state.depth =
-			init_state.hscore = 0;
+			//初期設定
+			State init_state;//初期状態
+			SearchStat final_stat;//探索終了状態
+			//初期化
+			init_state.state_str = input_level;
+			init_state.move_list = "";
+			init_state.moves = init_state.pushes =
+				init_state.total_cost = init_state.depth =
+				init_state.hscore = 0;
 
-		std::cout << "生成に成功しました！" << std::endl;
-		std::cout << init_state.state_str;
+			std::cout << "生成しました" << std::endl;
+			std::cout << init_state.state_str;
 
+			//生成したレベルに対して幅優先探索を行う
+			final_stat = choose_search(init_state, BFS);
+			//クリアチェック
+			if (final_stat.node.move_list.empty()) {
+				std::cout << "生成されたレベルは解答不可能です。" << std::endl;
+				std::cout << "新しいレベルを作り直します。" << std::endl;
+				continue;
+			}
+			//人の移動回数を表示
+			std::cout << "このレベルの荷物を動かす最小回数は:" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
+				<< std::endl;
+			/////////////
+			/*比較部分*/
+			////////////
+			Evaluation cur_state;
+			cur_state.stage = init_state.state_str;//レベル
+			cur_state.cnt_pushes = countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)));//プッシュ
+			//配列にレベルと評価を保存
+			compare.push(cur_state);
 
-		bool valid_input = true;
+			//リセット
+			level.resetStage();
 
-		//生成したレベルに対して幅優先探索を行う
-		final_stat = choose_search(init_state, BFS);
-	
-		if (final_stat.node.move_list.empty()) {
-			std::cout << "生成されたレベルは解答不可能です。" << std::endl;
-			std::cout << "新しいレベルを作り直します。" << std::endl;
-			continue;
+			//3つ保存したら終了
+			if (compare.size() == 1) {
+				compare_end = true;
+			}
 		}
-		//人の移動回数を表示
-		std::cout << "このレベルの荷物を動かす最小回数は:" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
-			<< std::endl;
+		//全て表示
+		while (!compare.empty()) {
+			std::cout << compare.front().stage;
+			compare.pop();
+		}
+
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
+		bool valid_input = true;
 		while (valid_input)
 		{
+			std::string usr_input;
 			std::cout << "もう一度実行しますか?[y/n]: ";
 			std::cin >> usr_input;
 			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
@@ -592,6 +619,7 @@ int main(int argc, char** argv)
 		valid_input = true;
 		while (valid_input)
 		{
+			std::string usr_input;
 			std::cout << "このレベルを保存しますか?[y/n]: ";
 			std::cin >> usr_input;
 			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
