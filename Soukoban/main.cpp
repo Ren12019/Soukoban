@@ -547,15 +547,17 @@ int main(int argc, char** argv)
 				init_state.total_cost = init_state.depth =
 				init_state.hscore = 0;
 
-			std::cout << "生成しました" << std::endl;
-			std::cout << init_state.state_str;
+			/*std::cout << "生成しました" << std::endl;
+			std::cout << init_state.state_str;*/
 
 			//生成したレベルに対して幅優先探索を行う
 			final_stat = choose_search(init_state, BFS);
 			//クリアチェック
 			if (final_stat.node.move_list.empty()) {
-				std::cout << "生成されたレベルは解答不可能です。" << std::endl;
-				std::cout << "新しいレベルを作り直します。" << std::endl;
+				/*std::cout << "生成されたレベルは解答不可能です。" << std::endl;
+				std::cout << "新しいレベルを作り直します。" << std::endl;*/
+				//リセット
+				level.resetStage();
 				continue;
 			}
 			//人の移動回数を表示
@@ -574,7 +576,7 @@ int main(int argc, char** argv)
 			level.resetStage();
 
 			//3つ保存したら終了
-			if (compare.size() == 1) {
+			if (compare.size() == 3) {
 				compare_end = true;
 			}
 		}
@@ -615,6 +617,7 @@ int main(int argc, char** argv)
 			else
 				std::cout << "有効な値を入力してください。  ";
 		}
+#if 0
 		//生成されたステージを保存するか
 		valid_input = true;
 		while (valid_input)
@@ -644,6 +647,7 @@ int main(int argc, char** argv)
 			else
 				std::cout << "有効な値を入力してください。  ";
 		}
+#endif
 	}
 
 	return 0;

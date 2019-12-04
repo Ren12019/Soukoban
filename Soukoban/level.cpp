@@ -388,6 +388,11 @@ bool Level::setGoal() {
 		printf("荷物の配置に失敗しました。\n");
 		return false;
 	}
+	//配置できる場所が足りない
+	else if (checklist.size() < NUMBER_OF_BOX) {
+		printf("荷物の配置に失敗しました。\n");
+		return false;
+	}
 	//リストの中からランダムに
 	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
 		SQUARE set_square = checklist[rand() % checklist.size()];
@@ -406,6 +411,11 @@ bool Level::setBox() {
 		std::vector<SQUARE> checklist = checkPutBox(stage);
 		//配置できる場所が存在しない
 		if (checklist.empty()) {
+			printf("荷物の配置に失敗しました。\n");
+			return false;
+		}
+		//配置できる場所が足りない
+		else if (checklist.size() < NUMBER_OF_BOX) {
 			printf("荷物の配置に失敗しました。\n");
 			return false;
 		}
@@ -594,12 +604,11 @@ void Level::resetStage() {
 }
 //空の部屋に配置物をすべてセットする
 void Level::setStage() {
-	printStage();
 	while (true)
 	{
 		//ゴール、荷物、プレイヤーを配置
 		if (!setGoal()) {
-			setEmptyRoom();
+			resetStage();
 			continue;
 		}
 		if (!setBox()) {
