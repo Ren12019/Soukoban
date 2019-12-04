@@ -8,6 +8,13 @@
 #include "level.h"
 #include "search.h"
 
+//レベルの評価用
+struct Evaluation {
+	std::vector <std::vector<char>>stage;//ステージの内容
+	int cnt_pushes;//クリアするのに必要な荷物を押す回数
+	int cnt_switching_box;//クリアするのに必要な荷物を押す回数
+};
+
 //荷物の移動回数をカウント
 int countMovingSolution(State &init_state, std::string solution) {
 	unsigned int count = 0;
@@ -526,15 +533,16 @@ int main(int argc, char** argv)
 		std::string input_level = level.outputString();//生成したステージをインプット
 
 		//初期設定
-		State init_state;
-		SearchStat final_stat;
+		State init_state;//初期状態
+		SearchStat final_stat;//探索終了状態
+		//初期化
 		init_state.state_str = input_level;
 		init_state.move_list = "";
 		init_state.moves = init_state.pushes =
 			init_state.total_cost = init_state.depth =
 			init_state.hscore = 0;
 
-		std::cout << "Sokoban level input:" << std::endl;
+		std::cout << "生成に成功しました！" << std::endl;
 		std::cout << init_state.state_str;
 
 
@@ -544,17 +552,17 @@ int main(int argc, char** argv)
 		final_stat = choose_search(init_state, BFS);
 	
 		if (final_stat.node.move_list.empty()) {
-			std::cout << "This Level has no answer." << std::endl;
-			std::cout << "Remake Level." << std::endl;
+			std::cout << "生成されたレベルは解答不可能です。" << std::endl;
+			std::cout << "新しいレベルを作り直します。" << std::endl;
 			continue;
 		}
 		//人の移動回数を表示
-		std::cout << "Times of moving (Box):" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
+		std::cout << "このレベルの荷物を動かす最小回数は:" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
 			<< std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		while (valid_input)
 		{
-			std::cout << "Again?[y/n]: ";
+			std::cout << "もう一度実行しますか?[y/n]: ";
 			std::cin >> usr_input;
 			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
 			if (usr_input == "y")
@@ -578,13 +586,13 @@ int main(int argc, char** argv)
 				repeat = false;
 			}
 			else
-				std::cout << "Invalid choice.  ";
+				std::cout << "有効な値を入力してください。  ";
 		}
 		//生成されたステージを保存するか
 		valid_input = true;
 		while (valid_input)
 		{
-			std::cout << "Save this level?[y/n]: ";
+			std::cout << "このレベルを保存しますか?[y/n]: ";
 			std::cin >> usr_input;
 			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
 			if (usr_input == "y")
@@ -606,7 +614,7 @@ int main(int argc, char** argv)
 				valid_input = false;
 			}
 			else
-				std::cout << "Invalid choice.  ";
+				std::cout << "有効な値を入力してください。  ";
 		}
 	}
 
