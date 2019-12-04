@@ -145,7 +145,7 @@ bool checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
 
 	return false;
 }
-//対象マスに荷物を配置できるか判定する
+//荷物を配置できる座標をリスト化し返す
 std::vector<SQUARE> checkPutBox(const int stage[][WIDTH]) {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
@@ -156,7 +156,9 @@ std::vector<SQUARE> checkPutBox(const int stage[][WIDTH]) {
 				/*if (checkNeighborhoodWall(stage, x, y)) {
 					checklist[y][x] = CHECK;
 				}
-				else */if (!checkCornerSquare(stage, x, y)) {
+				else */
+				//配置予定場所が角で出ないか
+				if (!checkCornerSquare(stage, x, y)) {
 					square.x = x;
 					square.y = y;
 					checklist.push_back(square);
@@ -303,6 +305,23 @@ bool checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
 	}
 	return false;
 }
+//プレイヤーを配置できる座標をリスト化し返す
+std::vector<SQUARE> checkPutPlayer(const int stage[][WIDTH]) {
+	std::vector<SQUARE>checklist;
+	SQUARE square;
+
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (stage[y][x] == PATH) {
+				square.x = x;
+				square.y = y;
+				checklist.push_back(square);
+			}
+		}
+	}
+
+	return checklist;
+}
 
 //ステージ生成を行う
 void Level::createLevel() {
@@ -404,20 +423,21 @@ bool Level::setBox() {
 }
 //プレイヤーを配置する
 bool Level::setPlayer() {
-	int x = 0, y = 0;
+	//配置可能な座標をvectorに
+	std::vector<SQUARE> checklist = checkPutPlayer(stage);
 
-	while (true) {
-		x = choiceX();
-		y = choiceY();
-		if (stage[y][x] == PATH) {
-			stage[y][x] = MAN;
-			return true;
-		}
-		else if (stage[y][x] == GOAL) {
-			stage[y][x] = MAN_ON_GOAL;
-			return true;
-		}
+	//配置できる場所が存在しない
+	if (checklist.empty()) {
+		printf("荷物の配置に失敗しました。\n");
+		return false;
 	}
+	//リストの中からランダムに
+	SQUARE set_square = checklist[rand() % checklist.size()];
+	int x = set_square.x;
+	int y = set_square.y;
+	stage[y][x] = MAN;
+	
+	return true;
 }
 //ステージをコマンドプロンプトへ出力する
 void Level::printStage() {
