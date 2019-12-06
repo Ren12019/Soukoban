@@ -36,7 +36,7 @@ bool Level::checkCarryInSquare(const int x, const int y) {
 
 	return false;
 }
-//チェックリストに荷物が運び込めないエリアをチェックする
+// チェックリストに荷物が運び込めないエリアをチェックする
 std::vector<SQUARE> Level::checkCarryInArea() {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
@@ -53,6 +53,24 @@ std::vector<SQUARE> Level::checkCarryInArea() {
 	}
 
 	return checklist;
+}
+//ゴールが置ける場所をキューする
+std::queue<SQUARE> Level::decisionCanditdate() {
+	std::queue<SQUARE>canditdate;
+	SQUARE square;
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (stage[y][x] == ' ') {
+				if (!checkCarryInSquare(x, y)) {
+					square.x = x;
+					square.y = y;
+					canditdate.push(square);
+				}
+			}
+		}
+	}
+
+	return canditdate;
 }
 //周囲の壁の数を数える
 int Level::countAroundWall(const int x, const int y) {
@@ -113,7 +131,7 @@ bool Level::checkCornerSquare(const int x, const int y) {
 	return false;
 }
 //荷物を配置できる座標をリスト化し返す
-std::vector<SQUARE> Level::checkPutBox() {
+std::vector<SQUARE> Level::checkPutBox(){
 	std::vector<SQUARE>checklist;
 	SQUARE square;
 
@@ -328,7 +346,9 @@ void Level::setEmptyRoom() {
 		createEmptyRoom();
 		//意味のないマスを埋め整地
 		fillBlindAlley();
-	} while (checkSection() == 1 && countSpace() > 8);
+		printf("%d\n", checkSection());
+		printf("%d\n", countSpace());
+	} while (checkSection() == 1 || countSpace() < 8);
 }
 //袋小路など意味のないスペースを埋める
 void Level::fillBlindAlley() {
@@ -376,6 +396,7 @@ bool Level::setBoxOnGoal() {
 		return false;
 	}
 	//リストの中からランダムに
+#if 1
 	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
 		SQUARE set_square = checklist[rand() % checklist.size()];
 		int x = set_square.x;
@@ -383,7 +404,15 @@ bool Level::setBoxOnGoal() {
 		if (stage[y][x] == ' ')
 			stage[y][x] = '*';
 	}
-
+#else
+#endif
+	return true;
+}
+bool Level::setBoxOnGoal(SQUARE set_pos) {
+	int x = set_pos.x;
+	int y = set_pos.y;
+	if (stage[y][x] == ' ')
+		stage[y][x] = '*';
 	return true;
 }
 //荷物を設置する

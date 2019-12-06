@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <queue>
 #include "define.h"
 
 class Level
@@ -18,7 +19,9 @@ public:
 	std::string outputString();//ステージをstring型で出力
 	void inputString(std::string);//ステージをstring型で入力
 	bool setBoxOnGoal();
+	bool setBoxOnGoal(SQUARE);
 	bool setPlayer();//ステージにプレイヤーを配置する
+	std::queue<SQUARE> decisionCanditdate();//ゴールが置ける場所をキューする
 private:
 	void createEmptyRoom();//空の部屋を作る
 	void fillBlindAlley();//ステージの袋小路をつぶす

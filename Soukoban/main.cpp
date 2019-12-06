@@ -8,8 +8,6 @@
 #include "level.h"
 #include "search.h"
 
-#define MODE 1
-
 //レベルの評価用
 struct Evaluation {
 	std::string stage;//ステージの内容
@@ -521,39 +519,40 @@ int main(int argc, char** argv)
 	while (repeat)
 	{
 		//初期設定
-		bool compare_end = false;
 		Level level;
 		std::queue<Evaluation> compare;//レベルの評価用
-
+		std::queue<SQUARE> candidate;
 		//ステージの生成
 		level.setEmptyRoom();
 		level.printStage();
-		//ゴールと荷物の配置を比較
-		while (!compare_end) {
+		candidate = level.decisionCanditdate();
+		//全てのゴールを試すまで
+		while (!candidate.empty()) {
 			////////////////////////////////
 			/*ステージ生成部分*/
 			////////////////////////////////
-#if MODE
 			//初期設定
 			State create_start_stat;//初期状態
 			SearchStat create_finish_stat;//探索終了状態
 			std::string input_level;
 			bool create_box = false;
+			int cnt_box = 0;
 			//ゴール上から箱が動くまで
 			while (!create_box) {
 				while (true)
 				{
-					level.resetStage();
 					//ゴール上の荷物を配置
-					if (!level.setBoxOnGoal()) {
+					if (!level.setBoxOnGoal(candidate.front())) {
 						level.resetStage();
 						std::cout << "この形では配置できません。" << std::endl;
 						level.printStage();
 						level.setEmptyRoom();
 						continue;
 					}
-
-					break;
+					else {
+						candidate.pop();
+						break;
+					}
 				}
 				level.printStage();
 				input_level = level.outputString();//生成したステージをインプット
@@ -568,7 +567,14 @@ int main(int argc, char** argv)
 				//生成したレベルに対して逆幅優先探索を行う
 				create_finish_stat = choose_search(create_start_stat, BFSR);
 				if (create_finish_stat.node.state_str != create_start_stat.state_str && create_finish_stat.node.state_str != "NULL\n") {
-					break;
+					cnt_box++;
+				}
+				else {
+					level.resetStage();
+					cnt_box++;
+				}
+				if (cnt_box == NUMBER_OF_BOX) {
+					create_box = true;
 				}
 			}
 			//levelにインプット
@@ -577,15 +583,10 @@ int main(int argc, char** argv)
 			level.setPlayer();
 
 			input_level = level.outputString();
-			//ランダムに荷物を配置
-#else
-			level.setStage();
-			level.printStage();
 			////////////////////////////////
 			/*ステージ探索部分*/
 			////////////////////////////////
-			std::string input_level = level.outputString();//生成したステージをインプット
-#endif
+
 			//初期設定
 			State init_state;//初期状態
 			SearchStat final_stat;//探索終了状態
@@ -622,14 +623,8 @@ int main(int argc, char** argv)
 			cur_state.cnt_pushes = countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)));//プッシュ
 			//配列にレベルと評価を保存
 			compare.push(cur_state);
-
 			//リセット
 			level.resetStage();
-
-			//10保存したら終了
-			if (compare.size() == 10) {
-				compare_end = true;
-			}
 		}
 		//全て表示
 #if 0		
