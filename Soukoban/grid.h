@@ -7,7 +7,7 @@ public:
 	Grid();//コンストラクタ
 	~Grid();//デストラクタ
 
-	int grid[GRID_SIZE][GRID_SIZE] = {};//ステージのもととなるグリッド
+	char grid[GRID_SIZE][GRID_SIZE] = {};//ステージのもととなるグリッド
 	void setGrid();//乱数でグリッド内の配置を決定する
 	void setGridTemplate();//テンプレートの配置を利用しグリッドを作成する
 private:

@@ -529,7 +529,7 @@ int main(int argc, char** argv)
 			////////////////////////////////
 			/*ステージ生成部分*/
 			////////////////////////////////
-#if 1
+#if 0
 			while (true)
 			{
 				//ゴール上の荷物を配置
@@ -566,9 +566,8 @@ int main(int argc, char** argv)
 			//アバターを配置
 
 			input_level = final_stat.node.state_str;
-#endif
 			//ランダムに荷物を配置
-#if 0
+#else
 			level.setStage();
 			level.printStage();
 			////////////////////////////////
@@ -612,7 +611,7 @@ int main(int argc, char** argv)
 			////////////
 			Evaluation cur_state;
 			cur_state.stage = init_state.state_str;//レベル
-			//cur_state.cnt_pushes = countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)));//プッシュ
+			cur_state.cnt_pushes = countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)));//プッシュ
 			//配列にレベルと評価を保存
 			compare.push(cur_state);
 
@@ -620,7 +619,7 @@ int main(int argc, char** argv)
 			level.resetStage();
 
 			//10保存したら終了
-			if (compare.size() == 5) {
+			if (compare.size() == 3) {
 				compare_end = true;
 			}
 		}
@@ -645,6 +644,7 @@ int main(int argc, char** argv)
 			compare.pop();
 		}
 		std::cout << best_stage;
+		std::cout << "pushes = " << best << std::endl;
 #endif
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		bool valid_input = true;

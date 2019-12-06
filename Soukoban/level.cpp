@@ -87,19 +87,19 @@ bool checkSquare(char stage[][WIDTH])
 //ëŒè€É}ÉXÇ™äpÇ≈Ç†ÇÈÇ©îªíËÇ∑ÇÈ
 bool checkCornerSquare(const char stage[][WIDTH], const int x, const int y) {
 	//ÑØ
-	if (stage[y][x - 1] == WALL && stage[y + 1][x] == WALL) {
+	if (stage[y][x - 1] == '#' && stage[y + 1][x] == '#') {
 		return true;
 	}
 	//ÑÆ
-	if (stage[y][x + 1] == WALL && stage[y + 1][x] == WALL) {
+	if (stage[y][x + 1] == '#' && stage[y + 1][x] == '#') {
 		return true;
 	}
 	//Ñ¨
-	if (stage[y - 1][x] == WALL && stage[y][x - 1] == WALL) {
+	if (stage[y - 1][x] == '#' && stage[y][x - 1] == '#') {
 		return true;
 	}
 	//Ñ≠
-	if (stage[y - 1][x] == WALL && stage[y][x + 1] == WALL) {
+	if (stage[y - 1][x] == '#' && stage[y][x + 1] == '#') {
 		return true;
 	}
 
@@ -112,7 +112,7 @@ std::vector<SQUARE> checkPutBox(const char stage[][WIDTH]) {
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == PATH) {
+			if (stage[y][x] == ' ') {
 				//îzíuó\íËèÍèäÇ™äpÇ≈èoÇ»Ç¢Ç©
 				if (!checkCornerSquare(stage, x, y)) {
 					square.x = x;
@@ -128,135 +128,135 @@ std::vector<SQUARE> checkPutBox(const char stage[][WIDTH]) {
 //ÇªÇ±Ç…â◊ï®ÇíuÇ≠Ç±Ç∆Ç≈ãlÇ›Ç™î≠ê∂Ç∑ÇÈÇ©îªíËÇ∑ÇÈ
 bool checkDeadlock(const char stage[][WIDTH], const int x, const int y) {
 	/*four boxes*/
-	if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL)) {
+	if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*')) {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x - 1] == BOX || stage[y + 1][x - 1] == BOX_ON_GOAL)) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*')) {
 		return true;
 	}
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && stage[y - 1][x] == BOX && (stage[y - 1][x + 1] == BOX || stage[y - 1][x + 1] == BOX_ON_GOAL)) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x] == '$' && (stage[y - 1][x + 1] == '$' || stage[y - 1][x + 1] == '*')) {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && stage[y - 1][x] == BOX && (stage[y - 1][x - 1] == BOX || stage[y - 1][x - 1] == BOX_ON_GOAL)) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '$' && (stage[y - 1][x - 1] == '$' || stage[y - 1][x - 1] == '*')) {
 		return true;
 	}
 	/*one box two wall*/
-	else if (stage[y][x + 1] == WALL && stage[y - 1][x] == WALL) {
+	else if (stage[y][x + 1] == '#' && stage[y - 1][x] == '#') {
 		return true;
 	}
-	else if (stage[y][x - 1] == WALL && stage[y - 1][x] == WALL) {
+	else if (stage[y][x - 1] == '#' && stage[y - 1][x] == '#') {
 		return true;
 	}
-	else if (stage[y][x - 1] == WALL && stage[y + 1][x] == WALL) {
+	else if (stage[y][x - 1] == '#' && stage[y + 1][x] == '#') {
 		return true;
 	}
-	else if (stage[y][x + 1] == WALL && stage[y + 1][x] == WALL) {
+	else if (stage[y][x + 1] == '#' && stage[y + 1][x] == '#') {
 		return true;
 	}
 	/*two box two wall(Å†)*/
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && stage[y - 1][x] == WALL && stage[y - 1][x + 1] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x] == '#' && stage[y - 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && stage[y - 1][x] == WALL && stage[y - 1][x - 1] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '#' && stage[y - 1][x - 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && stage[y + 1][x] == WALL && stage[y + 1][x + 1] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y + 1][x] == '#' && stage[y + 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && stage[y + 1][x] == WALL && stage[y + 1][x - 1] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y + 1][x] == '#' && stage[y + 1][x - 1] == '#') {
 		return true;
 	}
 	//
-	else if (stage[y - 1][x] == BOX && stage[y][x - 1] == WALL && stage[y - 1][x - 1] == WALL) {
+	else if (stage[y - 1][x] == '$' && stage[y][x - 1] == '#' && stage[y - 1][x - 1] == '#') {
 		return true;
 	}
-	else if ((stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && stage[y][x - 1] == WALL && stage[y + 1][x - 1] == WALL) {
+	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x - 1] == '#' && stage[y + 1][x - 1] == '#') {
 		return true;
 	}
-	else if (stage[y - 1][x] == BOX && stage[y][x + 1] == WALL && stage[y - 1][x + 1] == WALL) {
+	else if (stage[y - 1][x] == '$' && stage[y][x + 1] == '#' && stage[y - 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && stage[y][x + 1] == WALL && stage[y + 1][x + 1] == WALL) {
+	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x + 1] == '#' && stage[y + 1][x + 1] == '#') {
 		return true;
 	}
 	/*two box two wall(S)*/
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && stage[y - 1][x] == WALL && stage[y + 1][x + 1] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && stage[y + 1][x] == WALL && stage[y - 1][x + 1] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y + 1][x] == '#' && stage[y - 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && stage[y - 1][x] == WALL && stage[y + 1][x - 1] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x - 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && stage[y + 1][x] == WALL && stage[y - 1][x - 1] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y + 1][x] == '#' && stage[y - 1][x - 1] == '#') {
 		return true;
 	}
 	//
-	else if ((stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && stage[y][x + 1] == WALL && stage[y + 1][x - 1] == WALL) {
+	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x + 1] == '#' && stage[y + 1][x - 1] == '#') {
 		return 1;
 	}
-	else if ((stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && stage[y][x - 1] == WALL && stage[y + 1][x + 1] == WALL) {
+	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x - 1] == '#' && stage[y + 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y - 1][x] == BOX || stage[y - 1][x] == BOX_ON_GOAL) && stage[y - 1][x + 1] == WALL && stage[y][x - 1] == WALL) {
+	else if ((stage[y - 1][x] == '$' || stage[y - 1][x] == '*') && stage[y - 1][x + 1] == '#' && stage[y][x - 1] == '#') {
 		return true;
 	}
-	else if ((stage[y - 1][x] == BOX || stage[y - 1][x] == BOX_ON_GOAL) && stage[y - 1][x - 1] == WALL && stage[y][x + 1] == WALL) {
+	else if ((stage[y - 1][x] == '$' || stage[y - 1][x] == '*') && stage[y - 1][x - 1] == '#' && stage[y][x + 1] == '#') {
 		return true;
 	}
 	/*three boxes one wall*/
-	else if (stage[y][x + 1] == WALL && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL)) {
+	else if (stage[y][x + 1] == '#' && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*')) {
 		return true;
 	}
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && stage[y + 1][x] == WALL && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL)) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y + 1][x] == '#' && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*')) {
 		return true;
 	}
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && stage[y + 1][x + 1] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y + 1][x + 1] == '#') {
 		return true;
 	}
-	else if (stage[y][x - 1] == WALL && (stage[y + 1][x - 1] == BOX || stage[y + 1][x - 1] == BOX_ON_GOAL) && stage[y + 1][x] == WALL) {
+	else if (stage[y][x - 1] == '#' && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*') && stage[y + 1][x] == '#') {
 		return true;
 	}
 	/*three boxes two wall*/
 	//1
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL) && stage[y - 1][x] == WALL && stage[y + 1][x + 2] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x + 2] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && stage[y - 1][x - 1] == WALL && stage[y + 1][x + 1] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y - 1][x - 1] == '#' && stage[y + 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y - 1][x - 1] == BOX || stage[y - 1][x - 1] == BOX_ON_GOAL) && stage[y][x + 1] == WALL && stage[y - 2][x - 1] == WALL) {
+	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y - 1][x - 1] == '$' || stage[y - 1][x - 1] == '*') && stage[y][x + 1] == '#' && stage[y - 2][x - 1] == '#') {
 		return true;
 	}
 	//2
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && stage[y - 1][x + 1] == WALL && stage[y + 1][x - 1] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y - 1][x + 1] == '#' && stage[y + 1][x - 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && (stage[y + 1][x - 1] == BOX || stage[y + 1][x - 1] == BOX_ON_GOAL) && stage[y - 1][x] == WALL && stage[y + 1][x - 2] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x - 2] == '#') {
 		return true;
 	}
-	else if (stage[y - 1][x] == BOX && (stage[y - 1][x + 1] == BOX || stage[y - 1][x + 1] == BOX_ON_GOAL) && stage[y - 2][x + 1] == WALL && stage[y][x - 1] == WALL) {
+	else if (stage[y - 1][x] == '$' && (stage[y - 1][x + 1] == '$' || stage[y - 1][x + 1] == '*') && stage[y - 2][x + 1] == '#' && stage[y][x - 1] == '#') {
 		return true;
 	}
 	//3
-	else if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y - 1][x + 1] == BOX || stage[y - 1][x + 1] == BOX_ON_GOAL) && stage[y - 1][x + 2] == WALL && stage[y + 1][x] == WALL) {
+	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y - 1][x + 1] == '$' || stage[y - 1][x + 1] == '*') && stage[y - 1][x + 2] == '#' && stage[y + 1][x] == '#') {
 		return true;
 	}
-	else if ((stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x - 1] == BOX || stage[y + 1][x - 1] == BOX_ON_GOAL) && stage[y][x + 1] == WALL && stage[y + 2][x - 1] == WALL) {
+	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*') && stage[y][x + 1] == '#' && stage[y + 2][x - 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && stage[y - 1][x] == BOX && stage[y - 1][x + 1] == WALL && stage[y + 1][x - 1] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '$' && stage[y - 1][x + 1] == '#' && stage[y + 1][x - 1] == '#') {
 		return true;
 	}
 	//4
-	else if ((stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL) && stage[y][x - 1] == WALL && stage[y + 2][x + 1] == WALL) {
+	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*') && stage[y][x - 1] == '#' && stage[y + 2][x + 1] == '#') {
 		return true;
 	}
-	else if (stage[y - 1][x] == BOX && (stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && stage[y - 1][x - 1] == WALL && stage[y + 1][x + 1] == WALL) {
+	else if (stage[y - 1][x] == '$' && (stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x - 1] == '#' && stage[y + 1][x + 1] == '#') {
 		return true;
 	}
-	else if ((stage[y][x - 1] == BOX || stage[y][x - 1] == BOX_ON_GOAL) && (stage[y - 1][x - 1] == BOX || stage[y - 1][x - 1] == BOX_ON_GOAL) && stage[y + 1][x] == WALL && stage[y - 1][x - 2] == WALL) {
+	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y - 1][x - 1] == '$' || stage[y - 1][x - 1] == '*') && stage[y + 1][x] == '#' && stage[y - 1][x - 2] == '#') {
 		return true;
 	}
 	return false;
@@ -268,7 +268,7 @@ std::vector<SQUARE> checkPutPlayer(const char stage[][WIDTH]) {
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == PATH) {
+			if (stage[y][x] == ' ') {
 				square.x = x;
 				square.y = y;
 				checklist.push_back(square);
@@ -305,7 +305,7 @@ void Level::createEmptyRoom() {
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			stage[y][x] = WALL;
+			stage[y][x] = '#';
 		}
 	}
 
@@ -354,8 +354,8 @@ bool Level::setGoal() {
 		SQUARE set_square = checklist[rand() % checklist.size()];
 		int x = set_square.x;
 		int y = set_square.y;
-		if (stage[y][x] == PATH) 
-			stage[y][x] = GOAL;
+		if (stage[y][x] == ' ') 
+			stage[y][x] = '.';
 	}
 
 	return true;
@@ -380,8 +380,8 @@ bool Level::setBoxOnGoal() {
 		SQUARE set_square = checklist[rand() % checklist.size()];
 		int x = set_square.x;
 		int y = set_square.y;
-		if (stage[y][x] == PATH)
-			stage[y][x] = BOX_ON_GOAL;
+		if (stage[y][x] == ' ')
+			stage[y][x] = '*';
 	}
 
 	return true;
@@ -407,7 +407,7 @@ bool Level::setBox() {
 		int y = set_square.y;
 		//ãlÇ›ÇçÏÇÁÇ»ÇØÇÍÇŒîzíu
 		if (!checkDeadlock(stage, x, y)) {
-			stage[y][x] = BOX;
+			stage[y][x] = '$';
 		}
 	}
 
@@ -427,7 +427,7 @@ bool Level::setPlayer() {
 	SQUARE set_square = checklist[rand() % checklist.size()];
 	int x = set_square.x;
 	int y = set_square.y;
-	stage[y][x] = MAN;
+	stage[y][x] = '@';
 	
 	return true;
 }
@@ -435,22 +435,20 @@ bool Level::setPlayer() {
 void Level::printStage() {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == WALL)
+			if (stage[y][x] == '#')
 				printf("#");
-			else if (stage[y][x] == MAN)
+			else if (stage[y][x] == '@')
 				printf("@");
-			else if (stage[y][x] == MAN_ON_GOAL)
+			else if (stage[y][x] == '+')
 				printf("+");
-			else if (stage[y][x] == BOX)
+			else if (stage[y][x] == '$')
 				printf("$");
-			else if (stage[y][x] == BOX_ON_GOAL)
+			else if (stage[y][x] == '*')
 				printf("*");
-			else if (stage[y][x] == GOAL)
+			else if (stage[y][x] == '.')
 				printf(".");
-			else if (stage[y][x] == PATH)
+			else if (stage[y][x] == ' ')
 				printf(" ");
-			else if (stage[y][x] == CHECK)
-				printf("x");
 		}
 		printf("\n");
 	}
@@ -467,19 +465,19 @@ void Level::outputStage() {
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == WALL)
+			if (stage[y][x] == '#')
 				fprintf(fp, "#");
-			else if (stage[y][x] == MAN)
+			else if (stage[y][x] == '@')
 				fprintf(fp, "@");
-			else if (stage[y][x] == MAN_ON_GOAL)
+			else if (stage[y][x] == '+')
 				fprintf(fp, "+");
-			else if (stage[y][x] == BOX)
+			else if (stage[y][x] == '$')
 				fprintf(fp, "$");
-			else if (stage[y][x] == BOX_ON_GOAL)
+			else if (stage[y][x] == '*')
 				fprintf(fp, "*");
-			else if (stage[y][x] == GOAL)
+			else if (stage[y][x] == '.')
 				fprintf(fp, ".");
-			else if (stage[y][x] == PATH)
+			else if (stage[y][x] == ' ')
 				fprintf(fp, " ");
 		}
 		fprintf(fp, "\n");
@@ -497,7 +495,7 @@ bool Level::checkSection() {
 	{
 		for (int x = 1; x < WIDTH - 1; x++)
 		{
-			if (stage[y][x] == PATH || stage[y][x] == GOAL)
+			if (stage[y][x] == ' ' || stage[y][x] == '.')
 			{
 				if (checksheet[y - 1][x] != 0)
 					checksheet[y][x] = checksheet[y - 1][x];
@@ -566,7 +564,7 @@ int Level::countSpace() {
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] != WALL) {
+			if (stage[y][x] != '#') {
 				count++;
 			}
 		}
@@ -578,8 +576,8 @@ int Level::countSpace() {
 void Level::resetStage() {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] != WALL) {
-				stage[y][x] = PATH;
+			if (stage[y][x] != '#') {
+				stage[y][x] = ' ';
 			}
 		}
 	}
@@ -613,19 +611,19 @@ std::string Level::outputString() {
 	std::string line = {};
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == WALL)
+			if (stage[y][x] == '#')
 				line+="#";
-			else if (stage[y][x] == MAN)
+			else if (stage[y][x] == '@')
 				line += "@";
-			else if (stage[y][x] == MAN_ON_GOAL)
+			else if (stage[y][x] == '+')
 				line += "+";
-			else if (stage[y][x] == BOX)
+			else if (stage[y][x] == '$')
 				line += "$";
-			else if (stage[y][x] == BOX_ON_GOAL)
+			else if (stage[y][x] == '*')
 				line += "*";
-			else if (stage[y][x] == GOAL)
+			else if (stage[y][x] == '.')
 				line += ".";
-			else if (stage[y][x] == PATH)
+			else if (stage[y][x] == ' ')
 				line += " ";
 		}
 		line += "\n";

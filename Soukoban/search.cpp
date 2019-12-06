@@ -304,10 +304,12 @@ std::queue<State> gen_valid_states(const State &cur_state)
 	if (!found)
 	{
 		std::cout << "No player found on level" << std::endl;
+		print_level(stage);
 		return valid_moves;
 	}
 
 	//全方位の移動可能個所をキューへ
+	//上、右、下、左
 	int dx[4] = { 0, 1, 0, -1 };
 	int dy[4] = { -1, 0, 1, 0 };
 	for (unsigned int i = 0; i < 4; i++)
@@ -321,6 +323,8 @@ std::queue<State> gen_valid_states(const State &cur_state)
 
 		//範囲内
 		if (next_x < 0 || next_x > WIDTH - 1 || next_y < 0 || next_y > HEIGHT - 1)
+			continue;
+		if (next_to_next_x < 0 || next_to_next_x > WIDTH - 1 || next_to_next_y < 0 || next_to_next_y > HEIGHT - 1)
 			continue;
 
 		char direction = stage[next_y][next_x];
@@ -373,7 +377,7 @@ std::queue<State> gen_valid_states(const State &cur_state)
 		//空のゴールに移動します
 		case '.':
 			new_stage = stage;
-			//プレーヤーのタイルとプレーヤーの北のタイルの調整
+			//プレーヤーのタイルとプレーヤーの移動先タイルの調整
 			new_stage[next_y][next_x] = '+';
 			(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
@@ -412,28 +416,28 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			new_state.moves++;
 			valid_moves.push(new_state);
 			break;
-			//フロアーのボックスに移動します
+		//フロアーのボックスに移動します
 		case '$':
 			new_stage = stage;
-			//プレーヤーのタイルとプレーヤーの北のタイルの調整
+			//プレーヤーのタイルとプレーヤーの移動先タイルの調整
 			new_stage[next_y][next_x] = '@';
 			(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-			//ボックスタイルとボックスの北のタイルを調整します
+			//荷物のマスと荷物の移動先のタイルを調整します
 			box_move = new_stage[next_to_next_y][next_to_next_x];
-			//ボックスの北が壁または別のボックスの場合
+			//荷物の移動先が壁または別のボックスの場合
 			if (box_move == '#')
 				break;
 			else if (box_move == '$')
 				break;
 			else if (box_move == '*')
 				break;
-			//ボックスの北が空の床である場合
+			//荷物の移動先が空の床である場合
 			else if (box_move == ' ')
 			{
-				new_stage[next_to_next_x][next_to_next_x] = '$';
+				new_stage[next_to_next_y][next_to_next_x] = '$';
 			}
-			//ボックスの北が空のゴールの場合
+			//荷物の移動先が空のゴールの場合
 			else if (box_move == '.')
 			{
 				new_stage[next_to_next_y][next_to_next_x] = '*';
@@ -476,10 +480,10 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			new_state.moves++;
 			valid_moves.push(new_state);
 			break;
-			//ゴールでボックスに移動
+		//ゴールでボックスに移動
 		case '*':
 			new_stage = stage;
-			//プレーヤーのタイルとプレーヤーの北のタイルの調整
+			//プレーヤーのタイルとプレーヤーの移動先タイルの調整
 			new_stage[next_y][next_x] = '+';
 			(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
@@ -591,7 +595,7 @@ SearchStat bfs(State &initial_state)
 		{
 			report.node = current_state;
 			report.explored_count = (int)closed.size();
-			open.pop_front();
+			//open.pop_front();
 			break;
 		}
 

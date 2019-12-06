@@ -15,17 +15,17 @@ Grid::~Grid()
 {
 }
 //乱数により壁か道かを決定する
-int choiceWallOrPath() {
+char choiceWallOrPath() {
 	int choice = (rand() % 2) + 1;
 	switch (choice) {
 	case 1:
-		return WALL;
+		return '#';
 	case 2:
-		return PATH;
+		return ' ';
 	default:
 		break;
 	}
-	return WALL;
+	return '#';
 }
 //乱数により使用するテンプレートの番号を選ぶ
 int choiceTemplateNum() {
@@ -64,7 +64,7 @@ int choiceFlip() {
 //グリッドを回転させる
 void Grid::rotateGrid() {
 	int direction = choiceDirection();
-	int rotated_grid[GRID_SIZE][GRID_SIZE] = {};
+	char rotated_grid[GRID_SIZE][GRID_SIZE] = {};
 
 	while (direction != FRONT) {
 		for (int y = 0; y < GRID_SIZE; y++) {
@@ -117,7 +117,7 @@ void Grid::rotateGrid() {
 //グリッドを反転させる
 void Grid::flipGrid() {
 	int flip = choiceFlip();
-	int flipped_grid[GRID_SIZE][GRID_SIZE] = {};
+	char flipped_grid[GRID_SIZE][GRID_SIZE] = {};
 
 	switch (flip) {
 	case VERTICAL: {
@@ -195,13 +195,13 @@ void Grid::setGridTemplate() {
 				break;
 			}
 			case '-': {
-				grid[y][x] = WALL;
+				grid[y][x] = '#';
 				x++;
 				i++;
 				break;
 			}
 			case '0': {
-				grid[y][x] = PATH;
+				grid[y][x] = ' ';
 				x++;
 				break;
 			}
@@ -220,15 +220,15 @@ void Grid::setGridTemplate() {
 void Grid::printGrid() {
 	for (int y = 0; y < GRID_SIZE; y++) {
 		for (int x = 0; x < GRID_SIZE; x++) {
-			if (grid[y][x] == WALL)
+			if (grid[y][x] == '#')
 				printf("##");
-			else if (grid[y][x] == MAN)
+			else if (grid[y][x] == '@')
 				printf("P ");
-			else if (grid[y][x] == BOX)
+			else if (grid[y][x] == '$')
 				printf("■");
-			else if (grid[y][x] == GOAL)
+			else if (grid[y][x] == '.')
 				printf("○");
-			else if (grid[y][x] == PATH)
+			else if (grid[y][x] == ' ')
 				printf("・");
 		}
 		printf("\n");
