@@ -258,14 +258,6 @@ void print_level(std::vector< std::vector<char> > &map)
  *各ボックスに対して、少なくとも1つの目標と1つのボックス。
  *検索アルゴリズム関数で呼び出されます。
  *
- * smodeの場合：
- * NONE-bfs / dfsでは移動の総コストは無視されます
- * UCS-移動の総コストが計算されます
- * GBFSH1-移動の総コストは無視され、ヒューリスティック関数1が使用されます
- * GBFSH2-移動の総コストは無視され、ヒューリスティック関数2が使用されます
- * ASH1-計算された移動の合計コスト、合計コストで使用されるヒューリスティック関数1
- * ASH2-計算された移動の合計コスト、合計コストで使用されるヒューリスティック関数2
- *
  *前提条件：エージェントの現在の状態を表す状態オブジェクト、
  *どの検索アルゴリズムが使用されたかを表すint
  *事後条件：可能なすべてを表す状態オブジェクトのキューを返します
@@ -281,10 +273,6 @@ std::queue<State> gen_valid_states(const State &cur_state)
 	bool found = false;
 	char player, box_move;
 	int x, y, counter = 0, MOVE_COST = 1, PUSH_COST = 1;
-
-	//検索アルゴリズムが統一コスト検索の場合、push_costを2に設定します
-	if (smode == UCS)
-		PUSH_COST = 2;
 
 	//インデックスが移動に使用されるため、ベクトル配列を生成します
 	//扱いやすくなります。たとえば、pos [1,2]で下に移動すると[2,2]になります
@@ -318,783 +306,248 @@ std::queue<State> gen_valid_states(const State &cur_state)
 		return valid_moves;
 	}
 
-	//北タイルpos = x、y-1
-	//北の動きを生成
-	char north = stage[y - 1][x];
-	switch (north)
+	//全方位の移動可能個所をキューへ
+	int dx[4] = { 0, 1, 0, -1 };
+	int dy[4] = { -1, 0, 1, 0 };
+	for (unsigned int i = 0; i < 4; i++)
 	{
-		//空の場所に移動します
-	case ' ':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_stage[y - 1][x] = '@';
-		//プレイヤー= @の場合、空の床に立っていた
-		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+		//移動先
+		int next_x = x + dx[i];
+		int next_y = y + dy[i];
+		//荷物の移動先
+		int next_to_next_x = next_x + dx[i];
+		int next_to_next_y = next_y + dy[i];
 
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
+		//範囲内
+		if (next_x < 0 || next_x > WIDTH - 1 || next_y < 0 || next_y > HEIGHT - 1)
+			continue;
+
+		char direction = stage[next_y][next_x];
+		switch (direction)
 		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
+		//空のマスに移動します
+		case ' ':
+			new_stage = stage;
+			//プレーヤーのタイルとプレーヤーの移動先タイルの調整
+			new_stage[next_y][next_x] = '@';
+			//プレイヤー= @の場合、空の床に立っていた
+			//そうでなければ、プレーヤーはゴールに立っていた
+			(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-		//状態の統計を更新します
-		new_state.move_list.append("u, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//空の目標に移動します
-	case '.':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_stage[y - 1][x] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+			//新しい状態を作成および更新します
+			new_state = cur_state;
+			new_state.state_str = "";
+			// vector <vector <char >>を文字列に戻す
+			for (unsigned int i = 0; i < new_stage.size(); i++)
+			{
+				std::vector<char> temp = new_stage[i];
+				std::vector<char>::iterator itr;
+				for (itr = temp.begin(); itr != temp.end(); itr++)
+					new_state.state_str.push_back(*itr);
+				new_state.state_str.append("\n");
+			}
 
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("u, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//フロアーのボックスに移動します
-	case '$':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_stage[y - 1][x] = '@';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//ボックスタイルとボックスの北のタイルを調整します
-		box_move = new_stage[y - 2][x];
-		//ボックスの北が壁または別のボックスの場合
-		if (box_move == '#')
+			//状態の統計を更新します
+			switch (i)
+			{
+			case NORTH:
+				new_state.move_list.append("u, ");
+				break;
+			case EAST:
+				new_state.move_list.append("r, ");
+				break;
+			case SOUTH:
+				new_state.move_list.append("d, ");
+				break;
+			case WEST:
+				new_state.move_list.append("l, ");
+				break;
+			default:
+				break;
+			}
+			new_state.depth++;
+			new_state.moves++;
+			valid_moves.push(new_state);
 			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの北が空の床である場合
-		else if (box_move == ' ')
-		{
-			new_stage[y - 2][x] = '$';
-		}
-		//ボックスの北が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y - 2][x] = '*';
-		}
-		else
-			break;
+		//空のゴールに移動します
+		case '.':
+			new_stage = stage;
+			//プレーヤーのタイルとプレーヤーの北のタイルの調整
+			new_stage[next_y][next_x] = '+';
+			(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
+			//新しい状態を作成および更新します
+			new_state = cur_state;
+			new_state.state_str = "";
+			// vector <vector <char >>を文字列に戻す
+			for (unsigned int i = 0; i < new_stage.size(); i++)
+			{
+				std::vector<char> temp = new_stage[i];
+				std::vector<char>::iterator itr;
+				for (itr = temp.begin(); itr != temp.end(); itr++)
+					new_state.state_str.push_back(*itr);
+				new_state.state_str.append("\n");
+			}
 
-		//状態の統計を更新します
-		new_state.move_list.append("u, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//ゴールでボックスに移動
-	case '*':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの北のタイルの調整
-		new_stage[y - 1][x] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+			//状態の統計を更新します
+			switch (i)
+			{
+			case NORTH:
+				new_state.move_list.append("u, ");
+				break;
+			case EAST:
+				new_state.move_list.append("r, ");
+				break;
+			case SOUTH:
+				new_state.move_list.append("d, ");
+				break;
+			case WEST:
+				new_state.move_list.append("l, ");
+				break;
+			default:
+				break;
+			}
+			new_state.depth++;
+			new_state.moves++;
+			valid_moves.push(new_state);
+			break;
+			//フロアーのボックスに移動します
+		case '$':
+			new_stage = stage;
+			//プレーヤーのタイルとプレーヤーの北のタイルの調整
+			new_stage[next_y][next_x] = '@';
+			(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
 
-		//ボックスタイルとボックスの北のタイルを調整します
-		box_move = new_stage[y - 2][x];
-		//ボックスの北が壁または別のボックスの場合
-		if (box_move == '#')
-			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの北が空の床である場合
-		else if (box_move == ' ')
-		{
-			new_stage[y - 2][x] = '$';
-		}
-		//ボックスの北が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y - 2][x] = '*';
-		}
-		else
-			break;
+			//ボックスタイルとボックスの北のタイルを調整します
+			box_move = new_stage[next_to_next_y][next_to_next_x];
+			//ボックスの北が壁または別のボックスの場合
+			if (box_move == '#')
+				break;
+			else if (box_move == '$')
+				break;
+			else if (box_move == '*')
+				break;
+			//ボックスの北が空の床である場合
+			else if (box_move == ' ')
+			{
+				new_stage[next_to_next_x][next_to_next_x] = '$';
+			}
+			//ボックスの北が空のゴールの場合
+			else if (box_move == '.')
+			{
+				new_stage[next_to_next_y][next_to_next_x] = '*';
+			}
+			else
+				break;
 
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
+			//新しい状態を作成および更新します
+			new_state = cur_state;
+			new_state.state_str = "";
+			// vector <vector <char >>を文字列に戻す
+			for (unsigned int i = 0; i < new_stage.size(); i++)
+			{
+				std::vector<char> temp = new_stage[i];
+				std::vector<char>::iterator itr;
+				for (itr = temp.begin(); itr != temp.end(); itr++)
+					new_state.state_str.push_back(*itr);
+				new_state.state_str.append("\n");
+			}
 
-		//状態の統計を更新します
-		new_state.move_list.append("u, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
+			//状態の統計を更新します
+			switch (i)
+			{
+			case NORTH:
+				new_state.move_list.append("u, ");
+				break;
+			case EAST:
+				new_state.move_list.append("r, ");
+				break;
+			case SOUTH:
+				new_state.move_list.append("d, ");
+				break;
+			case WEST:
+				new_state.move_list.append("l, ");
+				break;
+			default:
+				break;
+			}
+			new_state.depth++;
+			new_state.moves++;
+			valid_moves.push(new_state);
+			break;
+			//ゴールでボックスに移動
+		case '*':
+			new_stage = stage;
+			//プレーヤーのタイルとプレーヤーの北のタイルの調整
+			new_stage[next_y][next_x] = '+';
+			(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
+
+			//ボックスタイルとボックスの北のタイルを調整します
+			box_move = new_stage[next_to_next_y][next_to_next_x];
+			//ボックスの北が壁または別のボックスの場合
+			if (box_move == '#')
+				break;
+			else if (box_move == '$')
+				break;
+			else if (box_move == '*')
+				break;
+			//ボックスの北が空の床である場合
+			else if (box_move == ' ')
+			{
+				new_stage[next_to_next_y][next_to_next_x] = '$';
+			}
+			//ボックスの北が空のゴールの場合
+			else if (box_move == '.')
+			{
+				new_stage[next_to_next_y][next_to_next_x] = '*';
+			}
+			else
+				break;
+
+			//新しい状態を作成および更新します
+			new_state = cur_state;
+			new_state.state_str = "";
+			// vector <vector <char >>を文字列に戻す
+			for (unsigned int i = 0; i < new_stage.size(); i++)
+			{
+				std::vector<char> temp = new_stage[i];
+				std::vector<char>::iterator itr;
+				for (itr = temp.begin(); itr != temp.end(); itr++)
+					new_state.state_str.push_back(*itr);
+				new_state.state_str.append("\n");
+			}
+
+			//状態の統計を更新します
+			switch (i)
+			{
+			case NORTH:
+				new_state.move_list.append("u, ");
+				break;
+			case EAST:
+				new_state.move_list.append("r, ");
+				break;
+			case SOUTH:
+				new_state.move_list.append("d, ");
+				break;
+			case WEST:
+				new_state.move_list.append("l, ");
+				break;
+			default:
+				break;
+			}
+			new_state.depth++;
+			new_state.moves++;
+			valid_moves.push(new_state);
+			break;
 		//壁に移動します
-	case '#':
-		break;
-	default:
-		break;
+		case '#':
+			break;
+		default:
+			break;
+		}
+
 	}
-
-	//東タイルpos = x、y-1
-	//東の動きを生成します
-	char east = stage[y][x + 1];
-	switch (east)
-	{
-		//空の場所に移動します
-	case ' ':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_stage[y][x + 1] = '@';
-		//プレイヤー= @の場合、空の床に立っていた
-		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("r, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		//std::cout<<new_state.state_str<<std::endl;
-		valid_moves.push(new_state);
-		break;
-		//空の目標に移動します
-	case '.':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_stage[y][x + 1] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("r, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//フロアーのボックスに移動します
-	case '$':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_stage[y][x + 1] = '@';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//ボックスタイルとボックスの東のタイルの調整
-		box_move = new_stage[y][x + 2];
-		//ボックスの東が壁または別のボックスである場合
-		if (box_move == '#')
-			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの東が空の床の場合
-		else if (box_move == ' ')
-		{
-			new_stage[y][x + 2] = '$';
-		}
-		//ボックスの東が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y][x + 2] = '*';
-		}
-		else
-			break;
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("r, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//ゴールでボックスに移動
-	case '*':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの東のタイルを調整します
-		new_stage[y][x + 1] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//ボックスタイルとボックスの東のタイルの調整
-		box_move = new_stage[y][x + 2];
-		//ボックスの東が壁または別のボックスである場合
-		if (box_move == '#')
-			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの東が空の床の場合
-		else if (box_move == ' ')
-		{
-			new_stage[y][x + 2] = '$';
-		}
-		//ボックスの東が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y][x + 2] = '*';
-		}
-		else
-			break;
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("r, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//壁に移動します
-	case '#':
-		break;
-	default:
-		break;
-	}
-
-	//南タイルpos = x、y-1
-	//南に移動します
-	char south = stage[y + 1][x];
-	switch (south)
-	{
-		//空の場所に移動します
-	case ' ':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_stage[y + 1][x] = '@';
-		//プレイヤー= @の場合、空の床に立っていた
-		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("d, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//空の目標に移動します
-	case '.':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_stage[y + 1][x] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("d, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//フロアーのボックスに移動します
-	case '$':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_stage[y + 1][x] = '@';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//ボックスタイルとボックスの南側のタイルの調整
-		box_move = new_stage[y + 2][x];
-		//ボックスの南が壁または別のボックスである場合
-		if (box_move == '#')
-			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの南が空の床の場合
-		else if (box_move == ' ')
-		{
-			new_stage[y + 2][x] = '$';
-		}
-		//ボックスの南が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y + 2][x] = '*';
-		}
-		else
-			break;
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("d, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//ゴールでボックスに移動
-	case '*':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの南のタイルの調整
-		new_stage[y + 1][x] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//ボックスタイルとボックスの南側のタイルの調整
-		box_move = new_stage[y + 2][x];
-		//ボックスの南が壁または別のボックスである場合
-		if (box_move == '#')
-			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの南が空の床の場合
-		else if (box_move == ' ')
-		{
-			new_stage[y + 2][x] = '$';
-		}
-		//ボックスの南が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y + 2][x] = '*';
-		}
-		else
-			break;
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("d, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//壁に移動します
-	case '#':
-		break;
-	default:
-		break;
-	}
-
-	//西タイルpos = x、y-1
-	//西の動きを生成します
-	char west = stage[y][x - 1];
-	switch (west)
-	{
-		//空の場所に移動します
-	case ' ':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_stage[y][x - 1] = '@';
-		//プレイヤー= @の場合、空の床に立っていた
-		//そうでなければ、プレーヤーはゴールに立っていた
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("l, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//空の目標に移動します
-	case '.':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_stage[y][x - 1] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("l, ");
-		new_state.depth++;
-		new_state.moves++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += MOVE_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//階のボックスに移動します
-	case '$':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_stage[y][x - 1] = '@';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//ボックスタイルとボックスの西側のタイルの調整
-		box_move = new_stage[y][x - 2];
-		//ボックスの西が壁または別のボックスの場合
-		if (box_move == '#')
-			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの西が空の床の場合
-		else if (box_move == ' ')
-		{
-			new_stage[y][x - 2] = '$';
-		}
-		//ボックスの西が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y][x - 2] = '*';
-		}
-		else
-			break;
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("l, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//ゴールでボックスに移動
-	case '*':
-		new_stage = stage;
-		//プレーヤーのタイルとプレーヤーの西のタイルの調整
-		new_stage[y][x - 1] = '+';
-		(player == '@') ? new_stage[y][x] = ' ' : new_stage[y][x] = '.';
-
-		//ボックスタイルとボックスの西側のタイルの調整
-		box_move = new_stage[y][x - 2];
-		//ボックスの西が壁または別のボックスの場合
-		if (box_move == '#')
-			break;
-		else if (box_move == '$')
-			break;
-		else if (box_move == '*')
-			break;
-		//ボックスの西が空の床の場合
-		else if (box_move == ' ')
-		{
-			new_stage[y][x - 2] = '$';
-		}
-		//ボックスの西が空のゴールの場合
-		else if (box_move == '.')
-		{
-			new_stage[y][x - 2] = '*';
-		}
-		else
-			break;
-
-		//新しい状態を作成および更新します
-		new_state = cur_state;
-		new_state.state_str = "";
-		// vector <vector <char >>を文字列に戻す
-		for (unsigned int i = 0; i < new_stage.size(); i++)
-		{
-			std::vector<char> temp = new_stage[i];
-			std::vector<char>::iterator itr;
-			for (itr = temp.begin(); itr != temp.end(); itr++)
-				new_state.state_str.push_back(*itr);
-			new_state.state_str.append("\n");
-		}
-
-		//状態の統計を更新します
-		new_state.move_list.append("l, ");
-		new_state.depth++;
-		new_state.pushes++;
-		if (smode == UCS || smode == ASH1 || smode == ASH2)
-			new_state.total_cost += PUSH_COST;
-		if (smode == GBFSH1 || smode == ASH1)
-			new_state.hscore = h1(new_state);
-		if (smode == GBFSH2 || smode == ASH2)
-			new_state.hscore = h2(new_state);
-		if (smode == ASH1 || smode == ASH2)
-			new_state.hscore += new_state.total_cost;
-		valid_moves.push(new_state);
-		break;
-		//壁に移動します
-	case '#':
-		break;
-	default:
-		break;
-	}
-
+	
 	return valid_moves;
 } //std::queue<State> gen_valid_states (const State &cur_state, const int smode = NONE)
 

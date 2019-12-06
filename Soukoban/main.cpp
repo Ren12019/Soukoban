@@ -529,7 +529,7 @@ int main(int argc, char** argv)
 			////////////////////////////////
 			/*ステージ生成部分*/
 			////////////////////////////////
-#if 1
+#if 0
 			while (true)
 			{
 				//ゴール上の荷物を配置
@@ -566,8 +566,9 @@ int main(int argc, char** argv)
 			std::cout << final_stat.node.state_str;
 #endif
 			//ランダムに荷物を配置
-#if 0
+#if 1
 			level.setStage();
+			level.printStage();
 			////////////////////////////////
 			/*ステージ探索部分*/
 			////////////////////////////////
@@ -592,8 +593,8 @@ int main(int argc, char** argv)
 			final_stat = choose_search(init_state, BFS);
 			//クリアチェック
 			if (final_stat.node.move_list.empty()) {
-				/*std::cout << "生成されたレベルは解答不可能です。" << std::endl;
-				std::cout << "新しいレベルを作り直します。" << std::endl;*/
+				std::cout << "生成されたレベルは解答不可能です。" << std::endl;
+				std::cout << "新しいレベルを作り直します。" << std::endl;
 				//リセット
 				level.resetStage();
 				continue;

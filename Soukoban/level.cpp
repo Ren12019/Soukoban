@@ -635,6 +635,9 @@ void Level::setStage() {
 		//ゴール、荷物、プレイヤーを配置
 		if (!setGoal()) {
 			resetStage();
+			printf("この形では配置できません。\n");
+			printStage();
+			setEmptyRoom();
 			continue;
 		}
 		if (!setBox()) {
