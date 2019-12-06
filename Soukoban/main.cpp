@@ -513,8 +513,10 @@ int main(int argc, char** argv)
 {
 	//初期設定
 	srand((unsigned int)time(NULL));//乱数設定
+	timespec start, end;
 	bool repeat = true;
-
+	//時間計測開始
+	timespec_get(&start, TIME_UTC);
 	// whileループを使用して生成と検索アルゴリズムを繰り返します
 	while (repeat)
 	{
@@ -541,6 +543,7 @@ int main(int argc, char** argv)
 			while (!create_box) {
 				while (true)
 				{
+					level.resetStage();
 					//ゴール上の荷物を配置
 					if (!level.setBoxOnGoal()) {
 						level.resetStage();
@@ -562,9 +565,9 @@ int main(int argc, char** argv)
 					create_start_stat.total_cost = create_start_stat.depth =
 					create_start_stat.hscore = 0;
 
-				//生成したレベルに対して幅優先探索を行う
+				//生成したレベルに対して逆幅優先探索を行う
 				create_finish_stat = choose_search(create_start_stat, BFSR);
-				if (create_finish_stat.node.state_str != create_start_stat.state_str) {
+				if (create_finish_stat.node.state_str != create_start_stat.state_str && create_finish_stat.node.state_str != "NULL\n") {
 					break;
 				}
 			}
@@ -649,8 +652,15 @@ int main(int argc, char** argv)
 			compare.pop();
 		}
 		std::cout << best_stage;
-		std::cout << "pushes = " << best << std::endl;
+		std::cout << "最短解答手数は " << best << std::endl;
 #endif
+		//生成時間
+		long long sec, nanosec;
+		timespec_get(&end, TIME_UTC);
+		std::cout << "  生成時間: ";
+		sec = end.tv_sec - start.tv_sec;
+		nanosec = end.tv_nsec - start.tv_nsec;
+		std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		bool valid_input = true;
 		while (valid_input)

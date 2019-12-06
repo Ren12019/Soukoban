@@ -25,8 +25,6 @@ std::queue<State> gen_valid_states_reverse(const State &cur_state)
 	int x = 0, y = 0, counter = 0, MOVE_COST = 1, PUSH_COST = 1;
 
 	//インデックスが移動に使用されるため、ベクトル配列を生成します
-	//扱いやすくなります。たとえば、pos [1,2]で下に移動すると[2,2]になります
-	// stageは（y、x）座標として保存されます
 	std::vector<std::vector<char>> stage;
 	while (getline(ss, line, '\n'))
 	{
@@ -320,10 +318,8 @@ std::queue<State> gen_valid_states(const State &cur_state)
 		int next_to_next_x = next_x + dx[i];
 		int next_to_next_y = next_y + dy[i];
 
-		//範囲内
+		//範囲確認
 		if (next_x < 0 || next_x > WIDTH - 1 || next_y < 0 || next_y > HEIGHT - 1)
-			continue;
-		if (next_to_next_x < 0 || next_to_next_x > WIDTH - 1 || next_to_next_y < 0 || next_to_next_y > HEIGHT - 1)
 			continue;
 
 		char direction = stage[next_y][next_x];
@@ -417,6 +413,9 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			break;
 		//フロアーのボックスに移動します
 		case '$':
+			//範囲確認
+			if (next_to_next_x < 0 || next_to_next_x > WIDTH - 1 || next_to_next_y < 0 || next_to_next_y > HEIGHT - 1)
+				break;
 			new_stage = stage;
 			//プレーヤーのタイルとプレーヤーの移動先タイルの調整
 			new_stage[next_y][next_x] = '@';
@@ -481,6 +480,9 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			break;
 		//ゴールでボックスに移動
 		case '*':
+			//範囲確認
+			if (next_to_next_x < 0 || next_to_next_x > WIDTH - 1 || next_to_next_y < 0 || next_to_next_y > HEIGHT - 1)
+				break;
 			new_stage = stage;
 			//プレーヤーのタイルとプレーヤーの移動先タイルの調整
 			new_stage[next_y][next_x] = '+';
@@ -679,16 +681,16 @@ SearchStat choose_search(State &init_state, int search_choice)
 		std::cout << "    "
 			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))
 			<< std::endl;
-		std::cout << "    # of nodes generated: ";
+		std::cout << "    # 生成したノード数: ";
 		std::cout << final_stat.node_count << std::endl;
 		std::cout << "    # of duplicate states generated: ";
 		std::cout << final_stat.rep_node_count << std::endl;
 		std::cout << "    # of fringe nodes when termination occured: ";
 		std::cout << final_stat.fringe_node << std::endl;
-		std::cout << "    # of explored nodes: ";
+		std::cout << "    # 探索したノード数: ";
 		std::cout << final_stat.explored_count << std::endl;
 		//検索アルゴリズムのランタイムを報告する
-		std::cout << "  Actual run time: ";
+		std::cout << "  解答時間: ";
 		sec = end.tv_sec - start.tv_sec;
 		nanosec = end.tv_nsec - start.tv_nsec;
 		std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
