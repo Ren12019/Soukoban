@@ -14,15 +14,15 @@ Level::~Level()
 {
 }
 //対象マスが荷物を運びこむことが可能かを判定する
-bool checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
-	if ((stage[y][x - 1] == PATH || stage[y][x - 1] == GOAL) && (stage[y][x + 1] == PATH || stage[y][x + 1] == GOAL)) {
-		if (stage[y][x - 2] == WALL && stage[y][x + 2] == WALL && stage[y - 1][x] == WALL && stage[y + 1][x] == WALL) {
+bool checkCarryInSquare(const char stage[][WIDTH], const int x, const int y) {
+	if ((stage[y][x - 1] == ' ' || stage[y][x - 1] == '.') && (stage[y][x + 1] == ' ' || stage[y][x + 1] == '.')) {
+		if (stage[y][x - 2] == '#' && stage[y][x + 2] == '#' && stage[y - 1][x] == '#' && stage[y + 1][x] == '#') {
 			return true;
 		}
 	}
 
-	if ((stage[y - 1][x] == PATH || stage[y - 1][x] == GOAL) && (stage[y + 1][x] == PATH || stage[y + 1][x] == GOAL)) {
-		if (stage[y - 2][x] == WALL && stage[y + 2][x] == WALL && stage[y][x - 1] == WALL && stage[y][x + 1] == WALL) {
+	if ((stage[y - 1][x] == ' ' || stage[y - 1][x] == '.') && (stage[y + 1][x] == ' ' || stage[y + 1][x] == '.')) {
+		if (stage[y - 2][x] == '#' && stage[y + 2][x] == '#' && stage[y][x - 1] == '#' && stage[y][x + 1] == '#') {
 			return true;
 		}
 	}
@@ -30,12 +30,12 @@ bool checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 //チェックリストに荷物が運び込めないエリアをチェックする
-std::vector<SQUARE> checkCarryInArea(const int stage[][WIDTH]) {
+std::vector<SQUARE> checkCarryInArea(const char stage[][WIDTH]) {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == PATH) {
+			if (stage[y][x] == ' ') {
 				if (!checkCarryInSquare(stage, x, y)) {
 					square.x = x;
 					square.y = y;
@@ -48,22 +48,22 @@ std::vector<SQUARE> checkCarryInArea(const int stage[][WIDTH]) {
 	return checklist;
 }
 //周囲の壁の数を数える
-int countAroundWall(const int stage[][WIDTH], const int x, const int y) {
+int countAroundWall(const char stage[][WIDTH], const int x, const int y) {
 	int count = 0;
 
-	if (stage[y - 1][x] == WALL)
+	if (stage[y - 1][x] == '#')
 		count++;
-	if (stage[y + 1][x] == WALL)
+	if (stage[y + 1][x] == '#')
 		count++;
-	if (stage[y][x - 1] == WALL)
+	if (stage[y][x - 1] == '#')
 		count++;
-	if (stage[y][x + 1] == WALL)
+	if (stage[y][x + 1] == '#')
 		count++;
 
 	return count;
 }
 //対象マスが荷物を運びこむことが可能かを判定する
-bool checkSquare(int stage[][WIDTH])
+bool checkSquare(char stage[][WIDTH])
 {
 	bool flag = false;
 
@@ -71,11 +71,11 @@ bool checkSquare(int stage[][WIDTH])
 	{
 		for (int x = 0; x < WIDTH; x++)
 		{
-			if (stage[y][x] == PATH)
+			if (stage[y][x] == ' ')
 			{
 				if (countAroundWall(stage, x, y) >= 3)
 				{
-					stage[y][x] = WALL;
+					stage[y][x] = '#';
 					flag = true;
 				}
 			}
@@ -84,29 +84,8 @@ bool checkSquare(int stage[][WIDTH])
 
 	return flag;
 }
-//対象マスが辺に接しているか判定する
-bool checkNeighborhoodWall(const int stage[][WIDTH], const int x, const int y) {
-	//Left
-	if (stage[y - 1][x - 1] == WALL && stage[y][x - 1] == WALL && stage[y + 1][x - 1] == WALL) {
-		return true;
-	}
-	//Right
-	if (stage[y - 1][x + 1] == WALL && stage[y][x + 1] == WALL && stage[y + 1][x + 1] == WALL) {
-		return true;
-	}
-	//Up
-	if (stage[y - 1][x - 1] == WALL && stage[y - 1][x] == WALL && stage[y - 1][x + 1] == WALL) {
-		return true;
-	}
-	//Down
-	if (stage[y + 1][x - 1] == WALL && stage[y + 1][x] == WALL && stage[y + 1][x + 1] == WALL) {
-		return true;
-	}
-
-	return false;
-}
 //対象マスが角であるか判定する
-bool checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
+bool checkCornerSquare(const char stage[][WIDTH], const int x, const int y) {
 	//┗
 	if (stage[y][x - 1] == WALL && stage[y + 1][x] == WALL) {
 		return true;
@@ -127,17 +106,13 @@ bool checkCornerSquare(const int stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 //荷物を配置できる座標をリスト化し返す
-std::vector<SQUARE> checkPutBox(const int stage[][WIDTH]) {
+std::vector<SQUARE> checkPutBox(const char stage[][WIDTH]) {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == PATH) {
-				/*if (checkNeighborhoodWall(stage, x, y)) {
-					checklist[y][x] = CHECK;
-				}
-				else */
 				//配置予定場所が角で出ないか
 				if (!checkCornerSquare(stage, x, y)) {
 					square.x = x;
@@ -151,7 +126,7 @@ std::vector<SQUARE> checkPutBox(const int stage[][WIDTH]) {
 	return checklist;
 }
 //そこに荷物を置くことで詰みが発生するか判定する
-bool checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
+bool checkDeadlock(const char stage[][WIDTH], const int x, const int y) {
 	/*four boxes*/
 	if ((stage[y][x + 1] == BOX || stage[y][x + 1] == BOX_ON_GOAL) && (stage[y + 1][x] == BOX || stage[y + 1][x] == BOX_ON_GOAL) && (stage[y + 1][x + 1] == BOX || stage[y + 1][x + 1] == BOX_ON_GOAL)) {
 		return true;
@@ -287,7 +262,7 @@ bool checkDeadlock(const int stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 //プレイヤーを配置できる座標をリスト化し返す
-std::vector<SQUARE> checkPutPlayer(const int stage[][WIDTH]) {
+std::vector<SQUARE> checkPutPlayer(const char stage[][WIDTH]) {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
 
