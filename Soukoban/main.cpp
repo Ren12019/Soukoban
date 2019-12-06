@@ -529,7 +529,7 @@ int main(int argc, char** argv)
 			////////////////////////////////
 			/*ステージ生成部分*/
 			////////////////////////////////
-#if 0
+#if 1
 			while (true)
 			{
 				//ゴール上の荷物を配置
@@ -563,10 +563,12 @@ int main(int argc, char** argv)
 
 			//生成したレベルに対して幅優先探索を行う
 			final_stat = choose_search(init_state, BFSR);
-			std::cout << final_stat.node.state_str;
+			//アバターを配置
+
+			input_level = final_stat.node.state_str;
 #endif
 			//ランダムに荷物を配置
-#if 1
+#if 0
 			level.setStage();
 			level.printStage();
 			////////////////////////////////
@@ -579,6 +581,8 @@ int main(int argc, char** argv)
 			//初期設定
 			State init_state;//初期状態
 			SearchStat final_stat;//探索終了状態
+#endif
+
 			//初期化
 			init_state.state_str = input_level;
 			init_state.move_list = "";
@@ -602,7 +606,6 @@ int main(int argc, char** argv)
 			//人の移動回数を表示
 			std::cout << "このレベルの荷物を動かす最小回数は:" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
 				<< std::endl;
-#endif
 
 			/////////////
 			/*比較部分*/
@@ -617,7 +620,7 @@ int main(int argc, char** argv)
 			level.resetStage();
 
 			//10保存したら終了
-			if (compare.size() == 1) {
+			if (compare.size() == 5) {
 				compare_end = true;
 			}
 		}
@@ -627,9 +630,9 @@ int main(int argc, char** argv)
 			std::cout << compare.front().stage;
 			compare.pop();
 		}
-#endif
+
 		//一番いいものを表示
-#if 1
+#else 
 		int best = 0;
 		std::string best_stage = compare.front().stage;
 		while (!compare.empty()) {

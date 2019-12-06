@@ -10,6 +10,7 @@
 #include <fstream>
 #include "define.h"
 
+enum direction { NORTH = 0, EAST, SOUTH, WEST };
 
 //クリア状態から遠ざける
 std::queue<State> gen_valid_states_reverse(const State &cur_state)

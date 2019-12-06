@@ -3,7 +3,7 @@
 #include <queue>
 #include <string>
 
-enum search_mode { NONE, UCS, GBFSH1, GBFSH2, ASH1, ASH2, BFS, DFS,BFSR };
+enum search_mode { NONE, BFS, BFSR };
 
 /*Stateには、レベル、取得する移動 / プッシュおよび移動リストの数が含まれます
 * その状態まで、およびその状態がノード単位でどの程度深いか

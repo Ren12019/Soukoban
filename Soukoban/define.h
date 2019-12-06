@@ -1,6 +1,6 @@
 #pragma once
 
-enum SETTING {
+enum setting {
 	WIDTH = 11,
 	HEIGHT = 11,
 
@@ -9,15 +9,14 @@ enum SETTING {
 	RATE = 8
 };
 
-enum NUMBER {
+enum number {
 	NUMBER_OF_BOX = 1,
-	NUMBER_OF_BLOCK_TYPE = 5,
 	NUMBER_OF_GRID_VERTICAL = 2,
-	NUMBER_OF_GRID_HORIZONTAL = 2,
+	NUMBER_OF_GRID_HORIZONTAL = 3,
 	NUMBER_OF_GRID_TEMPLATE = 17
 };
 
-enum BLOCK_TYPE {
+enum block_type {
 	WALL = -1,
 	MAN = 1,
 	MAN_ON_GOAL = 3,
@@ -32,29 +31,6 @@ enum definition {
 	VERTICAL = 1,
 	HORIZONTAL = 2
 };
-
-enum DIRECTION {
-	FRONT = 1,
-	RIGHT = 2,
-	BACK = 3,
-	LEFT = 4
-};
-
-enum DIRECTON2
-{
-	NORTH = 0,
-	EAST,
-	SOUTH,
-	WEST
-};
-
-typedef struct stagelist{
-	struct stagelist *next_stage;
-	int stage[HEIGHT][WIDTH];
-}STAGELIST;
-
-extern STAGELIST*head;
-extern STAGELIST*tail;
 
 typedef struct square {
 	int x;

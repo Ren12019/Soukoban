@@ -4,6 +4,8 @@
 #include <string.h>
 #include "define.h"
 
+enum direction { FRONT = 1, RIGHT, BACK, LEFT};
+
 //コンストラクタ
 Grid::Grid()
 {

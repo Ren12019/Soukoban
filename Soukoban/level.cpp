@@ -372,7 +372,7 @@ void Level::setEmptyRoom() {
 		createEmptyRoom();
 		//意味のないマスを埋め整地
 		fillBlindAlley();
-	} while (checkSection() == 1 && countSpace() > 4);
+	} while (checkSection() == 1 && countSpace() > 8);
 }
 //袋小路など意味のないスペースを埋める
 void Level::fillBlindAlley() {
