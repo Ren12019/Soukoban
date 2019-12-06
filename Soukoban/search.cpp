@@ -21,7 +21,7 @@ std::queue<State> gen_valid_states_reverse(const State &cur_state)
 	std::string line;
 	bool found = false;
 	char box_on_goal;
-	int x, y, counter = 0, MOVE_COST = 1, PUSH_COST = 1;
+	int x = 0, y = 0, counter = 0, MOVE_COST = 1, PUSH_COST = 1;
 
 	//インデックスが移動に使用されるため、ベクトル配列を生成します
 	//扱いやすくなります。たとえば、pos [1,2]で下に移動すると[2,2]になります
@@ -51,7 +51,7 @@ std::queue<State> gen_valid_states_reverse(const State &cur_state)
 	}
 	if (!found)
 	{
-		std::cout << "No box on goal found on level" << std::endl;
+		std::cout << "No box found on level" << std::endl;
 		return valid_moves;
 	}
 	//全方位の移動可能個所をキューへ
@@ -128,13 +128,6 @@ std::queue<State> gen_valid_states_reverse(const State &cur_state)
 	return valid_moves;
 } //std::queue<State> gen_valid_states_reverse (const State &cur_state)
 
-/* この関数は、初期状態で幅優先探索アルゴリズムを実行します。
- *無限の深さを持つ倉庫番パズルのため、探索されたリストは
- *無限ループを防ぐために使用されます。
- *
- *前提条件：レベルの初期状態のStateオブジェクトを取り込みます
- *事後条件：検索結果の統計情報のSearchStatオブジェクトを返します
- */
 SearchStat bfs_reverse(State &initial_state)
 {
 	std::deque<State> open;
@@ -168,7 +161,6 @@ SearchStat bfs_reverse(State &initial_state)
 		if (valid_states.empty()) {
 			report.node = current_state;
 			report.explored_count = (int)closed.size();
-			open.pop_front();
 			break;
 		}
 

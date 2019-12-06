@@ -520,7 +520,7 @@ int main(int argc, char** argv)
 		bool compare_end = false;
 		Level level;
 		std::queue<Evaluation> compare;//レベルの評価用
-		
+
 		//ステージの生成
 		level.setEmptyRoom();
 		level.printStage();
@@ -529,7 +529,6 @@ int main(int argc, char** argv)
 			////////////////////////////////
 			/*ステージ生成部分*/
 			////////////////////////////////
-			//level.setStage();
 #if 1
 			while (true)
 			{
@@ -544,7 +543,7 @@ int main(int argc, char** argv)
 
 				break;
 			}
-			; level.printStage();
+			level.printStage();
 			std::ifstream fs;
 			std::string line;
 			std::string input_level = level.outputString();//生成したステージをインプット
@@ -564,9 +563,11 @@ int main(int argc, char** argv)
 
 			//生成したレベルに対して幅優先探索を行う
 			final_stat = choose_search(init_state, BFSR);
-			std::cout<< final_stat.node.state_str;
+			std::cout << final_stat.node.state_str;
 #endif
+			//ランダムに荷物を配置
 #if 0
+			level.setStage();
 			////////////////////////////////
 			/*ステージ探索部分*/
 			////////////////////////////////
@@ -607,7 +608,7 @@ int main(int argc, char** argv)
 			////////////
 			Evaluation cur_state;
 			cur_state.stage = init_state.state_str;//レベル
-			cur_state.cnt_pushes = countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)));//プッシュ
+			//cur_state.cnt_pushes = countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)));//プッシュ
 			//配列にレベルと評価を保存
 			compare.push(cur_state);
 
@@ -615,18 +616,18 @@ int main(int argc, char** argv)
 			level.resetStage();
 
 			//10保存したら終了
-			if (compare.size() == 3) {
+			if (compare.size() == 1) {
 				compare_end = true;
 			}
 		}
-//全て表示
+		//全て表示
 #if 0		
 		while (!compare.empty()) {
 			std::cout << compare.front().stage;
 			compare.pop();
 		}
 #endif
-//一番いいものを表示
+		//一番いいものを表示
 #if 1
 		int best = 0;
 		std::string best_stage = compare.front().stage;
@@ -672,9 +673,9 @@ int main(int argc, char** argv)
 			else
 				std::cout << "有効な値を入力してください。  ";
 		}
-//生成されたステージを保存するか
+		//生成されたステージを保存するか
 #if 0
-		
+
 		valid_input = true;
 		while (valid_input)
 		{
