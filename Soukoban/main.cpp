@@ -511,81 +511,91 @@ int main(int argc, char** argv)
 {
 	//初期設定
 	srand((unsigned int)time(NULL));//乱数設定
-	timespec start, end;
 	bool repeat = true;
-	//時間計測開始
-	timespec_get(&start, TIME_UTC);
+	
 	// whileループを使用して生成と検索アルゴリズムを繰り返します
-	while (repeat)
-	{
+	while (repeat){
 		//初期設定
 		Level level;
 		std::queue<Evaluation> compare;//レベルの評価用
-		std::queue<SQUARE> candidate;
-		//ステージの生成
+		std::vector<SQUARE> candidate;
+		timespec start, end;
+		//時間計測開始
+		timespec_get(&start, TIME_UTC);
+		////////////////////////////////
+		/*ステージ生成部分*/
+		////////////////////////////////
+		/*空の部屋の生成*/
 		level.setEmptyRoom();
+		//使用する空の部屋を表示
 		level.printStage();
 		candidate = level.decisionCanditdate();
+		/*ゴールの配置を総当たり*/
 		//全てのゴールを試すまで
-		while (!candidate.empty()) {
-			////////////////////////////////
-			/*ステージ生成部分*/
-			////////////////////////////////
+		while (!candidate.empty() && candidate.size() >= NUMBER_OF_BOX) {
 			//初期設定
 			State create_start_stat;//初期状態
 			SearchStat create_finish_stat;//探索終了状態
 			std::string input_level;
 			bool create_box = false;
 			int cnt_box = 0;
-			//ゴール上から箱が動くまで
+			//規定数配置し終わるまで
 			while (!create_box) {
-				while (true)
-				{
-					//ゴール上の荷物を配置
-					if (!level.setBoxOnGoal(candidate.front())) {
-						level.resetStage();
-						std::cout << "この形では配置できません。" << std::endl;
-						level.printStage();
-						level.setEmptyRoom();
-						continue;
-					}
-					else {
-						candidate.pop();
-						break;
-					}
+				//配置できる場所が存在しない
+				if (candidate.empty()) {
+					//printf("配置できる場所が存在しません。\n");
+					continue;//終了
 				}
-				level.printStage();
-				input_level = level.outputString();//生成したステージをインプット
+				//配置できる場所が足りない
+				else if (candidate.size() + cnt_box < NUMBER_OF_BOX) {
+					//printf("配置できる場所が足りません。\n");
+					continue;//終了
+				}
+				//座標の決定
+				int num = rand() % candidate.size();
+				SQUARE set_square = candidate[num];
+				int x = set_square.x;
+				int y = set_square.y;
+				//ゴール上の荷物を配置
+				level.setBoxOnGoal(set_square);
+				candidate.erase(candidate.begin() + num);
+				//生成したステージをインプット
+				input_level = level.outputString();
 
-				//初期化
+				//探索用に初期化
 				create_start_stat.state_str = input_level;
 				create_start_stat.move_list = "";
 				create_start_stat.moves = create_start_stat.pushes =
 					create_start_stat.total_cost = create_start_stat.depth =
 					create_start_stat.hscore = 0;
 
-				//生成したレベルに対して逆幅優先探索を行う
+				//生成したレベルに対して逆に幅優先探索を行う
 				create_finish_stat = choose_search(create_start_stat, BFSR);
+				//盤面に変更がありNULLでないとき配置成功
 				if (create_finish_stat.node.state_str != create_start_stat.state_str && create_finish_stat.node.state_str != "NULL\n") {
-					cnt_box++;
+					cnt_box++;//配置数をカウント
+					level.inputString(create_finish_stat.node.state_str);//ステージを更新
 				}
+				//失敗なら次の組み合わせへ
 				else {
 					level.resetStage();
-					cnt_box++;
+					cnt_box = 0;
 				}
+
 				if (cnt_box == NUMBER_OF_BOX) {
 					create_box = true;
 				}
 			}
+			////////////////////////////////
+			/*ステージ探索部分*/
+			////////////////////////////////
 			//levelにインプット
 			level.inputString(create_finish_stat.node.state_str);
 			//アバターを配置
 			level.setPlayer();
-
+			//探索用にセット
 			input_level = level.outputString();
-			////////////////////////////////
-			/*ステージ探索部分*/
-			////////////////////////////////
+			
 
 			//初期設定
 			State init_state;//初期状態
@@ -606,18 +616,16 @@ int main(int argc, char** argv)
 			//クリアチェック
 			if (final_stat.node.move_list.empty()) {
 				std::cout << "生成されたレベルは解答不可能です。" << std::endl;
-				std::cout << "新しいレベルを作り直します。" << std::endl;
+				//std::cout << "新しいレベルを作り直します。" << std::endl;
 				//リセット
 				level.resetStage();
-				continue;
+				continue;//終了
 			}
 			//人の移動回数を表示
 			std::cout << "このレベルの荷物を動かす最小回数は:" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
 				<< std::endl;
 
-			/////////////
-			/*比較部分*/
-			////////////
+			/*比較用に保存*/
 			Evaluation cur_state;
 			cur_state.stage = init_state.state_str;//レベル
 			cur_state.cnt_pushes = countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)));//プッシュ
@@ -635,6 +643,9 @@ int main(int argc, char** argv)
 
 		//一番いいものを表示
 #else 
+		////////////////////////////////
+		/*比較部分*/
+		////////////////////////////////
 		int best = 0;
 		std::string best_stage = compare.front().stage;
 		while (!compare.empty()) {
