@@ -13,14 +13,6 @@ Level::Level()
 Level::~Level()
 {
 }
-//ランダムにx座標を返す
-int choiceX() {
-	return (rand() % (WIDTH - 2)) + 1;
-}
-//ランダムにy座標を返す
-int choiceY() {
-	return (rand() % (HEIGHT - 2)) + 1;
-}
 //対象マスが荷物を運びこむことが可能かを判定する
 bool checkCarryInSquare(const int stage[][WIDTH], const int x, const int y) {
 	if ((stage[y][x - 1] == PATH || stage[y][x - 1] == GOAL) && (stage[y][x + 1] == PATH || stage[y][x + 1] == GOAL)) {

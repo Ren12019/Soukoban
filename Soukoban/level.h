@@ -7,7 +7,7 @@ class Level
 public:
 	Level();
 	~Level();
-	int stage[HEIGHT][WIDTH] = {};
+	char stage[HEIGHT][WIDTH] = {};
 	void setEmptyRoom();//条件を満たした空の部屋を作る
 	void createLevel();//ステージ生成を行う
 	void setStage();//空の部屋に配置物をすべてセットする
