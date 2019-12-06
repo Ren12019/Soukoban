@@ -70,17 +70,6 @@ int countAroundWall(const int stage[][WIDTH], const int x, const int y) {
 
 	return count;
 }
-//チェックリストにチェックが存在するか判定する
-bool checkChecklist(const int checklist[][WIDTH]) {
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			if (checklist[y][x] != CHECK) {
-				return false;
-			}
-		}
-	}
-	return true;
-}
 //対象マスが荷物を運びこむことが可能かを判定する
 bool checkSquare(int stage[][WIDTH])
 {
