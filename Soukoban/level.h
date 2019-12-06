@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "define.h"
 
 class Level
@@ -7,7 +8,7 @@ class Level
 public:
 	Level();
 	~Level();
-	char stage[HEIGHT][WIDTH] = {};
+	std::vector< std::vector<char> > stage;
 	void setEmptyRoom();//条件を満たした空の部屋を作る
 	void createLevel();//ステージ生成を行う
 	void setStage();//空の部屋に配置物をすべてセットする
@@ -15,13 +16,22 @@ public:
 	void printStage();//ステージを表示する
 	void outputStage();//ステージをテキストファイルとして出力
 	std::string outputString();//ステージをstring型で出力
+	void inputString(std::string);//ステージをstring型で入力
 	bool setBoxOnGoal();
+	bool setPlayer();//ステージにプレイヤーを配置する
 private:
 	void createEmptyRoom();//空の部屋を作る
 	void fillBlindAlley();//ステージの袋小路をつぶす
 	bool setGoal();//ステージにゴールを設置する
 	bool setBox();//ステージに荷物を設置する
-	bool setPlayer();//ステージにプレイヤーを配置する
 	bool checkSection();//部屋が2つ以上になっていないか確認
 	int countSpace();//ステージの通過可能部分をカウントする
+	bool checkCarryInSquare(const int, const int);
+	std::vector<SQUARE> checkCarryInArea();
+	int countAroundWall(const int, const int);
+	bool checkSquare();
+	bool checkCornerSquare(const int, const int);
+	std::vector<SQUARE> checkPutBox();
+	bool checkDeadlock(const int, const int);
+	std::vector<SQUARE> checkPutPlayer();
 };

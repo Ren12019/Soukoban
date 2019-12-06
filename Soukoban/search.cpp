@@ -151,7 +151,6 @@ SearchStat bfs_reverse(State &initial_state)
 		open.pop_front();
 		// NをCLOSEDにプッシュします
 		closed.push_back(current_state); //探索済み
-		std::cout<<current_state.state_str;
 		//時間がかかった場合に出力し、フリーズしたかどうか確認する
 		if ((closed.size() % 5000) == 0)
 			std::cout << "...explored " << closed.size() << " nodes..." << std::endl;
@@ -674,7 +673,7 @@ SearchStat choose_search(State &init_state, int search_choice)
 	default:
 		std::cout << "Unrecognized choice" << std::endl;
 	}
-	if (!final_stat.node.move_list.empty()) {
+	if (!final_stat.node.move_list.empty() && search_choice == BFS) {
 		//文字列の末尾の「,」を削除するために使用されるサブストリング
 		std::cout << "  Solution: " << std::endl;
 		std::cout << "    "
@@ -694,6 +693,5 @@ SearchStat choose_search(State &init_state, int search_choice)
 		nanosec = end.tv_nsec - start.tv_nsec;
 		std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
 	}
-
 	return final_stat;
 } //void choose_search(State &init_state, int search_choice)

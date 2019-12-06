@@ -8,6 +8,8 @@
 #include "level.h"
 #include "search.h"
 
+#define MODE 1
+
 //レベルの評価用
 struct Evaluation {
 	std::string stage;//ステージの内容
@@ -529,43 +531,49 @@ int main(int argc, char** argv)
 			////////////////////////////////
 			/*ステージ生成部分*/
 			////////////////////////////////
-#if 0
-			while (true)
-			{
-				//ゴール上の荷物を配置
-				if (!level.setBoxOnGoal()) {
-					level.resetStage();
-					std::cout << "この形では配置できません。" << std::endl;
-					level.printStage();
-					level.setEmptyRoom();
-					continue;
-				}
-
-				break;
-			}
-			level.printStage();
-			std::ifstream fs;
-			std::string line;
-			std::string input_level = level.outputString();//生成したステージをインプット
-
+#if MODE
 			//初期設定
-			State init_state;//初期状態
-			SearchStat final_stat;//探索終了状態
-			//初期化
-			init_state.state_str = input_level;
-			init_state.move_list = "";
-			init_state.moves = init_state.pushes =
-				init_state.total_cost = init_state.depth =
-				init_state.hscore = 0;
+			State create_start_stat;//初期状態
+			SearchStat create_finish_stat;//探索終了状態
+			std::string input_level;
+			bool create_box = false;
+			//ゴール上から箱が動くまで
+			while (!create_box) {
+				while (true)
+				{
+					//ゴール上の荷物を配置
+					if (!level.setBoxOnGoal()) {
+						level.resetStage();
+						std::cout << "この形では配置できません。" << std::endl;
+						level.printStage();
+						level.setEmptyRoom();
+						continue;
+					}
 
-			/*std::cout << "生成しました" << std::endl;
-			std::cout << init_state.state_str;*/
+					break;
+				}
+				level.printStage();
+				input_level = level.outputString();//生成したステージをインプット
 
-			//生成したレベルに対して幅優先探索を行う
-			final_stat = choose_search(init_state, BFSR);
+				//初期化
+				create_start_stat.state_str = input_level;
+				create_start_stat.move_list = "";
+				create_start_stat.moves = create_start_stat.pushes =
+					create_start_stat.total_cost = create_start_stat.depth =
+					create_start_stat.hscore = 0;
+
+				//生成したレベルに対して幅優先探索を行う
+				create_finish_stat = choose_search(create_start_stat, BFSR);
+				if (create_finish_stat.node.state_str != create_start_stat.state_str) {
+					break;
+				}
+			}
+			//levelにインプット
+			level.inputString(create_finish_stat.node.state_str);
 			//アバターを配置
+			level.setPlayer();
 
-			input_level = final_stat.node.state_str;
+			input_level = level.outputString();
 			//ランダムに荷物を配置
 #else
 			level.setStage();
@@ -573,14 +581,14 @@ int main(int argc, char** argv)
 			////////////////////////////////
 			/*ステージ探索部分*/
 			////////////////////////////////
-			std::ifstream fs;
-			std::string line;
 			std::string input_level = level.outputString();//生成したステージをインプット
-
+#endif
 			//初期設定
 			State init_state;//初期状態
 			SearchStat final_stat;//探索終了状態
-#endif
+			//test
+			std::cout << "生成したステージです。" << std::endl;
+			std::cout << input_level;
 
 			//初期化
 			init_state.state_str = input_level;
@@ -588,9 +596,6 @@ int main(int argc, char** argv)
 			init_state.moves = init_state.pushes =
 				init_state.total_cost = init_state.depth =
 				init_state.hscore = 0;
-
-			/*std::cout << "生成しました" << std::endl;
-			std::cout << init_state.state_str;*/
 
 			//生成したレベルに対して幅優先探索を行う
 			final_stat = choose_search(init_state, BFS);
@@ -619,7 +624,7 @@ int main(int argc, char** argv)
 			level.resetStage();
 
 			//10保存したら終了
-			if (compare.size() == 3) {
+			if (compare.size() == 10) {
 				compare_end = true;
 			}
 		}

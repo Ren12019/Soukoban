@@ -3,18 +3,25 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iostream>
 #include "grid.h"
 
 //コンストラクタ
 Level::Level()
 {
+	std::vector<char> temp(WIDTH,'#');
+
+	for (int y = 0; y < HEIGHT; y++) {
+		stage.emplace_back(temp);
+	}
 }
 //デストラクタ
 Level::~Level()
 {
 }
 //対象マスが荷物を運びこむことが可能かを判定する
-bool checkCarryInSquare(const char stage[][WIDTH], const int x, const int y) {
+bool Level::checkCarryInSquare(const int x, const int y) {
 	if ((stage[y][x - 1] == ' ' || stage[y][x - 1] == '.') && (stage[y][x + 1] == ' ' || stage[y][x + 1] == '.')) {
 		if (stage[y][x - 2] == '#' && stage[y][x + 2] == '#' && stage[y - 1][x] == '#' && stage[y + 1][x] == '#') {
 			return true;
@@ -30,13 +37,13 @@ bool checkCarryInSquare(const char stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 //チェックリストに荷物が運び込めないエリアをチェックする
-std::vector<SQUARE> checkCarryInArea(const char stage[][WIDTH]) {
+std::vector<SQUARE> Level::checkCarryInArea() {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == ' ') {
-				if (!checkCarryInSquare(stage, x, y)) {
+				if (!checkCarryInSquare(x, y)) {
 					square.x = x;
 					square.y = y;
 					checklist.push_back(square);
@@ -48,7 +55,7 @@ std::vector<SQUARE> checkCarryInArea(const char stage[][WIDTH]) {
 	return checklist;
 }
 //周囲の壁の数を数える
-int countAroundWall(const char stage[][WIDTH], const int x, const int y) {
+int Level::countAroundWall(const int x, const int y) {
 	int count = 0;
 
 	if (stage[y - 1][x] == '#')
@@ -63,7 +70,7 @@ int countAroundWall(const char stage[][WIDTH], const int x, const int y) {
 	return count;
 }
 //対象マスが荷物を運びこむことが可能かを判定する
-bool checkSquare(char stage[][WIDTH])
+bool Level::checkSquare()
 {
 	bool flag = false;
 
@@ -73,7 +80,7 @@ bool checkSquare(char stage[][WIDTH])
 		{
 			if (stage[y][x] == ' ')
 			{
-				if (countAroundWall(stage, x, y) >= 3)
+				if (countAroundWall(x, y) >= 3)
 				{
 					stage[y][x] = '#';
 					flag = true;
@@ -85,7 +92,7 @@ bool checkSquare(char stage[][WIDTH])
 	return flag;
 }
 //対象マスが角であるか判定する
-bool checkCornerSquare(const char stage[][WIDTH], const int x, const int y) {
+bool Level::checkCornerSquare(const int x, const int y) {
 	//┗
 	if (stage[y][x - 1] == '#' && stage[y + 1][x] == '#') {
 		return true;
@@ -106,7 +113,7 @@ bool checkCornerSquare(const char stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 //荷物を配置できる座標をリスト化し返す
-std::vector<SQUARE> checkPutBox(const char stage[][WIDTH]) {
+std::vector<SQUARE> Level::checkPutBox() {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
 
@@ -114,7 +121,7 @@ std::vector<SQUARE> checkPutBox(const char stage[][WIDTH]) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == ' ') {
 				//配置予定場所が角で出ないか
-				if (!checkCornerSquare(stage, x, y)) {
+				if (!checkCornerSquare(x, y)) {
 					square.x = x;
 					square.y = y;
 					checklist.push_back(square);
@@ -126,7 +133,7 @@ std::vector<SQUARE> checkPutBox(const char stage[][WIDTH]) {
 	return checklist;
 }
 //そこに荷物を置くことで詰みが発生するか判定する
-bool checkDeadlock(const char stage[][WIDTH], const int x, const int y) {
+bool Level::checkDeadlock(const int x, const int y) {
 	/*four boxes*/
 	if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*')) {
 		return true;
@@ -262,7 +269,7 @@ bool checkDeadlock(const char stage[][WIDTH], const int x, const int y) {
 	return false;
 }
 //プレイヤーを配置できる座標をリスト化し返す
-std::vector<SQUARE> checkPutPlayer(const char stage[][WIDTH]) {
+std::vector<SQUARE> Level::checkPutPlayer() {
 	std::vector<SQUARE>checklist;
 	SQUARE square;
 
@@ -278,7 +285,6 @@ std::vector<SQUARE> checkPutPlayer(const char stage[][WIDTH]) {
 
 	return checklist;
 }
-
 //ステージ生成を行う
 void Level::createLevel() {
 	while (true)
@@ -303,12 +309,6 @@ void Level::createLevel() {
 void Level::createEmptyRoom() {
 	Grid grid;
 
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			stage[y][x] = '#';
-		}
-	}
-
 	for (int grid_num = 0, v = 0, h = 0; grid_num < (NUMBER_OF_GRID_VERTICAL * NUMBER_OF_GRID_HORIZONTAL); grid_num++) {
 		v = grid_num / NUMBER_OF_GRID_HORIZONTAL;
 		h = grid_num % NUMBER_OF_GRID_HORIZONTAL;
@@ -332,13 +332,13 @@ void Level::setEmptyRoom() {
 }
 //袋小路など意味のないスペースを埋める
 void Level::fillBlindAlley() {
-	while (checkSquare(stage) != 0) {}
+	while (checkSquare() != 0) {}
 }
 //ゴールを設置する
 bool Level::setGoal() {
 	std::vector<SQUARE>checklist;
 	//配置可能な座標をvectorに
-	checklist = checkCarryInArea(stage);
+	checklist = checkCarryInArea();
 	//配置できる場所が存在しない
 	if (checklist.empty()) {
 		printf("ゴールの配置に失敗しました。\n");
@@ -364,7 +364,7 @@ bool Level::setGoal() {
 bool Level::setBoxOnGoal() {
 	std::vector<SQUARE>checklist;
 	//配置可能な座標をvectorに
-	checklist = checkCarryInArea(stage);
+	checklist = checkCarryInArea();
 	//配置できる場所が存在しない
 	if (checklist.empty()) {
 		printf("ゴール上の荷物の配置に失敗しました。\n");
@@ -390,7 +390,7 @@ bool Level::setBoxOnGoal() {
 bool Level::setBox() {
 	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
 		//配置可能な座標をvectorに
-		std::vector<SQUARE> checklist = checkPutBox(stage);
+		std::vector<SQUARE> checklist = checkPutBox();
 		//配置できる場所が存在しない
 		if (checklist.empty()) {
 			printf("荷物の配置に失敗しました。\n");
@@ -406,7 +406,7 @@ bool Level::setBox() {
 		int x = set_square.x;
 		int y = set_square.y;
 		//詰みを作らなければ配置
-		if (!checkDeadlock(stage, x, y)) {
+		if (!checkDeadlock(x, y)) {
 			stage[y][x] = '$';
 		}
 	}
@@ -416,7 +416,7 @@ bool Level::setBox() {
 //プレイヤーを配置する
 bool Level::setPlayer() {
 	//配置可能な座標をvectorに
-	std::vector<SQUARE> checklist = checkPutPlayer(stage);
+	std::vector<SQUARE> checklist = checkPutPlayer();
 
 	//配置できる場所が存在しない
 	if (checklist.empty()) {
@@ -630,4 +630,26 @@ std::string Level::outputString() {
 	}
 
 	return line;
+}
+//ステージをstring型で入力
+void Level::inputString(std::string input) {
+	std::stringstream ss(input);
+	std::string line;
+	int counter = 0;
+	std::vector< std::vector<char> > copy_stage;
+	while (getline(ss, line, '\n'))
+	{
+		std::vector<char> temp;
+		copy_stage.push_back(temp);
+		for (unsigned int i = 0; i < line.length(); i++)
+		{
+			copy_stage[counter].push_back(line[i]);
+		}
+		counter++;
+	}
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			stage[y][x] = copy_stage[y][x];
+		}
+	}
 }
