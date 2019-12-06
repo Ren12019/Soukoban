@@ -10,9 +10,9 @@ enum SETTING {
 };
 
 enum NUMBER {
-	NUMBER_OF_BOX = 2,
+	NUMBER_OF_BOX = 1,
 	NUMBER_OF_BLOCK_TYPE = 5,
-	NUMBER_OF_GRID_VERTICAL = 2,
+	NUMBER_OF_GRID_VERTICAL = 1,
 	NUMBER_OF_GRID_HORIZONTAL = 2,
 	NUMBER_OF_GRID_TEMPLATE = 17
 };
@@ -38,6 +38,14 @@ enum DIRECTION {
 	RIGHT = 2,
 	BACK = 3,
 	LEFT = 4
+};
+
+enum DIRECTON2
+{
+	NORTH = 0,
+	EAST,
+	SOUTH,
+	WEST
 };
 
 typedef struct stagelist{

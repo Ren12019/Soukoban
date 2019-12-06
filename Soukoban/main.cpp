@@ -523,13 +523,50 @@ int main(int argc, char** argv)
 		
 		//ステージの生成
 		level.setEmptyRoom();
-
+		level.printStage();
 		//ゴールと荷物の配置を比較
 		while (!compare_end) {
 			////////////////////////////////
 			/*ステージ生成部分*/
 			////////////////////////////////
-			level.setStage();
+			//level.setStage();
+#if 1
+			while (true)
+			{
+				//ゴール上の荷物を配置
+				if (!level.setBoxOnGoal()) {
+					level.resetStage();
+					std::cout << "この形では配置できません。" << std::endl;
+					level.printStage();
+					level.setEmptyRoom();
+					continue;
+				}
+
+				break;
+			}
+			; level.printStage();
+			std::ifstream fs;
+			std::string line;
+			std::string input_level = level.outputString();//生成したステージをインプット
+
+			//初期設定
+			State init_state;//初期状態
+			SearchStat final_stat;//探索終了状態
+			//初期化
+			init_state.state_str = input_level;
+			init_state.move_list = "";
+			init_state.moves = init_state.pushes =
+				init_state.total_cost = init_state.depth =
+				init_state.hscore = 0;
+
+			/*std::cout << "生成しました" << std::endl;
+			std::cout << init_state.state_str;*/
+
+			//生成したレベルに対して幅優先探索を行う
+			final_stat = choose_search(init_state, BFSR);
+			std::cout<< final_stat.node.state_str;
+#endif
+#if 0
 			////////////////////////////////
 			/*ステージ探索部分*/
 			////////////////////////////////
@@ -563,6 +600,8 @@ int main(int argc, char** argv)
 			//人の移動回数を表示
 			std::cout << "このレベルの荷物を動かす最小回数は:" << countMovingSolution(init_state, final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2)))
 				<< std::endl;
+#endif
+
 			/////////////
 			/*比較部分*/
 			////////////
@@ -575,17 +614,33 @@ int main(int argc, char** argv)
 			//リセット
 			level.resetStage();
 
-			//3つ保存したら終了
+			//10保存したら終了
 			if (compare.size() == 3) {
 				compare_end = true;
 			}
 		}
-		//全て表示
+//全て表示
+#if 0		
 		while (!compare.empty()) {
 			std::cout << compare.front().stage;
 			compare.pop();
 		}
-
+#endif
+//一番いいものを表示
+#if 1
+		int best = 0;
+		std::string best_stage = compare.front().stage;
+		while (!compare.empty()) {
+			//pushが最大となれば更新
+			if (best < compare.front().cnt_pushes) {
+				best = compare.front().cnt_pushes;
+				best_stage = compare.front().stage;
+			}
+			//次へ
+			compare.pop();
+		}
+		std::cout << best_stage;
+#endif
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		bool valid_input = true;
 		while (valid_input)
@@ -617,8 +672,9 @@ int main(int argc, char** argv)
 			else
 				std::cout << "有効な値を入力してください。  ";
 		}
+//生成されたステージを保存するか
 #if 0
-		//生成されたステージを保存するか
+		
 		valid_input = true;
 		while (valid_input)
 		{

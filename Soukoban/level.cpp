@@ -385,12 +385,12 @@ bool Level::setGoal() {
 	checklist = checkCarryInArea(stage);
 	//配置できる場所が存在しない
 	if (checklist.empty()) {
-		printf("荷物の配置に失敗しました。\n");
+		printf("ゴールの配置に失敗しました。\n");
 		return false;
 	}
 	//配置できる場所が足りない
 	else if (checklist.size() < NUMBER_OF_BOX) {
-		printf("荷物の配置に失敗しました。\n");
+		printf("ゴールの配置に失敗しました。\n");
 		return false;
 	}
 	//リストの中からランダムに
@@ -400,6 +400,32 @@ bool Level::setGoal() {
 		int y = set_square.y;
 		if (stage[y][x] == PATH) 
 			stage[y][x] = GOAL;
+	}
+
+	return true;
+}
+//ゴールを設置する
+bool Level::setBoxOnGoal() {
+	std::vector<SQUARE>checklist;
+	//配置可能な座標をvectorに
+	checklist = checkCarryInArea(stage);
+	//配置できる場所が存在しない
+	if (checklist.empty()) {
+		printf("ゴール上の荷物の配置に失敗しました。\n");
+		return false;
+	}
+	//配置できる場所が足りない
+	else if (checklist.size() < NUMBER_OF_BOX) {
+		printf("ゴール上の荷物の配置に失敗しました。\n");
+		return false;
+	}
+	//リストの中からランダムに
+	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
+		SQUARE set_square = checklist[rand() % checklist.size()];
+		int x = set_square.x;
+		int y = set_square.y;
+		if (stage[y][x] == PATH)
+			stage[y][x] = BOX_ON_GOAL;
 	}
 
 	return true;

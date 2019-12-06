@@ -15,6 +15,7 @@ public:
 	void printStage();//ステージを表示する
 	void outputStage();//ステージをテキストファイルとして出力
 	std::string outputString();//ステージをstring型で出力
+	bool setBoxOnGoal();
 private:
 	void createEmptyRoom();//空の部屋を作る
 	void fillBlindAlley();//ステージの袋小路をつぶす
