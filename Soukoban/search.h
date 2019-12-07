@@ -10,13 +10,13 @@ enum search_mode { NONE, BFS, BFSR };
 */
 struct State
 {
-	std::string state_str;
-	std::string move_list;
-	int depth;
-	int moves;
-	int pushes;
-	int total_cost;
-	int hscore;
+	std::string state_str;//ステージの状態
+	std::string move_list;//解答経路
+	int depth;//現在の状態までの深さ
+	int moves;//
+	int pushes;//
+	int total_cost;//
+	int hscore;//
 }; //struct State
 
 /* SearchStatは検索アルゴリズム情報をカウントするために使用される。

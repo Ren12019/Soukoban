@@ -50,7 +50,7 @@ std::queue<State> gen_valid_states_reverse(const State &cur_state)
 	}
 	if (!found)
 	{
-		std::cout << "No box found on level" << std::endl;
+		std::cout << "荷物が存在しません。" << std::endl;
 		return valid_moves;
 	}
 	//全方位の移動可能個所をキューへ
@@ -475,7 +475,7 @@ std::queue<State> gen_valid_states(const State &cur_state)
 				break;
 			}
 			new_state.depth++;
-			new_state.moves++;
+			new_state.pushes++;
 			valid_moves.push(new_state);
 			break;
 		//ゴールでボックスに移動
@@ -542,7 +542,7 @@ std::queue<State> gen_valid_states(const State &cur_state)
 				break;
 			}
 			new_state.depth++;
-			new_state.moves++;
+			new_state.pushes++;
 			valid_moves.push(new_state);
 			break;
 		//壁に移動します
