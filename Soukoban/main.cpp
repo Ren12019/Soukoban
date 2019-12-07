@@ -529,6 +529,7 @@ int main(int argc, char** argv)
 		level.setEmptyRoom();
 		//使用する空の部屋を表示
 		level.printStage();
+		//ゴールが配置可能な場所を配列に収納
 		candidate = level.decisionCanditdate();
 		/*ゴールの配置を総当たり*/
 		//全てのゴールを試すまで
@@ -605,7 +606,7 @@ int main(int argc, char** argv)
 			State init_state;//初期状態
 			SearchStat final_stat;//探索終了状態
 			//test
-			std::cout << "生成したステージです。" << std::endl;
+			std::cout << "生成されたレベルです。" << std::endl;
 			std::cout << input_level;
 
 			//初期化
@@ -662,6 +663,7 @@ int main(int argc, char** argv)
 			compare.pop();
 		}
 		//最良ステージを表示
+		std::cout << "ベストな配置です。" << std::endl;
 		std::cout << best_stage;
 		if (best != 0) {
 			std::cout << "最短解答手数は " << best << std::endl;
