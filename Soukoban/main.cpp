@@ -544,12 +544,12 @@ int main(int argc, char** argv)
 				//配置できる場所が存在しない
 				if (candidate.empty()) {
 					//printf("配置できる場所が存在しません。\n");
-					continue;//終了
+					break;//終了
 				}
 				//配置できる場所が足りない
 				else if (candidate.size() + cnt_box < NUMBER_OF_BOX) {
 					//printf("配置できる場所が足りません。\n");
-					continue;//終了
+					break;//終了
 				}
 				//座標の決定
 				int num = rand() % candidate.size();
@@ -657,6 +657,7 @@ int main(int argc, char** argv)
 			//次へ
 			compare.pop();
 		}
+		//最良ステージを表示
 		std::cout << best_stage;
 		std::cout << "最短解答手数は " << best << std::endl;
 #endif
@@ -669,6 +670,41 @@ int main(int argc, char** argv)
 		std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		bool valid_input = true;
+		//生成されたステージを保存するか
+#if 1
+		while (valid_input)
+		{
+			std::string usr_input;
+			std::cout << "このレベルを保存しますか?[y/n]: ";
+			std::cin >> usr_input;
+			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
+			if (usr_input == "y")
+			{
+				level.inputString(best_stage);
+				level.outputStage();
+				valid_input = false;
+			}
+			else if (usr_input == "Y")
+			{
+				level.inputString(best_stage);
+				level.outputStage();
+				valid_input = false;
+			}
+			else if (usr_input == "n")
+			{
+				valid_input = false;
+			}
+			else if (usr_input == "N")
+			{
+				valid_input = false;
+			}
+			else
+				std::cout << "有効な値を入力してください。  ";
+		}
+		valid_input = true;
+
+#endif
+		//繰り返し機能を利用するか
 		while (valid_input)
 		{
 			std::string usr_input;
@@ -698,38 +734,6 @@ int main(int argc, char** argv)
 			else
 				std::cout << "有効な値を入力してください。  ";
 		}
-		//生成されたステージを保存するか
-#if 0
-
-		valid_input = true;
-		while (valid_input)
-		{
-			std::string usr_input;
-			std::cout << "このレベルを保存しますか?[y/n]: ";
-			std::cin >> usr_input;
-			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
-			if (usr_input == "y")
-			{
-				level.outputStage();
-				valid_input = false;
-			}
-			else if (usr_input == "Y")
-			{
-				level.outputStage();
-				valid_input = false;
-			}
-			else if (usr_input == "n")
-			{
-				valid_input = false;
-			}
-			else if (usr_input == "N")
-			{
-				valid_input = false;
-			}
-			else
-				std::cout << "有効な値を入力してください。  ";
-		}
-#endif
 	}
 
 	return 0;
