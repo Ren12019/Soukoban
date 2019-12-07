@@ -688,11 +688,11 @@ SearchStat choose_search(State &init_state, int search_choice)
 		std::cout << "    "
 			<< final_stat.node.move_list.substr(0, (final_stat.node.move_list.size() - 2))
 			<< std::endl;
-		std::cout << "    # 生成したノード数: ";
+		std::cout << "    # 生成した有効ノード数: ";
 		std::cout << final_stat.node_count << std::endl;
-		std::cout << "    # of duplicate states generated: ";
+		std::cout << "    # 生成した総ノード数: ";
 		std::cout << final_stat.rep_node_count << std::endl;
-		std::cout << "    # of fringe nodes when termination occured: ";
+		std::cout << "    # 解答発見時に未探索の有効ノード数: ";
 		std::cout << final_stat.fringe_node << std::endl;
 		std::cout << "    # 探索したノード数: ";
 		std::cout << final_stat.explored_count << std::endl;
