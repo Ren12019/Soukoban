@@ -580,7 +580,7 @@ SearchStat bfs(State &initial_state)
 	report.fringe_node = 0;
 	report.explored_count = 1;//will be replaced, just to stop cout spam
 	report.node_count = 1;
-	report.node.state_str = "NULL";
+	report.node.state_str = "NULL\n";
 	State current_state;
 
 	//最初の状態をキューにプッシュします

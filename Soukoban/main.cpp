@@ -509,10 +509,8 @@ struct Evaluation {
 
 int main(int argc, char** argv)
 {
-	//test
-	srand(2);
 	//初期設定
-	//srand((unsigned int)time(NULL));//乱数設定
+	srand((unsigned int)time(NULL));//乱数設定
 	bool repeat = true;
 	
 	// whileループを使用して生成と検索アルゴリズムを繰り返します
@@ -588,6 +586,10 @@ int main(int argc, char** argv)
 					create_box = true;
 				}
 			}
+			if (create_finish_stat.node.state_str == "NULL\n") {
+				continue;
+			}
+
 			////////////////////////////////
 			/*ステージ探索部分*/
 			////////////////////////////////
@@ -649,7 +651,7 @@ int main(int argc, char** argv)
 		/*比較部分*/
 		////////////////////////////////
 		int best = 0;
-		std::string best_stage = compare.front().stage;
+		std::string best_stage = "この空の部屋では生成できません\n";
 		while (!compare.empty()) {
 			//pushが最大となれば更新
 			if (best < compare.front().cnt_pushes) {
@@ -661,12 +663,14 @@ int main(int argc, char** argv)
 		}
 		//最良ステージを表示
 		std::cout << best_stage;
-		std::cout << "最短解答手数は " << best << std::endl;
+		if (best != 0) {
+			std::cout << "最短解答手数は " << best << std::endl;
+		}
 #endif
 		//生成時間
 		long long sec, nanosec;
 		timespec_get(&end, TIME_UTC);
-		std::cout << "  生成時間: ";
+		std::cout << "  所要時間: ";
 		sec = end.tv_sec - start.tv_sec;
 		nanosec = end.tv_nsec - start.tv_nsec;
 		std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
