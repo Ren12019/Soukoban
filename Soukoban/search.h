@@ -13,9 +13,9 @@ struct State
 	std::string state_str;//ステージの状態
 	std::string move_list;//解答経路
 	int depth;//現在の状態までの深さ
-	int moves;//
-	int pushes;//
-	int total_cost;//
+	int moves;//アバターの移動回数
+	int pushes;//荷物を押した回数
+	int total_cost;//距離
 	int hscore;//
 }; //struct State
 

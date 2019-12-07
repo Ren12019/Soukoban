@@ -581,7 +581,7 @@ int main(int argc, char** argv)
 					level.resetStage();
 					cnt_box = 0;
 				}
-
+				//配置数が規定に達したか判定
 				if (cnt_box == NUMBER_OF_BOX) {
 					create_box = true;
 				}

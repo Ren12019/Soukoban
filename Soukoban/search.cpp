@@ -138,6 +138,7 @@ SearchStat bfs_reverse(State &initial_state)
 	report.node_count = 1;
 	report.node.state_str = "NULL\n";
 	State current_state;
+	std::queue<State> list;//比較用キュー
 
 	//最初の状態をキューにプッシュします
 	open.push_back(initial_state);
@@ -149,18 +150,14 @@ SearchStat bfs_reverse(State &initial_state)
 		open.pop_front();
 		// NをCLOSEDにプッシュします
 		closed.push_back(current_state); //探索済み
+		/*テスト*/list.push(current_state);
+
 		//時間がかかった場合に出力し、フリーズしたかどうか確認する
 		if ((closed.size() % 5000) == 0)
 			std::cout << "...explored " << closed.size() << " nodes..." << std::endl;
 
 		//有効な状態を生成します
 		std::queue<State> valid_states = gen_valid_states_reverse(current_state);
-
-		if (valid_states.empty()) {
-			report.node = current_state;
-			report.explored_count = (int)closed.size();
-			break;
-		}
 
 		std::deque<State>::iterator it;
 		std::vector<State>::iterator itr;
@@ -201,6 +198,16 @@ SearchStat bfs_reverse(State &initial_state)
 			valid_states.pop();
 		}
 	}
+	//最良を収納
+	int best = 0;
+	while (!list.empty()) {
+		if (best < list.front().moves) {
+			best = list.front().moves;
+			report.node = list.front();
+		}
+		list.pop();
+	}
+	report.explored_count = (int)closed.size();
 	report.fringe_node = (int)open.size();
 	return report;
 } //SearchStat bfs(State &initial_state)
