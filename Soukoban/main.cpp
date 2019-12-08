@@ -13,8 +13,9 @@
 //レベルの評価用
 struct Evaluation {
 	std::string stage;//ステージの内容
-	int cnt_pushes;//クリアするのに必要な荷物を押す回数
-	int cnt_switching_box;//クリアするのに必要な荷物を押す回数
+	int pushes;//クリアするのに必要な荷物を押す回数
+	int moves;//クリアするのに必要なアバターの移動回数
+	int switching_box;//クリアするのに必要な荷物を押す回数
 };
 //座標の組み合わせをリスト化
 std::queue<std::vector<SQUARE>>createListCandidate(const std::vector<SQUARE> candidate) {
@@ -219,7 +220,8 @@ int main(int argc, char** argv)
 			/*比較用に保存*/
 			Evaluation cur_state;
 			cur_state.stage = init_state.state_str;//レベル
-			cur_state.cnt_pushes =final_stat.node.pushes;//プッシュ
+			cur_state.pushes =final_stat.node.pushes;//プッシュ
+			cur_state.moves = final_stat.node.moves;//ムーブ
 			//配列にレベルと評価を保存
 			compare.push(cur_state);
 			//リセット
@@ -241,8 +243,8 @@ int main(int argc, char** argv)
 		std::string best_stage = "この空の部屋では生成できません\n";
 		while (!compare.empty()) {
 			//pushが最大となれば更新
-			if (best < compare.front().cnt_pushes) {
-				best = compare.front().cnt_pushes;
+			if (best < compare.front().pushes) {
+				best = compare.front().pushes;
 				best_stage = compare.front().stage;
 			}
 			//次へ
