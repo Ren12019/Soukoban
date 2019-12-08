@@ -101,7 +101,8 @@ int main(int argc, char** argv)
 		//初期設定
 		Level level;
 		std::queue<Evaluation> compare;//レベルの評価用
-		std::vector<SQUARE> candidate;
+		std::vector<SQUARE> candidate;//ゴールの候補地のキュー
+		std::queue<std::vector<SQUARE>>list_cand;//ゴールの候補地の組み合わせのリスト
 		timespec start, end;
 		//時間計測開始
 		timespec_get(&start, TIME_UTC);
@@ -114,11 +115,11 @@ int main(int argc, char** argv)
 		level.printStage();
 		//ゴールが配置可能な場所を配列に収納
 		candidate = level.decisionCanditdate();
-		//test
-		printList(createListCandidate(candidate));
+		//配置可能な場所の組み合わせをリスト化
+		list_cand = createListCandidate(candidate);
 		/*ゴールの配置を総当たり*/
 		//全てのゴールを試すまで
-		while (!candidate.empty() && candidate.size() >= NUMBER_OF_BOX) {
+		while (!list_cand.empty() && list_cand.front().size() >= NUMBER_OF_BOX) {
 			//初期設定
 			State create_start_stat;//初期状態
 			SearchStat create_finish_stat;//探索終了状態
@@ -128,23 +129,21 @@ int main(int argc, char** argv)
 			//規定数配置し終わるまで
 			while (!create_box) {
 				//配置できる場所が存在しない
-				if (candidate.empty()) {
+				if (list_cand.empty()) {
 					//printf("配置できる場所が存在しません。\n");
 					break;//終了
 				}
 				//配置できる場所が足りない
-				else if (candidate.size() + cnt_box < NUMBER_OF_BOX) {
+				else if (list_cand.front().size()< NUMBER_OF_BOX) {
 					//printf("配置できる場所が足りません。\n");
 					break;//終了
 				}
 				//座標の決定
-				int num = rand() % candidate.size();
-				SQUARE set_square = candidate[num];
-				int x = set_square.x;
-				int y = set_square.y;
+				//int num = rand() % candidate.size();
+				SQUARE set_square = list_cand.front()[cnt_box];
 				//ゴール上の荷物を配置
 				level.setBoxOnGoal(set_square);
-				candidate.erase(candidate.begin() + num);
+				//candidate.erase(candidate.begin() + num);
 				//生成したステージをインプット
 				input_level = level.outputString();
 
@@ -164,12 +163,14 @@ int main(int argc, char** argv)
 				}
 				//失敗なら次の組み合わせへ
 				else {
+					list_cand.pop();
 					level.resetStage();
 					cnt_box = 0;
 				}
 				//配置数が規定に達したか判定
 				if (cnt_box == NUMBER_OF_BOX) {
 					create_box = true;
+					list_cand.pop();
 				}
 			}
 			if (create_finish_stat.node.state_str == "NULL\n") {
