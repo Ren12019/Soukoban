@@ -3,6 +3,8 @@
 #include <time.h>
 #include <fstream>
 #include <sstream>
+#include <vector>
+#include <queue>
 
 #include "define.h"
 #include "level.h"
@@ -14,6 +16,79 @@ struct Evaluation {
 	int cnt_pushes;//クリアするのに必要な荷物を押す回数
 	int cnt_switching_box;//クリアするのに必要な荷物を押す回数
 };
+//座標の組み合わせをリスト化
+std::queue<std::vector<SQUARE>>createListCandidate(const std::vector<SQUARE> candidate) {
+	std::queue<SQUARE> que_cand;//読み取り用
+	std::queue < std::vector<SQUARE>> list_cand;//座標の組み合わせリスト
+	//選択用にキューへ
+	for (unsigned int i = 0; i < candidate.size(); i++) {
+		que_cand.push(candidate[i]);
+	}
+	//選出
+	for (unsigned int i = 0; i < candidate.size(); i++) {
+		SQUARE first = que_cand.front();
+		que_cand.pop();
+		std::queue <SQUARE> copy_cand = que_cand;
+		switch(NUMBER_OF_BOX) {
+		case 1: {
+			std::vector<SQUARE>set;
+			//1つ目の座標
+			set.push_back(first);
+			list_cand.push(set);
+			break;
+		}
+		case 2: {
+			while (!copy_cand.empty()) {
+				std::vector<SQUARE>set;
+				//1つ目の座標
+				set.push_back(first);
+				//2つ目の座標
+				set.push_back(copy_cand.front());
+				copy_cand.pop();
+				list_cand.push(set);
+			}
+			break;
+		}
+		case 3: {
+			while (!copy_cand.empty()) {
+				std::vector<SQUARE>set;
+				set.push_back(first);
+				SQUARE second = copy_cand.front();
+				copy_cand.pop();
+				std::queue <SQUARE> copy_copy_cand = copy_cand;
+				while (!copy_copy_cand.empty()) {
+					std::vector<SQUARE>set;
+					//1つ目の座標
+					set.push_back(first);
+					//2つ目の座標
+					set.push_back(second);
+					//3つ目の座標
+					set.push_back(copy_copy_cand.front());
+					copy_copy_cand.pop();
+					list_cand.push(set);
+				}
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	return list_cand;
+}
+
+void printList(std::queue<std::vector<SQUARE>>list) {
+	int count = 1;
+	while (!list.empty()) {
+		std::cout << count << std::endl;
+		for (unsigned int i = 0; i < list.front().size(); i++) {
+			std::cout << "(" << list.front()[i].y << "," << list.front()[i].x << ")" << std::endl;
+		}
+		list.pop();
+		count++;
+	}
+}
 
 int main(int argc, char** argv)
 {
@@ -39,6 +114,8 @@ int main(int argc, char** argv)
 		level.printStage();
 		//ゴールが配置可能な場所を配列に収納
 		candidate = level.decisionCanditdate();
+		//test
+		printList(createListCandidate(candidate));
 		/*ゴールの配置を総当たり*/
 		//全てのゴールを試すまで
 		while (!candidate.empty() && candidate.size() >= NUMBER_OF_BOX) {
