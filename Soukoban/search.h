@@ -15,8 +15,8 @@ struct State
 	int depth;//現在の状態までの深さ
 	int moves;//アバターの移動回数
 	int pushes;//荷物を押した回数
-	int total_cost;//距離
-	int hscore;//
+	int push_lines;//荷物移動のライン数
+	int push_direction;//最後に荷物を押した方向
 }; //struct State
 
 /* SearchStatは検索アルゴリズム情報をカウントするために使用される。

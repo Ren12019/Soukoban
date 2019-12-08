@@ -15,7 +15,7 @@ struct Evaluation {
 	std::string stage;//ステージの内容
 	int pushes;//クリアするのに必要な荷物を押す回数
 	int moves;//クリアするのに必要なアバターの移動回数
-	int switching_box;//クリアするのに必要な荷物を押す回数
+	int change_lines;//クリアするのに必要な荷物を押す回数
 };
 //座標の組み合わせをリスト化
 std::queue<std::vector<SQUARE>>createListCandidate(const std::vector<SQUARE> candidate) {
@@ -152,8 +152,8 @@ int main(int argc, char** argv)
 				create_start_stat.state_str = input_level;
 				create_start_stat.move_list = "";
 				create_start_stat.moves = create_start_stat.pushes =
-					create_start_stat.total_cost = create_start_stat.depth =
-					create_start_stat.hscore = 0;
+					create_start_stat.push_lines = create_start_stat.depth =
+					create_start_stat.push_direction = 0;
 
 				//生成したレベルに対して逆に幅優先探索を行う
 				create_finish_stat = choose_search(create_start_stat, BFSR);
@@ -200,8 +200,8 @@ int main(int argc, char** argv)
 			init_state.state_str = input_level;
 			init_state.move_list = "";
 			init_state.moves = init_state.pushes =
-				init_state.total_cost = init_state.depth =
-				init_state.hscore = 0;
+				init_state.push_lines = init_state.depth =
+				init_state.push_direction = 0;
 
 			//生成したレベルに対して幅優先探索を行う
 			final_stat = choose_search(init_state, BFS);
@@ -222,6 +222,7 @@ int main(int argc, char** argv)
 			cur_state.stage = init_state.state_str;//レベル
 			cur_state.pushes =final_stat.node.pushes;//プッシュ
 			cur_state.moves = final_stat.node.moves;//ムーブ
+			cur_state.change_lines = final_stat.node.push_lines;//移動の方向転換
 			//配列にレベルと評価を保存
 			compare.push(cur_state);
 			//リセット
@@ -239,22 +240,32 @@ int main(int argc, char** argv)
 		////////////////////////////////
 		/*比較部分*/
 		////////////////////////////////
-		int best = 0;
+		int best_value = 0;
+		int best_pushes = 0;
+		int best_moves = 0;
+		int best_chages = 0;
 		std::string best_stage = "この空の部屋では生成できません\n";
 		while (!compare.empty()) {
+			int value_level = compare.front().pushes + compare.front().moves + compare.front().change_lines;
 			//pushが最大となれば更新
-			if (best < compare.front().pushes) {
-				best = compare.front().pushes;
+			if (best_value < value_level) {
+				best_value = value_level;
 				best_stage = compare.front().stage;
+				best_pushes = compare.front().pushes;
+				best_moves = compare.front().moves;
+				best_chages = compare.front().change_lines;
 			}
 			//次へ
 			compare.pop();
 		}
 		//最良ステージを表示
-		if (best != 0) {
+		if (best_value != 0) {
 			std::cout << "ベストな配置です。" << std::endl;
 			std::cout << best_stage;
-			std::cout << "最短解答手数は " << best << std::endl;
+			std::cout << "評価値は " << best_value << std::endl;
+			std::cout << "最短解答手数は " << best_pushes << std::endl;
+			std::cout << "最短移動回数は " << best_moves + best_pushes << std::endl;
+			std::cout << "最短方向転換数は " << best_chages << std::endl;
 		}
 		else {
 			std::cout << best_stage;
