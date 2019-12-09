@@ -10,7 +10,7 @@
 #include <fstream>
 #include "define.h"
 
-enum direction { NORTH = 1, EAST, SOUTH, WEST };
+enum direction { NORTH = 0, EAST, SOUTH, WEST };
 
 //クリア状態から遠ざける
 std::queue<State> gen_valid_states_reverse(const State &cur_state)
@@ -468,19 +468,19 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			{
 			case NORTH:
 				new_state.move_list.append("u, ");
-				new_state.push_direction = NORTH;
+				new_state.push_direction = NORTH + 1;
 				break;
 			case EAST:
 				new_state.move_list.append("r, ");
-				new_state.push_direction = EAST;
+				new_state.push_direction = EAST + 1;
 				break;
 			case SOUTH:
 				new_state.move_list.append("d, ");
-				new_state.push_direction = SOUTH;
+				new_state.push_direction = SOUTH + 1;
 				break;
 			case WEST:
 				new_state.move_list.append("l, ");
-				new_state.push_direction = WEST;
+				new_state.push_direction = WEST + 1;
 				break;
 			default:
 				break;
@@ -542,19 +542,19 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			{
 			case NORTH:
 				new_state.move_list.append("u, ");
-				new_state.push_direction = NORTH;
+				new_state.push_direction = NORTH + 1;
 				break;
 			case EAST:
 				new_state.move_list.append("r, ");
-				new_state.push_direction = EAST;
+				new_state.push_direction = EAST + 1;
 				break;
 			case SOUTH:
 				new_state.move_list.append("d, ");
-				new_state.push_direction = SOUTH;
+				new_state.push_direction = SOUTH + 1;
 				break;
 			case WEST:
 				new_state.move_list.append("l, ");
-				new_state.push_direction = WEST;
+				new_state.push_direction = WEST + 1;
 				break;
 			default:
 				break;

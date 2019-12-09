@@ -94,7 +94,9 @@ void printList(std::queue<std::vector<SQUARE>>list) {
 int main(int argc, char** argv)
 {
 	//初期設定
-	srand((unsigned int)time(NULL));//乱数設定
+	srand(6);//乱数設定test
+
+	//srand((unsigned int)time(NULL));//乱数設定
 	bool repeat = true;
 	
 	// whileループを使用して生成と検索アルゴリズムを繰り返します
