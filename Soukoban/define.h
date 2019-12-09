@@ -10,21 +10,10 @@ enum setting {
 };
 
 enum number {
-	NUMBER_OF_BOX = 1,
+	NUMBER_OF_BOX = 2,
 	NUMBER_OF_GRID_VERTICAL = 2,
-	NUMBER_OF_GRID_HORIZONTAL = 2,
+	NUMBER_OF_GRID_HORIZONTAL = 3,
 	NUMBER_OF_GRID_TEMPLATE = 17
-};
-
-enum block_type {
-	WALL = -1,
-	MAN = 1,
-	MAN_ON_GOAL = 3,
-	BOX = 5,
-	BOX_ON_GOAL = 7,
-	GOAL = 2,
-	PATH = 0,
-	CHECK = 10
 };
 
 enum definition {
