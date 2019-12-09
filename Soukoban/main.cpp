@@ -131,16 +131,13 @@ int main(int argc, char** argv)
 			while (!create_box) {
 				//配置できる場所が存在しない
 				if (list_cand.empty()) {
-					//printf("配置できる場所が存在しません。\n");
 					break;//終了
 				}
 				//配置できる場所が足りない
 				else if (list_cand.front().size()< NUMBER_OF_BOX) {
-					//printf("配置できる場所が足りません。\n");
 					break;//終了
 				}
 				//座標の決定
-				//int num = rand() % candidate.size();
 				SQUARE set_square = list_cand.front()[cnt_box];
 				//ゴール上の荷物を配置
 				if (!level.setBoxOnGoal(set_square)) {
@@ -150,7 +147,6 @@ int main(int argc, char** argv)
 					cnt_box = 0;
 					break;
 				}
-				//candidate.erase(candidate.begin() + num);
 				//生成したステージをインプット
 				input_level = level.outputString();
 
