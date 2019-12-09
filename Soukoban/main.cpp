@@ -94,9 +94,7 @@ void printList(std::queue<std::vector<SQUARE>>list) {
 int main(int argc, char** argv)
 {
 	//初期設定
-	srand(6);//乱数設定test
-
-	//srand((unsigned int)time(NULL));//乱数設定
+	srand((unsigned int)time(NULL));//乱数設定
 	bool repeat = true;
 	
 	// whileループを使用して生成と検索アルゴリズムを繰り返します
@@ -163,10 +161,37 @@ int main(int argc, char** argv)
 					create_start_stat.push_lines = create_start_stat.depth =
 					create_start_stat.push_direction = 0;
 
-				//生成したレベルに対して逆に幅優先探索を行う
-				create_finish_stat = choose_search(create_start_stat, BFSR);
+				//一次的に荷物を壁に
+				if (cnt_box != 0) {
+					//荷物を見つけ壁に置き換え
+					std::queue<SQUARE>pos_box;
+					SQUARE pos_instant;//キューへプッシュ用
+					for (unsigned int i = 0; i < create_start_stat.state_str.size(); i++) {
+						if (create_start_stat.state_str[i] == '$') {
+							create_start_stat.state_str[i] = '#';
+							pos_instant.x = i % (WIDTH + 1);
+							pos_instant.y = i / (WIDTH + 1);
+							pos_box.push(pos_instant);
+						}
+					}
+					//生成したレベルに対して逆に幅優先探索を行う
+					create_finish_stat = choose_search(create_start_stat, BFSR);
+					if (create_finish_stat.node.state_str != "NULL\n") {
+						//壁を荷物に戻す
+						while (!pos_box.empty()) {
+							unsigned int i = pos_box.front().y*(WIDTH + 1) + pos_box.front().x;
+							create_finish_stat.node.state_str[i] = '$';
+							pos_box.pop();
+						}
+					}
+				}
+				else {
+					//生成したレベルに対して逆に幅優先探索を行う
+					create_finish_stat = choose_search(create_start_stat, BFSR);
+				}
+
 				//盤面に変更がありNULLでないとき配置成功
-				if (create_finish_stat.node.state_str != create_start_stat.state_str && create_finish_stat.node.state_str != "NULL\n") {
+				if (create_finish_stat.node.state_str != input_level && create_finish_stat.node.state_str != "NULL\n") {
 					cnt_box++;//配置数をカウント
 					level.inputString(create_finish_stat.node.state_str);//ステージを更新
 				}
