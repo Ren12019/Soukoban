@@ -406,11 +406,15 @@ bool Level::setBoxOnGoal() {
 #endif
 	return true;
 }
-void Level::setBoxOnGoal(SQUARE set_pos) {
+bool Level::setBoxOnGoal(SQUARE set_pos) {
 	int x = set_pos.x;
 	int y = set_pos.y;
-	if (stage[y][x] == ' ')
+	if (stage[y][x] == ' ') {
 		stage[y][x] = '*';
+		return true;
+	}
+
+	return false;
 }
 //‰×•¨‚ğİ’u‚·‚é
 bool Level::setBox() {

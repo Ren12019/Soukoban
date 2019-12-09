@@ -19,7 +19,7 @@ public:
 	std::string outputString();//ステージをstring型で出力
 	void inputString(std::string);//ステージをstring型で入力
 	bool setBoxOnGoal();
-	void setBoxOnGoal(SQUARE);
+	bool setBoxOnGoal(SQUARE);
 	bool setPlayer();//ステージにプレイヤーを配置する
 	std::vector<SQUARE> decisionCanditdate();//ゴールが置ける場所をキューする
 private:

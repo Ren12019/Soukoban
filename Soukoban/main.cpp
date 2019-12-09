@@ -145,7 +145,13 @@ int main(int argc, char** argv)
 				//int num = rand() % candidate.size();
 				SQUARE set_square = list_cand.front()[cnt_box];
 				//ゴール上の荷物を配置
-				level.setBoxOnGoal(set_square);
+				if (!level.setBoxOnGoal(set_square)) {
+					//配置に失敗
+					list_cand.pop();
+					level.resetStage();
+					cnt_box = 0;
+					break;
+				}
 				//candidate.erase(candidate.begin() + num);
 				//生成したステージをインプット
 				input_level = level.outputString();
@@ -177,6 +183,9 @@ int main(int argc, char** argv)
 				}
 			}
 			if (create_finish_stat.node.state_str == "NULL\n") {
+				continue;
+			}
+			else if (!create_box) {
 				continue;
 			}
 
