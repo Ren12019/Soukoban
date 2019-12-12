@@ -176,6 +176,11 @@ int main(int argc, char** argv)
 		level.setEmptyRoom();
 		//使用する空の部屋を表示
 		level.printStage();
+		if (level.checkLargeSpace()) {
+			std::cout << "広すぎ" << std::endl;
+			return 0;
+		}
+		std::cout << "OK" << std::endl;
 		//ゴールが配置可能な場所を配列に収納
 		candidate = level.decisionCanditdate();
 #if 0

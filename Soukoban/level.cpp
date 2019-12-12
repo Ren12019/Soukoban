@@ -683,3 +683,65 @@ void Level::inputString(std::string input) {
 		}
 	}
 }
+//無駄な空間の確認
+bool Level::checkLargeSpace() {
+	//bool check_space = false;
+	//幅と高さを計測
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			//スペースを探索
+			if (stage[y][x] == ' ') {
+				//3*4
+				//スペースのみの長方形であるか
+				for (int cnt_y = 0; cnt_y < 4; cnt_y++) {
+					int h = y + cnt_y;
+					if (h >= HEIGHT) {
+						break;
+					}
+					int w;
+					for (int cnt_x = 0; cnt_x < 3; cnt_x++) {
+						w = x + cnt_x;
+						if (w >= WIDTH) {
+							break;
+						}
+						if (stage[h][w] == '#') {
+							break;
+						}
+						else if (w == x + 2 && h == y + 3) {
+							return true;
+						}
+					}
+					if (stage[h][w] == '#') {
+						break;
+					}
+				}
+				//4*3
+				//計測した幅と高さの空間がスペースのみの長方形であるか
+				for (int cnt_y = 0; cnt_y < 3; cnt_y++) {
+					int h = y + cnt_y;
+					if (h >= HEIGHT) {
+						break;
+					}
+					int w;
+					for (int cnt_x = 0; cnt_x < 4; cnt_x++) {
+						w = x + cnt_x;
+						if (w >= WIDTH) {
+							break;
+						}
+						if (stage[h][w] == '#') {
+							break;
+						}
+						else if (w == x + 3 && h == y + 2) {
+							return true;
+						}
+					}
+					if (stage[h][w] == '#') {
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	return false;
+}
