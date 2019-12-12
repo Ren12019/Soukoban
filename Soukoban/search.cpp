@@ -345,9 +345,9 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			new_state = cur_state;
 			new_state.state_str = "";
 			// vector <vector <char >>を文字列に戻す
-			for (unsigned int i = 0; i < new_stage.size(); i++)
+			for (unsigned int j = 0; j < new_stage.size(); j++)
 			{
-				std::vector<char> temp = new_stage[i];
+				std::vector<char> temp = new_stage[j];
 				std::vector<char>::iterator itr;
 				for (itr = temp.begin(); itr != temp.end(); itr++)
 					new_state.state_str.push_back(*itr);
@@ -387,9 +387,9 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			new_state = cur_state;
 			new_state.state_str = "";
 			// vector <vector <char >>を文字列に戻す
-			for (unsigned int i = 0; i < new_stage.size(); i++)
+			for (unsigned int j = 0; j < new_stage.size(); j++)
 			{
-				std::vector<char> temp = new_stage[i];
+				std::vector<char> temp = new_stage[j];
 				std::vector<char>::iterator itr;
 				for (itr = temp.begin(); itr != temp.end(); itr++)
 					new_state.state_str.push_back(*itr);
@@ -454,9 +454,9 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			new_state = cur_state;
 			new_state.state_str = "";
 			// vector <vector <char >>を文字列に戻す
-			for (unsigned int i = 0; i < new_stage.size(); i++)
+			for (unsigned int j = 0; j < new_stage.size(); j++)
 			{
-				std::vector<char> temp = new_stage[i];
+				std::vector<char> temp = new_stage[j];
 				std::vector<char>::iterator itr;
 				for (itr = temp.begin(); itr != temp.end(); itr++)
 					new_state.state_str.push_back(*itr);
@@ -528,9 +528,9 @@ std::queue<State> gen_valid_states(const State &cur_state)
 			new_state = cur_state;
 			new_state.state_str = "";
 			// vector <vector <char >>を文字列に戻す
-			for (unsigned int i = 0; i < new_stage.size(); i++)
+			for (unsigned int j = 0; j < new_stage.size(); j++)
 			{
-				std::vector<char> temp = new_stage[i];
+				std::vector<char> temp = new_stage[j];
 				std::vector<char>::iterator itr;
 				for (itr = temp.begin(); itr != temp.end(); itr++)
 					new_state.state_str.push_back(*itr);
