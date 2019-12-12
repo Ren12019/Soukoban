@@ -148,11 +148,12 @@ int main(int argc, char** argv)
 	srand((unsigned int)time(NULL));//乱数設定
 	bool repeat = true;
 	
-	// whileループを使用して生成と検索アルゴリズムを繰り返します
+	// 生成と検索アルゴリズムを繰り返します
 	while (repeat){
 		//初期設定
 		Level level;
 		std::queue<Evaluation> compare;//レベルの評価用
+		std::queue<Evaluation> better_level;//レベルの評価用
 		std::vector<SQUARE> candidate;//ゴールの候補地のキュー
 		timespec start, end;
 		//時間計測開始
@@ -465,10 +466,19 @@ int main(int argc, char** argv)
 						cur_state.moves = final_stat.node.moves;//ムーブ
 						cur_state.change_lines = final_stat.node.push_lines;//移動の方向転換
 						//配列にレベルと評価を保存
-						compare.push(cur_state);
+						better_level.push(cur_state);
 						break;//終了
 					}
 				}
+			}
+			else {
+				Evaluation cur_state;
+				cur_state.stage = init_state.state_str;//レベル
+				cur_state.pushes = final_stat.node.pushes;//プッシュ
+				cur_state.moves = final_stat.node.moves;//ムーブ
+				cur_state.change_lines = final_stat.node.push_lines;//移動の方向転換
+				//配列にレベルと評価を保存
+				compare.push(cur_state);
 			}
 			
 			//リセット
@@ -492,22 +502,36 @@ int main(int argc, char** argv)
 		int best_moves = 0;
 		int best_chages = 0;
 		std::string best_stage = "この空の部屋では生成できません\n";
-		while (!compare.empty()) {
-			int value_level = compare.front().pushes + compare.front().moves + compare.front().change_lines;
-			//pushが最大となれば更新
-			if (best_value < value_level) {
-				best_value = value_level;
-				best_stage = compare.front().stage;
-				best_pushes = compare.front().pushes;
-				best_moves = compare.front().moves;
-				best_chages = compare.front().change_lines;
-			}
-			//次へ
-			compare.pop();
+		if (!better_level.empty()) {
+			int value_level = better_level.front().pushes + better_level.front().moves + better_level.front().change_lines;
+			best_value = value_level;
+			best_stage = better_level.front().stage;
+			best_pushes = better_level.front().pushes;
+			best_moves = better_level.front().moves;
+			best_chages = better_level.front().change_lines;
+			std::cout << "基準を超えるレベルが見つかりました。" << std::endl;
 		}
+		else
+		{
+			while (!compare.empty()) {
+				int value_level = compare.front().pushes + compare.front().moves + compare.front().change_lines;
+				//pushが最大となれば更新
+				if (best_value < value_level) {
+					best_value = value_level;
+					best_stage = compare.front().stage;
+					best_pushes = compare.front().pushes;
+					best_moves = compare.front().moves;
+					best_chages = compare.front().change_lines;
+				}
+				//次へ
+				compare.pop();
+			}
+			std::cout << "基準を超えるレベルは見つかりませんでした。" << std::endl;
+			std::cout << "ベストなレベルを表示します。" << std::endl;
+		}
+		
 		//最良ステージを表示
 		if (best_value != 0) {
-			std::cout << "ベストな配置です。" << std::endl;
 			std::cout << best_stage;
 			std::cout << "評価値は " << best_value << std::endl;
 			std::cout << "最短解答手数は " << best_pushes << std::endl;
