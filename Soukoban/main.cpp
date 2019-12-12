@@ -10,8 +10,8 @@
 #include "level.h"
 #include "search.h"
 
+//問題評価の基準点数
 enum Border { MOVES = 18, PUSHES = 8, LINES = 4, TOTAL_VAL = 30 };
-
 //レベルの評価用
 struct Evaluation {
 	std::string stage;//ステージの内容
@@ -142,18 +142,6 @@ std::vector<std::vector<SQUARE>>createListCandidateVector(const std::vector<SQUA
 	return list_cand;
 }
 
-void printList(std::queue<std::vector<SQUARE>>list) {
-	int count = 1;
-	while (!list.empty()) {
-		std::cout << count << std::endl;
-		for (unsigned int i = 0; i < list.front().size(); i++) {
-			std::cout << "(" << list.front()[i].y << "," << list.front()[i].x << ")" << std::endl;
-		}
-		list.pop();
-		count++;
-	}
-}
-
 int main(int argc, char** argv)
 {
 	//初期設定
@@ -174,13 +162,12 @@ int main(int argc, char** argv)
 		////////////////////////////////
 		/*空の部屋の生成*/
 		level.setEmptyRoom();
+		//広すぎる場合は再作成
+		while (level.checkLargeSpace()) {
+			level.setEmptyRoom();
+		}
 		//使用する空の部屋を表示
 		level.printStage();
-		if (level.checkLargeSpace()) {
-			std::cout << "広すぎ" << std::endl;
-			return 0;
-		}
-		std::cout << "OK" << std::endl;
 		//ゴールが配置可能な場所を配列に収納
 		candidate = level.decisionCanditdate();
 #if 0
@@ -540,8 +527,8 @@ int main(int argc, char** argv)
 		std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
 		//ユーザーが繰り返しの有効な選択肢を選択するために使用されるwhileループ
 		bool valid_input = true;
-		//生成されたステージを保存するか
-#if 0
+		/*生成されたステージを保存するか*/
+#if 1
 		while (valid_input)
 		{
 			std::string usr_input;
