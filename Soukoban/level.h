@@ -22,7 +22,6 @@ public:
 	bool setBoxOnGoal(SQUARE);
 	bool setPlayer();//ステージにプレイヤーを配置する
 	std::vector<SQUARE> decisionCanditdate();//ゴールが置ける場所をキューする
-	bool checkLargeSpace();//無駄に広い空間が存在するか確認する
 private:
 	void createEmptyRoom();//空の部屋を作る
 	void fillBlindAlley();//ステージの袋小路をつぶす
@@ -38,4 +37,5 @@ private:
 	std::vector<SQUARE> checkPutBox();
 	bool checkDeadlock(const int, const int);
 	std::vector<SQUARE> checkPutPlayer();
+	bool checkLargeSpace();//無駄に広い空間が存在するか確認する
 };

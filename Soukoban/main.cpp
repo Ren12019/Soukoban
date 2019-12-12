@@ -11,11 +11,11 @@
 #include "search.h"
 
 //生成モード
-enum Mode { BRUTE_FORCE = 0, MY_MODE = 1 };
+enum Mode { BRUTE_FORCE, MY_MODE, NUM_MODE };
 //問題評価の基準点数
 enum Border { MOVES = 18, PUSHES = 8, LINES = 4, TOTAL_VAL = 30 };
 //レベルの評価用
-struct Evaluation {
+struct EVALUATION {
 	std::string stage;//ステージの内容
 	int pushes;//クリアするのに必要な荷物を押す回数
 	int moves;//クリアするのに必要なアバターの移動回数
@@ -144,8 +144,7 @@ std::vector<std::vector<SQUARE>>createListCandidateVector(const std::vector<SQUA
 	return list_cand;
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv){
 	//初期設定
 	srand((unsigned int)time(NULL));//乱数設定
 	bool repeat = true;
@@ -154,8 +153,8 @@ int main(int argc, char** argv)
 	while (repeat) {
 		//初期設定
 		Level level;
-		std::queue<Evaluation> compare;//レベルの評価用
-		std::queue<Evaluation> better_level;//レベルの評価用
+		std::queue<EVALUATION> compare;//レベルの評価用
+		std::queue<EVALUATION> better_level;//レベルの評価用
 		std::vector<SQUARE> candidate;//ゴールの候補地のキュー
 		timespec start1, end1;
 		timespec start2, end2;
@@ -176,17 +175,13 @@ int main(int argc, char** argv)
 		////////////////////////////////
 		/*空の部屋の生成*/
 		level.setEmptyRoom();
-		//広すぎる場合は再作成
-		while (level.checkLargeSpace()) {
-			level.setEmptyRoom();
-		}
 		//使用する空の部屋を表示
 		level.printStage();
 		//ゴールが配置可能な場所を配列に収納
 		candidate = level.decisionCanditdate();
 		//２モードで生成
-		int cnt_mode = 0;
-		while (cnt_mode < 2) {
+		int cnt_mode = BRUTE_FORCE;
+		while (cnt_mode < NUM_MODE) {
 			switch (cnt_mode) {
 			case BRUTE_FORCE: {
 				timespec_get(&start1, TIME_UTC);
@@ -316,7 +311,6 @@ int main(int argc, char** argv)
 					//クリアチェック
 					if (final_stat.node.move_list.empty()) {
 						std::cout << "生成されたレベルは解答不可能です。" << std::endl;
-						//std::cout << "新しいレベルを作り直します。" << std::endl;
 						//リセット
 						level.resetStage();
 						continue;//終了
@@ -326,7 +320,7 @@ int main(int argc, char** argv)
 						<< std::endl;
 
 					/*比較用に保存*/
-					Evaluation cur_state;
+					EVALUATION cur_state;
 					cur_state.stage = init_state.state_str;//レベル
 					cur_state.pushes = final_stat.node.pushes;//プッシュ
 					cur_state.moves = final_stat.node.moves;//ムーブ
@@ -468,7 +462,6 @@ int main(int argc, char** argv)
 					//クリアチェック
 					if (final_stat.node.move_list.empty()) {
 						std::cout << "生成されたレベルは解答不可能です。" << std::endl;
-						//std::cout << "新しいレベルを作り直します。" << std::endl;
 						//リセット
 						level.resetStage();
 						continue;//終了
@@ -484,7 +477,7 @@ int main(int argc, char** argv)
 						if (final_stat.node.moves >= MOVES) {
 							//移動の方向転換
 							if (final_stat.node.push_lines >= LINES) {
-								Evaluation cur_state;
+								EVALUATION cur_state;
 								cur_state.stage = init_state.state_str;//レベル
 								cur_state.pushes = final_stat.node.pushes;//プッシュ
 								cur_state.moves = final_stat.node.moves;//ムーブ
@@ -496,7 +489,7 @@ int main(int argc, char** argv)
 						}
 					}
 					else {
-						Evaluation cur_state;
+						EVALUATION cur_state;
 						cur_state.stage = init_state.state_str;//レベル
 						cur_state.pushes = final_stat.node.pushes;//プッシュ
 						cur_state.moves = final_stat.node.moves;//ムーブ
@@ -518,7 +511,7 @@ int main(int argc, char** argv)
 			/*比較部分*/
 			////////////////////////////////
 			//Brute Force
-			if (cnt_mode == 0) {		
+			if (cnt_mode == BRUTE_FORCE) {
 				while (!compare.empty()) {
 					int value_level = compare.front().pushes + compare.front().moves + compare.front().change_lines;
 					//pushが最大となれば更新
@@ -536,7 +529,7 @@ int main(int argc, char** argv)
 				timespec_get(&end1, TIME_UTC);
 			}
 			//My Mode
-			else if (cnt_mode == 1) {
+			else if (cnt_mode == MY_MODE) {
 				if (!better_level.empty()) {
 					int value_level = better_level.front().pushes + better_level.front().moves + better_level.front().change_lines;
 					best_value2 = value_level;
@@ -639,8 +632,7 @@ int main(int argc, char** argv)
 
 		//繰り返し機能を利用するか
 		valid_input = true;
-		while (valid_input)
-		{
+		while (valid_input){
 			std::string usr_input;
 			std::cout << "もう一度実行しますか?[y/n]: ";
 			std::cin >> usr_input;

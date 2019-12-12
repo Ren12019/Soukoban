@@ -323,7 +323,7 @@ void Level::createLevel() {
 		break;
 	}
 }
-//空の部屋を作る
+//テンプレートを使用してグリッドから空部屋を作成する
 void Level::createEmptyRoom() {
 	Grid grid;
 
@@ -338,15 +338,6 @@ void Level::createEmptyRoom() {
 			}
 		}
 	}
-}
-//空の部屋を作る
-void Level::setEmptyRoom() {
-	do {
-		//テンプレートで空部屋を生成
-		createEmptyRoom();
-		//意味のないマスを埋め整地
-		fillBlindAlley();
-	} while (checkSection() == 1 || countSpace() < 8);
 }
 //袋小路など意味のないスペースを埋める
 void Level::fillBlindAlley() {
@@ -744,4 +735,14 @@ bool Level::checkLargeSpace() {
 	}
 	
 	return false;
+}
+//条件を満たした空部屋を作る
+void Level::setEmptyRoom() {
+	//2部屋でなく、8マス以上かつ3*4,4*3の長方形の空間がないものを生成
+	do {
+		//テンプレートで空部屋を生成
+		createEmptyRoom();
+		//意味のないマスを埋め整地
+		fillBlindAlley();
+	} while (checkSection() == 1 || countSpace() < 8 || checkLargeSpace());
 }
