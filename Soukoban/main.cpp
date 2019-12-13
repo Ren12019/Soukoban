@@ -154,7 +154,7 @@ std::queue<EVALUATION> runBruteForceMode(Level level) {
 	std::queue<EVALUATION> compare;//レベルの評価用
 	std::vector<SQUARE> candidate;//ゴールの候補地のキュー
 	//ゴールが配置可能な場所を配列に収納
-	candidate = level.decisionCanditdate();
+	candidate = level.storeCandidate();
 	std::queue<std::vector<SQUARE>>list_cand;//ゴールの候補地の組み合わせのリスト
 	//配置可能な場所の組み合わせをリスト化
 	list_cand = createListCandidate(candidate);
@@ -308,7 +308,7 @@ std::queue<EVALUATION> runMyMode(Level level) {
 	std::queue<EVALUATION> compare;//レベルの評価用
 	std::vector<SQUARE> candidate;//ゴールの候補地のキュー
 	std::vector<std::vector<SQUARE>>list_cand;//ゴールの候補地の組み合わせのリスト
-	candidate = level.decisionCanditdate();
+	candidate = level.storeCandidate();
 	//配置可能な場所の組み合わせをリスト化
 	list_cand = createListCandidateVector(candidate);
 	/*ゴールの配置をランダムに*/

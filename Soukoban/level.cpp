@@ -21,7 +21,10 @@ Level::~Level()
 {
 }
 //対象マスが荷物を運びこむことが可能かを判定する
-bool Level::checkCarryInSquare(const int x, const int y) {
+bool Level::canCarryInSquare(const SQUARE square) {
+	const int x = square.x;
+	const int y = square.y;
+
 	if ((stage[y][x - 1] == ' ' || stage[y][x - 1] == '.') && (stage[y][x + 1] == ' ' || stage[y][x + 1] == '.')) {
 		if (stage[y][x - 2] == '#' && stage[y][x + 2] == '#' && stage[y - 1][x] == '#' && stage[y + 1][x] == '#') {
 			return true;
@@ -37,15 +40,13 @@ bool Level::checkCarryInSquare(const int x, const int y) {
 	return false;
 }
 // チェックリストに荷物が運び込めないエリアをチェックする
-std::vector<SQUARE> Level::checkCarryInArea() {
+std::vector<SQUARE> Level::storeCarryInArea() {
 	std::vector<SQUARE>checklist;
-	SQUARE square;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == ' ') {
-				if (!checkCarryInSquare(x, y)) {
-					square.x = x;
-					square.y = y;
+				SQUARE square = { x,y };
+				if (!canCarryInSquare(square)) {
 					checklist.push_back(square);
 				}
 			}
@@ -55,15 +56,13 @@ std::vector<SQUARE> Level::checkCarryInArea() {
 	return checklist;
 }
 //ゴールが置ける場所をキューする
-std::vector<SQUARE> Level::decisionCanditdate() {
+std::vector<SQUARE> Level::storeCandidate() {
 	std::vector<SQUARE>canditdate;
-	SQUARE square;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == ' ') {
-				if (!checkCarryInSquare(x, y)) {
-					square.x = x;
-					square.y = y;
+				SQUARE square = { x,y };
+				if (!canCarryInSquare(square)) {
 					canditdate.push_back(square);
 				}
 			}
@@ -73,255 +72,21 @@ std::vector<SQUARE> Level::decisionCanditdate() {
 	return canditdate;
 }
 //周囲の壁の数を数える
-int Level::countAroundWall(const int x, const int y) {
-	int count = 0;
+int Level::countAroundWall(const SQUARE square) {
+	const int x = square.x;
+	const int y = square.y;
+	int cnt_wall = 0;
 
 	if (stage[y - 1][x] == '#')
-		count++;
+		cnt_wall++;
 	if (stage[y + 1][x] == '#')
-		count++;
+		cnt_wall++;
 	if (stage[y][x - 1] == '#')
-		count++;
+		cnt_wall++;
 	if (stage[y][x + 1] == '#')
-		count++;
+		cnt_wall++;
 
-	return count;
-}
-//対象マスが荷物を運びこむことが可能かを判定する
-bool Level::checkSquare()
-{
-	bool flag = false;
-
-	for (int y = 0; y < HEIGHT; y++)
-	{
-		for (int x = 0; x < WIDTH; x++)
-		{
-			if (stage[y][x] == ' ')
-			{
-				if (countAroundWall(x, y) >= 3)
-				{
-					stage[y][x] = '#';
-					flag = true;
-				}
-			}
-		}
-	}
-
-	return flag;
-}
-//対象マスが角であるか判定する
-bool Level::checkCornerSquare(const int x, const int y){
-	//┗
-	if (stage[y][x - 1] == '#' && stage[y + 1][x] == '#') {
-		return true;
-	}
-	//┛
-	if (stage[y][x + 1] == '#' && stage[y + 1][x] == '#') {
-		return true;
-	}
-	//┏
-	if (stage[y - 1][x] == '#' && stage[y][x - 1] == '#') {
-		return true;
-	}
-	//┓
-	if (stage[y - 1][x] == '#' && stage[y][x + 1] == '#') {
-		return true;
-	}
-
-	return false;
-}
-//荷物を配置できる座標をリスト化し返す
-std::vector<SQUARE> Level::checkPutBox() {
-	std::vector<SQUARE>checklist;
-	SQUARE square;
-
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == ' ') {
-				//配置予定場所が角で出ないか
-				if (!checkCornerSquare(x, y)) {
-					square.x = x;
-					square.y = y;
-					checklist.push_back(square);
-				}
-			}
-		}
-	}
-
-	return checklist;
-}
-//そこに荷物を置くことで詰みが発生するか判定する
-bool Level::checkDeadlock(const int x, const int y) {
-	/*four boxes*/
-	if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*')) {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*')) {
-		return true;
-	}
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x] == '$' && (stage[y - 1][x + 1] == '$' || stage[y - 1][x + 1] == '*')) {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '$' && (stage[y - 1][x - 1] == '$' || stage[y - 1][x - 1] == '*')) {
-		return true;
-	}
-	/*one box two wall*/
-	else if (stage[y][x + 1] == '#' && stage[y - 1][x] == '#') {
-		return true;
-	}
-	else if (stage[y][x - 1] == '#' && stage[y - 1][x] == '#') {
-		return true;
-	}
-	else if (stage[y][x - 1] == '#' && stage[y + 1][x] == '#') {
-		return true;
-	}
-	else if (stage[y][x + 1] == '#' && stage[y + 1][x] == '#') {
-		return true;
-	}
-	/*two box two wall(□)*/
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x] == '#' && stage[y - 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '#' && stage[y - 1][x - 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y + 1][x] == '#' && stage[y + 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y + 1][x] == '#' && stage[y + 1][x - 1] == '#') {
-		return true;
-	}
-	//
-	else if (stage[y - 1][x] == '$' && stage[y][x - 1] == '#' && stage[y - 1][x - 1] == '#') {
-		return true;
-	}
-	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x - 1] == '#' && stage[y + 1][x - 1] == '#') {
-		return true;
-	}
-	else if (stage[y - 1][x] == '$' && stage[y][x + 1] == '#' && stage[y - 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x + 1] == '#' && stage[y + 1][x + 1] == '#') {
-		return true;
-	}
-	/*two box two wall(S)*/
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y + 1][x] == '#' && stage[y - 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x - 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y + 1][x] == '#' && stage[y - 1][x - 1] == '#') {
-		return true;
-	}
-	//
-	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x + 1] == '#' && stage[y + 1][x - 1] == '#') {
-		return 1;
-	}
-	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y][x - 1] == '#' && stage[y + 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y - 1][x] == '$' || stage[y - 1][x] == '*') && stage[y - 1][x + 1] == '#' && stage[y][x - 1] == '#') {
-		return true;
-	}
-	else if ((stage[y - 1][x] == '$' || stage[y - 1][x] == '*') && stage[y - 1][x - 1] == '#' && stage[y][x + 1] == '#') {
-		return true;
-	}
-	/*three boxes one wall*/
-	else if (stage[y][x + 1] == '#' && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*')) {
-		return true;
-	}
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y + 1][x] == '#' && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*')) {
-		return true;
-	}
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y + 1][x + 1] == '#') {
-		return true;
-	}
-	else if (stage[y][x - 1] == '#' && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*') && stage[y + 1][x] == '#') {
-		return true;
-	}
-	/*three boxes two wall*/
-	//1
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x + 2] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y - 1][x - 1] == '#' && stage[y + 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y - 1][x - 1] == '$' || stage[y - 1][x - 1] == '*') && stage[y][x + 1] == '#' && stage[y - 2][x - 1] == '#') {
-		return true;
-	}
-	//2
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && stage[y - 1][x + 1] == '#' && stage[y + 1][x - 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*') && stage[y - 1][x] == '#' && stage[y + 1][x - 2] == '#') {
-		return true;
-	}
-	else if (stage[y - 1][x] == '$' && (stage[y - 1][x + 1] == '$' || stage[y - 1][x + 1] == '*') && stage[y - 2][x + 1] == '#' && stage[y][x - 1] == '#') {
-		return true;
-	}
-	//3
-	else if ((stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && (stage[y - 1][x + 1] == '$' || stage[y - 1][x + 1] == '*') && stage[y - 1][x + 2] == '#' && stage[y + 1][x] == '#') {
-		return true;
-	}
-	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x - 1] == '$' || stage[y + 1][x - 1] == '*') && stage[y][x + 1] == '#' && stage[y + 2][x - 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && stage[y - 1][x] == '$' && stage[y - 1][x + 1] == '#' && stage[y + 1][x - 1] == '#') {
-		return true;
-	}
-	//4
-	else if ((stage[y + 1][x] == '$' || stage[y + 1][x] == '*') && (stage[y + 1][x + 1] == '$' || stage[y + 1][x + 1] == '*') && stage[y][x - 1] == '#' && stage[y + 2][x + 1] == '#') {
-		return true;
-	}
-	else if (stage[y - 1][x] == '$' && (stage[y][x + 1] == '$' || stage[y][x + 1] == '*') && stage[y - 1][x - 1] == '#' && stage[y + 1][x + 1] == '#') {
-		return true;
-	}
-	else if ((stage[y][x - 1] == '$' || stage[y][x - 1] == '*') && (stage[y - 1][x - 1] == '$' || stage[y - 1][x - 1] == '*') && stage[y + 1][x] == '#' && stage[y - 1][x - 2] == '#') {
-		return true;
-	}
-	return false;
-}
-//プレイヤーを配置できる座標をリスト化し返す
-std::vector<SQUARE> Level::checkPutPlayer() {
-	std::vector<SQUARE>checklist;
-	SQUARE square;
-
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			if (stage[y][x] == ' ') {
-				square.x = x;
-				square.y = y;
-				checklist.push_back(square);
-			}
-		}
-	}
-
-	return checklist;
-}
-//ステージ生成を行う
-void Level::createLevel() {
-	while (true)
-	{
-		setEmptyRoom();
-
-		//ゴール、荷物、プレイヤーを配置
-		if (!setGoal()) {
-			continue;
-		}
-		if (!setBox()) {
-			continue;
-		}
-		if (!setPlayer()) {
-			continue;
-		}
-
-		break;
-	}
+	return cnt_wall;
 }
 //テンプレートを使用してグリッドから空部屋を作成する
 void Level::createEmptyRoom() {
@@ -339,64 +104,25 @@ void Level::createEmptyRoom() {
 		}
 	}
 }
-//袋小路など意味のないスペースを埋める
+//袋小路を埋める
 void Level::fillBlindAlley() {
-	while (checkSquare() != 0) {}
+	bool exist = true;
+	while (exist) {
+		exist = false;
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
+				if (stage[y][x] == ' ') {
+					SQUARE square = { x,y };
+					if (countAroundWall(square) >= 3) {
+						stage[y][x] = '#';
+						exist = true;
+					}
+				}
+			}
+		}
+	}
 }
 //ゴールを設置する
-bool Level::setGoal() {
-	std::vector<SQUARE>checklist;
-	//配置可能な座標をvectorに
-	checklist = checkCarryInArea();
-	//配置できる場所が存在しない
-	if (checklist.empty()) {
-		printf("ゴールの配置に失敗しました。\n");
-		return false;
-	}
-	//配置できる場所が足りない
-	else if (checklist.size() < NUMBER_OF_BOX) {
-		printf("ゴールの配置に失敗しました。\n");
-		return false;
-	}
-	//リストの中からランダムに
-	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
-		SQUARE set_square = checklist[rand() % checklist.size()];
-		int x = set_square.x;
-		int y = set_square.y;
-		if (stage[y][x] == ' ') 
-			stage[y][x] = '.';
-	}
-
-	return true;
-}
-//ゴールを設置する
-bool Level::setBoxOnGoal() {
-	std::vector<SQUARE>checklist;
-	//配置可能な座標をvectorに
-	checklist = checkCarryInArea();
-	//配置できる場所が存在しない
-	if (checklist.empty()) {
-		printf("ゴール上の荷物の配置に失敗しました。\n");
-		return false;
-	}
-	//配置できる場所が足りない
-	else if (checklist.size() < NUMBER_OF_BOX) {
-		printf("ゴール上の荷物の配置に失敗しました。\n");
-		return false;
-	}
-	//リストの中からランダムに
-#if 1
-	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
-		SQUARE set_square = checklist[rand() % checklist.size()];
-		int x = set_square.x;
-		int y = set_square.y;
-		if (stage[y][x] == ' ')
-			stage[y][x] = '*';
-	}
-#else
-#endif
-	return true;
-}
 bool Level::setBoxOnGoal(SQUARE set_pos) {
 	int x = set_pos.x;
 	int y = set_pos.y;
@@ -407,45 +133,18 @@ bool Level::setBoxOnGoal(SQUARE set_pos) {
 
 	return false;
 }
-//荷物を設置する
-bool Level::setBox() {
-	for (int num_box = NUMBER_OF_BOX; num_box != 0; num_box--) {
-		//配置可能な座標をvectorに
-		std::vector<SQUARE> checklist = checkPutBox();
-		//配置できる場所が存在しない
-		if (checklist.empty()) {
-			printf("荷物の配置に失敗しました。\n");
-			return false;
-		}
-		//配置できる場所が足りない
-		else if (checklist.size() < NUMBER_OF_BOX) {
-			printf("荷物の配置に失敗しました。\n");
-			return false;
-		}
-		//リストの中からランダムに
-		SQUARE set_square = checklist[rand() % checklist.size()];
-		int x = set_square.x;
-		int y = set_square.y;
-		//詰みを作らなければ配置
-		if (!checkDeadlock(x, y)) {
-			stage[y][x] = '$';
-		}
-	}
-
-	return true;
-}
-//プレイヤーを配置する
+//アバターを配置する
 bool Level::setPlayer() {
 	//配置可能な座標をvectorに
-	std::vector<SQUARE> checklist = checkPutPlayer();
+	std::vector<SQUARE> candidate = storeCandidate();
 
 	//配置できる場所が存在しない
-	if (checklist.empty()) {
-		printf("荷物の配置に失敗しました。\n");
+	if (candidate.empty()) {
+		std::cout << "アバターの配置に失敗しました。" << std::endl;
 		return false;
 	}
 	//リストの中からランダムに
-	SQUARE set_square = checklist[rand() % checklist.size()];
+	SQUARE set_square = candidate[rand() % candidate.size()];
 	int x = set_square.x;
 	int y = set_square.y;
 	stage[y][x] = '@';
@@ -507,7 +206,7 @@ void Level::outputStage() {
 	fclose(fp);
 }
 //途切れたスペースができていればtrueを返す
-bool Level::checkSection() {
+bool Level::isTwoRoom() {
 	int checksheet[HEIGHT][WIDTH] = {};
 	int section = 1;
 	int flag = 1;
@@ -603,30 +302,6 @@ void Level::resetStage() {
 		}
 	}
 }
-//空の部屋に配置物をすべてセットする
-void Level::setStage() {
-	while (true)
-	{
-		//ゴール、荷物、プレイヤーを配置
-		if (!setGoal()) {
-			resetStage();
-			printf("この形では配置できません。\n");
-			printStage();
-			setEmptyRoom();
-			continue;
-		}
-		if (!setBox()) {
-			resetStage();
-			continue;
-		}
-		if (!setPlayer()) {
-			resetStage();
-			continue;
-		}
-
-		break;
-	}
-}
 //ステージをstring型で出力
 std::string Level::outputString() {
 	std::string line = {};
@@ -675,7 +350,7 @@ void Level::inputString(std::string input) {
 	}
 }
 //無駄な空間の確認
-bool Level::checkLargeSpace() {
+bool Level::hasLargeSpace() {
 	//bool check_space = false;
 	//幅と高さを計測
 	for (int y = 0; y < HEIGHT; y++) {
@@ -744,5 +419,5 @@ void Level::setEmptyRoom() {
 		createEmptyRoom();
 		//意味のないマスを埋め整地
 		fillBlindAlley();
-	} while (checkSection() == 1 || countSpace() < 8 || checkLargeSpace());
+	} while (isTwoRoom() || countSpace() < 8 || hasLargeSpace());
 }
