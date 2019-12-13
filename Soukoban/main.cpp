@@ -10,8 +10,10 @@
 #include "level.h"
 #include "search.h"
 
+//実行モード
+enum ExecutionMode { NORMAL = 1, RESEARCH };
 //生成モード
-enum Mode { BRUTE_FORCE, MY_MODE, NUM_MODE };
+enum SetMode { BRUTE_FORCE, MY_MODE};
 //問題評価の基準点数
 enum Border { MOVES = 18, PUSHES = 8, LINES = 4, TOTAL_VAL = 30 };
 //レベルの評価用
@@ -26,6 +28,7 @@ struct PROPERTY :public EVALUATION{
 	std::string mode_name = {};//モード名
 	timespec start, end;//タイマー
 	int value = 0;//評価値
+	int area = 0;//面積
 };
 //座標の組み合わせをリスト化（総当たり用）
 std::queue<std::vector<SQUARE>>createListCandidate(const std::vector<SQUARE> candidate) {
@@ -508,6 +511,9 @@ PROPERTY setProperty(timespec start,std::queue<EVALUATION>compare, int mode) {
 	//タイマーを停止
 	timespec_get(&(property.end), TIME_UTC);
 
+	Level level;
+	level.inputString(property.stage);
+	property.area = level.countSpace();
 	return property;
 }
 //結果を表示
@@ -517,6 +523,7 @@ void printResult(PROPERTY property){
 	//評価値を表示
 	if (property.value != 0) {
 		std::cout << property.stage;
+		std::cout << "面積は " << property.area << std::endl;
 		std::cout << "評価値は " << property.value << std::endl;
 		std::cout << "最短解答手数は " << property.pushes << std::endl;
 		std::cout << "最短移動回数は " << property.moves + property.pushes << std::endl;
@@ -533,75 +540,138 @@ void printResult(PROPERTY property){
 	std::cout << (sec + (nanosec / 1000000000.0)) << " seconds" << std::endl;
 }
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
 	/*初期設定*/
 	srand((unsigned int)time(NULL));//乱数設定
-	bool repeat = true;
+	int mode;
+	bool valid_choice = true;
+	while (valid_choice) {
+		std::cout << "モードを選択してください。" << std::endl << "1:normal,2:research" << std::endl;
+		std::cin >> mode;
+		switch (mode) {
+		case NORMAL: {
+			bool repeat = true;
+			// 生成を繰り返す
+			while (repeat) {
+				/*空部屋を作成*/
+				Level level;
+				level.setEmptyRoom();
+				//使用する空の部屋を表示
+				level.printStage();
 
-	// 生成を繰り返す
-	while (repeat) {
-		/*空部屋を作成*/
-		Level level;
-		level.setEmptyRoom();
-		//使用する空の部屋を表示
-		level.printStage();
-		
-		/*２モードで生成*/
-		timespec start;
-		std::queue<EVALUATION> compare;//レベルの評価用
-		PROPERTY brute_force, my_mode;//評価表示用
-		/*Brute Force Mode*/
-		//時間計測開始
-		timespec_get(&start, TIME_UTC);
-		std::cout << "Brute Force Mode" << std::endl;
-		//総当たりで候補を生成
-		compare = runBruteForceMode(level);
-		//最良なレベルを選択し、評価値等をセット
-		brute_force = setProperty(start, compare, BRUTE_FORCE);
-		/*My Mode*/
-		//時間計測開始
-		timespec_get(&start, TIME_UTC);
-		std::cout << "My Mode" << std::endl;
-		//基準を満たしたものを生成
-		compare = runMyMode(level);
-		//評価値等をセット
-		my_mode = setProperty(start, compare, MY_MODE);
-		
-		/*最良ステージを表示*/
-		printResult(brute_force);
-		printResult(my_mode);
+				/*２モードで生成*/
+				timespec start;
+				std::queue<EVALUATION> compare;//レベルの評価用
+				PROPERTY brute_force, my_mode;//評価表示用
+				/*Brute Force Mode*/
+				//時間計測開始
+				timespec_get(&start, TIME_UTC);
+				std::cout << "Brute Force Mode" << std::endl;
+				//総当たりで候補を生成
+				compare = runBruteForceMode(level);
+				//最良なレベルを選択し、評価値等をセット
+				brute_force = setProperty(start, compare, BRUTE_FORCE);
+				/*My Mode*/
+				//時間計測開始
+				timespec_get(&start, TIME_UTC);
+				std::cout << "My Mode" << std::endl;
+				//基準を満たしたものを生成
+				compare = runMyMode(level);
+				//評価値等をセット
+				my_mode = setProperty(start, compare, MY_MODE);
 
-		//繰り返し機能を利用するか
-		bool valid_input = true;
-		while (valid_input){
-			std::string usr_input;
-			std::cout << "もう一度実行しますか?[y/n]: ";
-			std::cin >> usr_input;
-			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
-			if (usr_input == "y")
-			{
-				valid_input = false;
-				repeat = true;
+				/*最良ステージを表示*/
+				printResult(brute_force);
+				printResult(my_mode);
+
+				//繰り返し機能を利用するか
+				bool valid_input = true;
+				while (valid_input) {
+					std::string usr_input;
+					std::cout << "もう一度実行しますか?[y/n]: ";
+					std::cin >> usr_input;
+					//有効な入力は、valid_inputをfalseに設定し、ループを中断します
+					if (usr_input == "y")
+					{
+						valid_input = false;
+						repeat = true;
+					}
+					else if (usr_input == "Y")
+					{
+						valid_input = false;
+						repeat = true;
+					}
+					else if (usr_input == "n")
+					{
+						valid_input = false;
+						repeat = false;
+					}
+					else if (usr_input == "N")
+					{
+						valid_input = false;
+						repeat = false;
+					}
+					else
+						std::cout << "有効な値を入力してください。  ";
+				}
+			}//repeat
+			break;
+		}//case normal
+		case RESEARCH: {
+			//繰り返し機能を利用するか
+			bool valid_input = true;
+			int times;
+			while (valid_input) {
+				std::cout << "何回実行しますか?[1-10]: ";
+				std::cin >> times;
+				//有効な入力は、valid_inputをfalseに設定し、ループを中断します
+				if (times >0 && times<11){
+					valid_input = false;
+				}
+				else
+					std::cout << "有効な値を入力してください。  ";
 			}
-			else if (usr_input == "Y")
-			{
-				valid_input = false;
-				repeat = true;
+			std::queue<PROPERTY> result;
+			// 生成を繰り返す
+			while (result.size() != times) {
+				/*空部屋を作成*/
+				Level level;
+				level.setEmptyRoom();
+				//使用する空の部屋を表示
+				level.printStage();
+
+				/*Brute Force Mode*/
+				timespec start;
+				std::queue<EVALUATION> compare;//レベルの評価用
+				PROPERTY brute_force;//評価表示用
+				//時間計測開始
+				timespec_get(&start, TIME_UTC);
+				std::cout << "Brute Force Mode" << std::endl;
+				//総当たりで候補を生成
+				compare = runBruteForceMode(level);
+				//最良なレベルを選択し、評価値等をセット
+				brute_force = setProperty(start, compare, BRUTE_FORCE);
+
+				result.push(brute_force);
+			}//result.size()!=times
+			//実行によって生成されたレベルをすべて表示
+			while (!result.empty()) {
+				int now_times = (times + 1) - result.size();
+				std::cout << now_times << std::endl;
+				/*最良ステージを表示*/
+				printResult(result.front());
+				result.pop();
 			}
-			else if (usr_input == "n")
-			{
-				valid_input = false;
-				repeat = false;
-			}
-			else if (usr_input == "N")
-			{
-				valid_input = false;
-				repeat = false;
-			}
-			else
-				std::cout << "有効な値を入力してください。  ";
+
+			break;
+		}//case research
+		default: {
+			std::cout << "正しい値を入力してください。" << std::endl;
+			break;
 		}
-	}//repeat
+		}//switch(mode)
+
+	}//valid_choice
 
 	return 0;
 } //int main(int argc, char** argv)

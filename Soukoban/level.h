@@ -18,13 +18,13 @@ public:
 	bool setBoxOnGoal(SQUARE);
 	bool setPlayer();//ステージにプレイヤーを配置する
 	std::vector<SQUARE> storeCandidate();//ゴールが置ける場所をキューする
+	int countSpace();//ステージの通過可能部分をカウントする
 private:
 	std::vector< std::vector<char> > stage;//ステージマップの本体
 
 	void createEmptyRoom();//空の部屋を作る
 	void fillBlindAlley();//ステージの袋小路をつぶす
 	bool isTwoRoom();//部屋が2つ以上になっていないか確認
-	int countSpace();//ステージの通過可能部分をカウントする
 	bool canCarryInSquare(const SQUARE);
 	std::vector<SQUARE> storeCarryInArea();
 	int countAroundWall(const SQUARE);//対象マスの周囲の壁をカウントする
