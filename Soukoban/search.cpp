@@ -9,10 +9,9 @@
 #include <string>
 #include <fstream>
 #include "define.h"
-
+//方位の定義
 enum direction { NORTH = 0, EAST, SOUTH, WEST };
-
-//クリア状態から遠ざける
+//現在の状態の荷物を移動可能な場所に移動した状態を収納したキューを返す
 std::queue<State> gen_valid_states_reverse(const State &cur_state)
 {
 	std::queue<State> valid_moves;
@@ -126,7 +125,7 @@ std::queue<State> gen_valid_states_reverse(const State &cur_state)
 
 	return valid_moves;
 } //std::queue<State> gen_valid_states_reverse (const State &cur_state)
-
+//幅優先探索で荷物を最も遠い状態へ配置する
 SearchStat bfs_reverse(State &initial_state)
 {
 	std::deque<State> open;
@@ -212,13 +211,7 @@ SearchStat bfs_reverse(State &initial_state)
 	return report;
 } //SearchStat bfs(State &initial_state)
 
-/* クリア状態であるかどうかを確認するために使用される関数。
- *クリア状態とは,空のゴールがないとき、ゴールを埋めるプレーヤーが存在せず、
- *ゴール上にない荷物が存在しないとき
- *
- *前提条件：エージェントprogの現在の状態を表す状態オブジェクト
- *事後条件：クリアの状態が見つかった場合はtrueを返し、それ以外の場合はfalseを返します
- */
+// クリア状態であるかどうかを確認するために使用される
 bool is_goal(State &cur_state)
 {
 	//std::cout << cur_state.state_str<<std::endl;
@@ -238,14 +231,7 @@ bool is_goal(State &cur_state)
 	return goal;
 } //bool is_goal(State &cur_state)
 
-/*その状態が保存されている場合、レベル状態を出力するために使用される関数
-* vector <char>のベクター。ベクターを反復処理し、印刷します
-*各ベクトルの各文字を出力します。
-*
-*前提条件：vector <vector <char >>オブジェクト
-* Postcoditions：ベクトルのベクトルの各要素を出力します。
-*各ベクトルを改行で区切る
-*/
+//レベル状態を出力するために使用
 void print_level(std::vector< std::vector<char> > &map)
 {
 	for (unsigned int i = 0; i < map.size(); i++)
@@ -258,16 +244,7 @@ void print_level(std::vector< std::vector<char> > &map)
 	}
 } //void print_level(std::vector< std::vector<char> > &map)
 
-/*この関数は、現在の状態からすべての有効な状態を生成するために使用されます
-*有効なレベルが想定されます。プレイヤーエージェントが1人だけで、ゴールが1つだけという意味
- *各ボックスに対して、少なくとも1つの目標と1つのボックス。
- *検索アルゴリズム関数で呼び出されます。
- *
- *前提条件：エージェントの現在の状態を表す状態オブジェクト、
- *どの検索アルゴリズムが使用されたかを表すint
- *事後条件：可能なすべてを表す状態オブジェクトのキューを返します
- *現在の状態からの状態
- */
+//現在の状態からすべての有効な状態を生成するために使用されます
 std::queue<State> gen_valid_states(const State &cur_state)
 {
 	std::queue<State> valid_moves;
@@ -578,13 +555,7 @@ std::queue<State> gen_valid_states(const State &cur_state)
 	return valid_moves;
 } //std::queue<State> gen_valid_states (const State &cur_state, const int smode = NONE)
 
-/* この関数は、初期状態で幅優先探索アルゴリズムを実行します。
- *無限の深さを持つ倉庫番パズルのため、探索されたリストは
- *無限ループを防ぐために使用されます。
- *
- *前提条件：レベルの初期状態のStateオブジェクトを取り込みます
- *事後条件：検索結果の統計情報のSearchStatオブジェクトを返します
- */
+//初期状態で幅優先探索アルゴリズムを実行します。
 SearchStat bfs(State &initial_state)
 {
 	std::deque<State> open;
@@ -666,12 +637,7 @@ SearchStat bfs(State &initial_state)
 	return report;
 } //SearchStat bfs(State &initial_state)
 
-/* 指定された初期状態で検索アルゴリズムを実行するために使用される関数。
- *バック検索結果を報告します。
- *
- *前提条件：状態オブジェクトと、検索アルゴリズムを表すintを取り込みます
- *事後条件：検索アルゴリズムを実行し、検索統計を出力します。
- */
+//指定された初期状態で検索アルゴリズムを実行するために使用される関数。
 SearchStat choose_search(State &init_state, int search_choice)
 {
 	timespec start, end;
