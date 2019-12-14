@@ -546,132 +546,148 @@ int main(int argc, char** argv) {
 	int mode;
 	bool valid_choice = true;
 	while (valid_choice) {
-		std::cout << "モードを選択してください。" << std::endl << "1:normal,2:research" << std::endl;
+		std::cout << "モードを選択してください。" << std::endl << "(1:normal,2:research)" << std::endl;
 		std::cin >> mode;
-		switch (mode) {
-		case NORMAL: {
-			bool repeat = true;
-			// 生成を繰り返す
-			while (repeat) {
-				/*空部屋を作成*/
-				Level level;
-				level.setEmptyRoom();
-				//使用する空の部屋を表示
-				level.printStage();
+		if (mode == NORMAL) {
+			valid_choice = false;
+		}
+		else if (mode == RESEARCH) {
+			valid_choice = false;
+		}
+		else {
+			std::cout << "正しい値を入力してください。" << std::endl;
+		}
+	}//valid_choice
 
-				/*２モードで生成*/
-				timespec start;
-				std::queue<EVALUATION> compare;//レベルの評価用
-				PROPERTY brute_force, my_mode;//評価表示用
-				/*Brute Force Mode*/
-				//時間計測開始
-				timespec_get(&start, TIME_UTC);
-				std::cout << "Brute Force Mode" << std::endl;
-				//総当たりで候補を生成
-				compare = runBruteForceMode(level);
-				//最良なレベルを選択し、評価値等をセット
-				brute_force = setProperty(start, compare, BRUTE_FORCE);
-				/*My Mode*/
-				//時間計測開始
-				timespec_get(&start, TIME_UTC);
-				std::cout << "My Mode" << std::endl;
-				//基準を満たしたものを生成
-				compare = runMyMode(level);
-				//評価値等をセット
-				my_mode = setProperty(start, compare, MY_MODE);
+	switch (mode) {
+	case NORMAL: {
+		bool repeat = true;
+		// 生成を繰り返す
+		while (repeat) {
+			/*空部屋を作成*/
+			Level level;
+			level.setEmptyRoom();
+			//使用する空の部屋を表示
+			level.printStage();
 
-				/*最良ステージを表示*/
-				printResult(brute_force);
-				printResult(my_mode);
+			/*２モードで生成*/
+			timespec start;
+			std::queue<EVALUATION> compare;//レベルの評価用
+			PROPERTY brute_force, my_mode;//評価表示用
+			/*Brute Force Mode*/
+			//時間計測開始
+			timespec_get(&start, TIME_UTC);
+			std::cout << "Brute Force Mode" << std::endl;
+			//総当たりで候補を生成
+			compare = runBruteForceMode(level);
+			//最良なレベルを選択し、評価値等をセット
+			brute_force = setProperty(start, compare, BRUTE_FORCE);
+			/*My Mode*/
+			//時間計測開始
+			timespec_get(&start, TIME_UTC);
+			std::cout << "My Mode" << std::endl;
+			//基準を満たしたものを生成
+			compare = runMyMode(level);
+			// 生成不可能な空部屋であればやり直し
+			if (compare.empty()) {
+				continue;
+			}
+			//評価値等をセット
+			my_mode = setProperty(start, compare, MY_MODE);
 
-				//繰り返し機能を利用するか
-				bool valid_input = true;
-				while (valid_input) {
-					std::string usr_input;
-					std::cout << "もう一度実行しますか?[y/n]: ";
-					std::cin >> usr_input;
-					//有効な入力は、valid_inputをfalseに設定し、ループを中断します
-					if (usr_input == "y")
-					{
-						valid_input = false;
-						repeat = true;
-					}
-					else if (usr_input == "Y")
-					{
-						valid_input = false;
-						repeat = true;
-					}
-					else if (usr_input == "n")
-					{
-						valid_input = false;
-						repeat = false;
-					}
-					else if (usr_input == "N")
-					{
-						valid_input = false;
-						repeat = false;
-					}
-					else
-						std::cout << "有効な値を入力してください。  ";
-				}
-			}//repeat
-			break;
-		}//case normal
-		case RESEARCH: {
+			/*最良ステージを表示*/
+			printResult(brute_force);
+			printResult(my_mode);
+
 			//繰り返し機能を利用するか
 			bool valid_input = true;
-			int times;
 			while (valid_input) {
-				std::cout << "何回実行しますか?[1-10]: ";
-				std::cin >> times;
+				std::string usr_input;
+				std::cout << "もう一度実行しますか?[y/n]: ";
+				std::cin >> usr_input;
 				//有効な入力は、valid_inputをfalseに設定し、ループを中断します
-				if (times >0 && times<11){
+				if (usr_input == "y")
+				{
 					valid_input = false;
+					repeat = true;
+				}
+				else if (usr_input == "Y")
+				{
+					valid_input = false;
+					repeat = true;
+				}
+				else if (usr_input == "n")
+				{
+					valid_input = false;
+					repeat = false;
+				}
+				else if (usr_input == "N")
+				{
+					valid_input = false;
+					repeat = false;
 				}
 				else
 					std::cout << "有効な値を入力してください。  ";
 			}
-			std::queue<PROPERTY> result;
-			// 生成を繰り返す
-			while (result.size() != times) {
-				/*空部屋を作成*/
-				Level level;
-				level.setEmptyRoom();
-				//使用する空の部屋を表示
-				level.printStage();
-
-				/*Brute Force Mode*/
-				timespec start;
-				std::queue<EVALUATION> compare;//レベルの評価用
-				PROPERTY brute_force;//評価表示用
-				//時間計測開始
-				timespec_get(&start, TIME_UTC);
-				std::cout << "Brute Force Mode" << std::endl;
-				//総当たりで候補を生成
-				compare = runBruteForceMode(level);
-				//最良なレベルを選択し、評価値等をセット
-				brute_force = setProperty(start, compare, BRUTE_FORCE);
-
-				result.push(brute_force);
-			}//result.size()!=times
-			//実行によって生成されたレベルをすべて表示
-			while (!result.empty()) {
-				int now_times = (times + 1) - result.size();
-				std::cout << now_times << std::endl;
-				/*最良ステージを表示*/
-				printResult(result.front());
-				result.pop();
+		}//repeat
+		break;
+	}//case normal
+	case RESEARCH: {
+		//繰り返し機能を利用するか
+		bool valid_input = true;
+		int times;
+		while (valid_input) {
+			std::cout << "何回実行しますか?[1-10] " << std::endl;
+			std::cin >> times;
+			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
+			if (times >0 && times<11){
+				valid_input = false;
 			}
-
-			break;
-		}//case research
-		default: {
-			std::cout << "正しい値を入力してください。" << std::endl;
-			break;
+			else
+				std::cout << "有効な値を入力してください。  ";
 		}
-		}//switch(mode)
+		std::queue<PROPERTY> result;
+		// 生成を繰り返す
+		while (result.size() != times) {
+			/*空部屋を作成*/
+			Level level;
+			level.setEmptyRoom();
+			//使用する空の部屋を表示
+			level.printStage();
 
-	}//valid_choice
+			/*Brute Force Mode*/
+			timespec start;
+			std::queue<EVALUATION> compare;//レベルの評価用
+			PROPERTY brute_force;//評価表示用
+			//時間計測開始
+			timespec_get(&start, TIME_UTC);
+			std::cout << "Brute Force Mode" << std::endl;
+			//総当たりで候補を生成
+			compare = runBruteForceMode(level);
+			//生成不可能な空部屋であればやり直し
+			if (compare.empty()) {
+				continue;
+			}
+			//最良なレベルを選択し、評価値等をセット
+			brute_force = setProperty(start, compare, BRUTE_FORCE);
+
+			result.push(brute_force);
+		}//result.size()!=times
+		//実行によって生成されたレベルをすべて表示
+		while (!result.empty()) {
+			long long now_times = (times + 1) - result.size();
+			std::cout << now_times << std::endl;
+			/*最良ステージを表示*/
+			printResult(result.front());
+			result.pop();
+		}
+
+		break;
+	}//case research
+	default: {
+		break;
+	}
+	}//switch(mode)
 
 	return 0;
 } //int main(int argc, char** argv)
