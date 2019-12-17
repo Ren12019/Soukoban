@@ -419,5 +419,5 @@ void Level::setEmptyRoom() {
 		createEmptyRoom();
 		//ˆÓ–¡‚Ì‚È‚¢ƒ}ƒX‚ğ–„‚ß®’n
 		fillBlindAlley();
-	} while (isTwoRoom() || countSpace() < 8 || hasLargeSpace());
+	} while (isTwoRoom() || countSpace() < 13 || hasLargeSpace());
 }

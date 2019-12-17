@@ -16,6 +16,7 @@ enum ExecutionMode { NORMAL = 1, RESEARCH };
 enum SetMode { BRUTE_FORCE, MY_MODE};
 //問題評価の基準点数
 enum Border { MOVES = 18, PUSHES = 8, LINES = 4, TOTAL_VAL = 30 };
+int moves, pushes, lines, value;
 //レベルの評価用
 struct EVALUATION {
 	std::string stage = "この空の部屋では生成できません\n";//ステージの内容
@@ -30,6 +31,38 @@ struct PROPERTY :public EVALUATION{
 	int value = 0;//評価値
 	int area = 0;//面積
 };
+//基準点をセット
+void setReferencePoint(Level level) {
+	std::ifstream ifs("ReferencePoint/2box/2_2.txt");
+	std::string name;
+	std::string str;
+	//一行目を廃棄
+	getline(ifs, name);
+	//一行づつ読み込み
+	int space = level.countSpace();
+	if (space < 14 || space>29) {
+		return;
+	}
+	for (int i = (space - 14); i >= 0; i--) {
+		getline(ifs, str);
+	}
+	std::string tmp;
+	std::istringstream stream(str);
+	//面積
+	getline(stream, tmp, ',');
+	//moves
+	getline(stream, tmp, ',');
+	moves = std::stoi(tmp);
+	//pushes
+	getline(stream, tmp, ',');
+	pushes = std::stoi(tmp);
+	//lines
+	getline(stream, tmp, ',');
+	lines = std::stoi(tmp);
+	//value
+	getline(stream, tmp, '\n');
+	value = std::stoi(tmp);
+}
 //座標の組み合わせをリスト化（総当たり用）
 std::queue<std::vector<SQUARE>>createListCandidate(const std::vector<SQUARE> candidate) {
 	std::queue<SQUARE> que_cand;//読み取り用
@@ -444,14 +477,14 @@ std::queue<EVALUATION> runMyMode(Level level) {
 		//人の移動回数を表示
 		std::cout << "このレベルの荷物を動かす最小回数は:" << final_stat.node.pushes
 			<< std::endl;
-
+		setReferencePoint(level);
 		/*基準点と比較*/
 		//プッシュ
-		if (final_stat.node.pushes >= PUSHES) {
+		if (final_stat.node.pushes >= moves) {
 			//ムーブ
-			if (final_stat.node.moves >= MOVES) {
+			if (final_stat.node.moves >= pushes) {
 				//移動の方向転換
-				if (final_stat.node.push_lines >= LINES) {
+				if (final_stat.node.push_lines >= lines) {
 					EVALUATION cur_state;
 					cur_state.stage = init_state.state_str;//レベル
 					cur_state.pushes = final_stat.node.pushes;//プッシュ
@@ -558,7 +591,6 @@ int main(int argc, char** argv) {
 			std::cout << "正しい値を入力してください。" << std::endl;
 		}
 	}//valid_choice
-
 	switch (mode) {
 	case NORMAL: {
 		bool repeat = true;
