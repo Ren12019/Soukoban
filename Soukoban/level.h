@@ -18,6 +18,7 @@ public:
 	bool setBoxOnGoal(SQUARE);
 	bool setPlayer();//ステージにプレイヤーを配置する
 	std::vector<SQUARE> storeCandidateAll();//ゴールが置ける場所をキューする
+	std::vector<SQUARE> storeCandidateTouchingWall();//ゴールが置ける壁に接した場所をキューする
 	int countSpace();//ステージの通過可能部分をカウントする
 private:
 	std::vector< std::vector<char> > stage;//ステージマップの本体
@@ -29,4 +30,5 @@ private:
 	std::vector<SQUARE> storeCarryInArea();
 	int countAroundWall(const SQUARE);//対象マスの周囲の壁をカウントする
 	bool hasLargeSpace();//無駄に広い空間が存在するか確認する
+	bool isTouchingWall(const SQUARE);//対象マスが壁に接しているか判定する
 };

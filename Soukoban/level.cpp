@@ -57,19 +57,57 @@ std::vector<SQUARE> Level::storeCarryInArea() {
 }
 //ゴールが置ける場所をキューする
 std::vector<SQUARE> Level::storeCandidateAll() {
-	std::vector<SQUARE>canditdate;
+	std::vector<SQUARE>candidate;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			if (stage[y][x] == ' ') {
 				SQUARE square = { x,y };
 				if (!canCarryInSquare(square)) {
-					canditdate.push_back(square);
+					candidate.push_back(square);
 				}
 			}
 		}
 	}
 
-	return canditdate;
+	return candidate;
+}
+//対象マスが壁に接しているか判定する
+bool Level::isTouchingWall(SQUARE target) {
+	int dx[4] = { 0, 1, 0, -1 };
+	int dy[4] = { -1, 0, 1, 0 };
+	for (unsigned int i = 0; i < 4; i++){
+		//確認先
+		int next_x = target.x + dx[i];
+		int next_y = target.y + dy[i];
+		//範囲内
+		if (next_x < 0 || next_x > WIDTH - 1 || next_y < 0 || next_y > HEIGHT - 1)
+			continue;
+
+		char direction = stage[next_y][next_x];
+		if (direction == '#'){
+			return true;
+		}
+	}
+
+	return false;
+}
+//ゴールが置ける壁に接した場所をキューする
+std::vector<SQUARE> Level::storeCandidateTouchingWall() {
+	std::vector<SQUARE>candidate;
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (stage[y][x] == ' ') {
+				SQUARE square = { x,y };
+				if (isTouchingWall(square)) {
+					if (!canCarryInSquare(square)) {
+						candidate.push_back(square);
+					}
+				}
+			}
+		}
+	}
+
+	return candidate;
 }
 //周囲の壁の数を数える
 int Level::countAroundWall(const SQUARE square) {
