@@ -56,7 +56,7 @@ std::vector<SQUARE> Level::storeCarryInArea() {
 	return checklist;
 }
 //ゴールが置ける場所をキューする
-std::vector<SQUARE> Level::storeCandidate() {
+std::vector<SQUARE> Level::storeCandidateAll() {
 	std::vector<SQUARE>canditdate;
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -136,7 +136,7 @@ bool Level::setBoxOnGoal(SQUARE set_pos) {
 //アバターを配置する
 bool Level::setPlayer() {
 	//配置可能な座標をvectorに
-	std::vector<SQUARE> candidate = storeCandidate();
+	std::vector<SQUARE> candidate = storeCandidateAll();
 
 	//配置できる場所が存在しない
 	if (candidate.empty()) {

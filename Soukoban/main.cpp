@@ -15,7 +15,7 @@ enum ExecutionMode { NORMAL = 1, RESEARCH };
 //生成モード
 enum SetMode { BRUTE_FORCE, MY_MODE};
 //問題評価の基準点数
-enum Border { MOVES = 18, PUSHES = 8, LINES = 4, TOTAL_VAL = 30 };
+enum Border { MOVES = 18, PUSHES = 8, LINES = 4, TOTAL_VAL = 30,MAX=100 };
 int moves, pushes, lines, value;
 //レベルの評価用
 struct EVALUATION {
@@ -33,7 +33,7 @@ struct PROPERTY :public EVALUATION{
 };
 //基準点をセット
 void setReferencePoint(Level level) {
-	std::ifstream ifs("ReferencePoint/2box/2_2.txt");
+	std::ifstream ifs("ReferencePoint/2box/2_2_easy.txt");
 	std::string name;
 	std::string str;
 	//一行目を廃棄
@@ -190,7 +190,7 @@ std::queue<EVALUATION> runBruteForceMode(Level level) {
 	std::queue<EVALUATION> compare;//レベルの評価用
 	std::vector<SQUARE> candidate;//ゴールの候補地のキュー
 	//ゴールが配置可能な場所を配列に収納
-	candidate = level.storeCandidate();
+	candidate = level.storeCandidateAll();
 	std::queue<std::vector<SQUARE>>list_cand;//ゴールの候補地の組み合わせのリスト
 	//配置可能な場所の組み合わせをリスト化
 	list_cand = createListCandidate(candidate);
@@ -344,7 +344,7 @@ std::queue<EVALUATION> runMyMode(Level level) {
 	std::queue<EVALUATION> compare;//レベルの評価用
 	std::vector<SQUARE> candidate;//ゴールの候補地のキュー
 	std::vector<std::vector<SQUARE>>list_cand;//ゴールの候補地の組み合わせのリスト
-	candidate = level.storeCandidate();
+	candidate = level.storeCandidateAll();
 	//配置可能な場所の組み合わせをリスト化
 	list_cand = createListCandidateVector(candidate);
 	/*ゴールの配置をランダムに*/
@@ -669,10 +669,10 @@ int main(int argc, char** argv) {
 		bool valid_input = true;
 		int times;
 		while (valid_input) {
-			std::cout << "何回実行しますか?[1-10] " << std::endl;
+			std::cout << "何回実行しますか?[1-" << MAX << "] " << std::endl;
 			std::cin >> times;
 			//有効な入力は、valid_inputをfalseに設定し、ループを中断します
-			if (times >0 && times<11){
+			if (times >0 && times<=MAX){
 				valid_input = false;
 			}
 			else
@@ -690,20 +690,19 @@ int main(int argc, char** argv) {
 			/*Brute Force Mode*/
 			timespec start;
 			std::queue<EVALUATION> compare;//レベルの評価用
-			PROPERTY brute_force;//評価表示用
+			PROPERTY mode_pro;//評価表示用
 			//時間計測開始
 			timespec_get(&start, TIME_UTC);
-			std::cout << "Brute Force Mode" << std::endl;
 			//総当たりで候補を生成
-			compare = runBruteForceMode(level);
+			compare = runMyMode(level);
 			//生成不可能な空部屋であればやり直し
 			if (compare.empty()) {
 				continue;
 			}
 			//最良なレベルを選択し、評価値等をセット
-			brute_force = setProperty(start, compare, BRUTE_FORCE);
+			mode_pro = setProperty(start, compare, BRUTE_FORCE);
 
-			result.push(brute_force);
+			result.push(mode_pro);
 		}//result.size()!=times
 		//実行によって生成されたレベルをすべて表示
 		while (!result.empty()) {

@@ -17,7 +17,7 @@ public:
 	void inputString(std::string);//ステージをstring型で入力
 	bool setBoxOnGoal(SQUARE);
 	bool setPlayer();//ステージにプレイヤーを配置する
-	std::vector<SQUARE> storeCandidate();//ゴールが置ける場所をキューする
+	std::vector<SQUARE> storeCandidateAll();//ゴールが置ける場所をキューする
 	int countSpace();//ステージの通過可能部分をカウントする
 private:
 	std::vector< std::vector<char> > stage;//ステージマップの本体
