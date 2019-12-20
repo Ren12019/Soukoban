@@ -847,7 +847,7 @@ int main(int argc, char** argv) {
 			//時間計測開始
 			timespec_get(&start, TIME_UTC);
 			//総当たりで候補を生成
-			compare = runMyMode(level);
+			compare = runBruteForceModeSpeedUp(level);
 			//生成不可能な空部屋であればやり直し
 			if (compare.empty()) {
 				continue;
