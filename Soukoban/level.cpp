@@ -171,6 +171,28 @@ bool Level::setBoxOnGoal(SQUARE set_pos) {
 
 	return false;
 }
+//ゴールを設置する
+bool Level::setBox(SQUARE set_pos) {
+	int x = set_pos.x;
+	int y = set_pos.y;
+	if (stage[y][x] == ' ') {
+		stage[y][x] = '$';
+		return true;
+	}
+
+	return false;
+}
+//ゴールを設置する
+bool Level::setGoal(SQUARE set_pos) {
+	int x = set_pos.x;
+	int y = set_pos.y;
+	if (stage[y][x] == ' ') {
+		stage[y][x] = '.';
+		return true;
+	}
+
+	return false;
+}
 //アバターを配置する
 bool Level::setPlayer() {
 	//配置可能な座標をvectorに
@@ -457,5 +479,16 @@ void Level::setEmptyRoom() {
 		createEmptyRoom();
 		//意味のないマスを埋め整地
 		fillBlindAlley();
-	} while (isTwoRoom() || countSpace() < 13 || hasLargeSpace());
+	} while (isTwoRoom() || countSpace() < 8 || hasLargeSpace());
+}
+//荷物の位置を返す
+SQUARE Level::searchBox() {
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			if (stage[y][x] == '$') {
+				SQUARE target = { x,y };
+				return target;
+			}
+		}
+	}
 }

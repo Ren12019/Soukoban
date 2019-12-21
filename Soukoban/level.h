@@ -16,10 +16,13 @@ public:
 	std::string outputString();//ステージをstring型で出力
 	void inputString(std::string);//ステージをstring型で入力
 	bool setBoxOnGoal(SQUARE);
+	bool setBox(SQUARE);
+	bool setGoal(SQUARE);
 	bool setPlayer();//ステージにプレイヤーを配置する
 	std::vector<SQUARE> storeCandidateAll();//ゴールが置ける場所をキューする
 	std::vector<SQUARE> storeCandidateTouchingWall();//ゴールが置ける壁に接した場所をキューする
 	int countSpace();//ステージの通過可能部分をカウントする
+	SQUARE searchBox();
 private:
 	std::vector< std::vector<char> > stage;//ステージマップの本体
 

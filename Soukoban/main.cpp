@@ -24,6 +24,58 @@ struct EVALUATION {
 	int moves = 0;//アバターの移動スコア
 	int change_lines = 0;//荷物の方向転換スコア
 };
+//座標の評価用
+class EVA_LOCATION :public EVALUATION {
+private:
+	SQUARE box_loc = {};
+	SQUARE goal_loc = {};
+	int value = 0;//評価値
+public:
+	void setLocationBox(SQUARE);
+	void setLocationGoal(SQUARE);
+	void setValue();
+	bool isEmpty();
+	SQUARE outputLocationBox();
+	SQUARE outputLocationGoal();
+	int outputValue();
+	int outputPushes();
+	int outputMoves();
+	int outputLines();
+};
+void EVA_LOCATION::setLocationBox(SQUARE target_loca) {
+	box_loc = target_loca;
+}
+void EVA_LOCATION::setLocationGoal(SQUARE target_loca) {
+	goal_loc = target_loca;
+}
+void EVA_LOCATION::setValue() {
+	value = moves + change_lines;
+}
+bool EVA_LOCATION::isEmpty() {
+	if (value == 0) {
+		return true;
+	}
+	return false;
+}
+SQUARE EVA_LOCATION::outputLocationBox() {
+	return box_loc;
+}
+SQUARE EVA_LOCATION::outputLocationGoal() {
+	return goal_loc;
+}
+int EVA_LOCATION::outputValue() {
+	return value;
+}
+int EVA_LOCATION::outputPushes() {
+	return pushes;
+}
+int EVA_LOCATION::outputMoves() {
+	return moves;
+}
+int EVA_LOCATION::outputLines() {
+	return lines;
+}
+
 //表示用
 struct PROPERTY :public EVALUATION{
 	std::string mode_name = {};//モード名
@@ -184,6 +236,69 @@ std::vector<std::vector<SQUARE>>createListCandidateVector(const std::vector<SQUA
 	}
 
 	return list_cand;
+}
+//座標を高評価順にソート
+std::queue<EVA_LOCATION>createQueueCandidateCarefullySelected(const std::queue<EVA_LOCATION> candidate) {
+	std::queue<EVA_LOCATION> que_cand;//読み取り用
+	std::vector<EVA_LOCATION> sort_cand;//ソート用
+	std::queue<EVA_LOCATION> result;//返り値
+	//選択用にキューへ
+	que_cand = candidate;
+	//選出
+	while(!que_cand.empty()) {
+		EVA_LOCATION current = que_cand.front();
+		que_cand.pop();
+		//空なら
+		if (sort_cand.empty()) {
+			sort_cand.push_back(current);
+			continue;
+		}
+		//比較し挿入
+		for (unsigned int i = 0; i < sort_cand.size(); i++) {
+			//value
+			int arr_value = sort_cand[i].outputValue();
+			if (current.outputValue() > arr_value) {
+				sort_cand.insert(sort_cand.begin() + i, current);
+				break;
+			}
+			else if (current.outputValue() == arr_value) {
+				//lines
+				int arr_lines = sort_cand[i].outputLines();
+				if (current.outputValue() > arr_lines) {
+					sort_cand.insert(sort_cand.begin() + i, current);
+					break;
+				}
+				else if (current.outputValue() == arr_lines) {
+					//pushes
+					int arr_pushes = sort_cand[i].outputPushes();
+					if (current.outputValue() > arr_pushes) {
+						sort_cand.insert(sort_cand.begin() + i, current);
+						break;
+					}
+					else if (current.outputValue() == arr_pushes) {
+						//moves
+						int arr_moves = sort_cand[i].outputMoves();
+						if (current.outputValue() >= arr_moves) {
+							sort_cand.insert(sort_cand.begin() + i, current);
+							break;
+						}
+					}
+
+				}
+			}
+			//挿入ができないなら
+			if (i == sort_cand.size() - 1) {
+				sort_cand.push_back(current);
+				break;
+			}
+		}
+	}
+	//ソート内容をキューへ
+	for (unsigned int i = 0; i < sort_cand.size(); i++) {
+		result.push(sort_cand[i]);
+	}
+
+	return result;
 }
 //総当たりで最良の配置を求める
 std::queue<EVALUATION> runBruteForceMode(Level level) {
@@ -490,6 +605,239 @@ std::queue<EVALUATION> runBruteForceModeSpeedUp(Level level) {
 	}
 
 	return compare;
+}
+//座標ごとに評価を行い評価が高い順に選択
+std::queue<EVALUATION> runCarefullySelectedMode(Level level) {
+	std::queue<EVALUATION> result;//レベルの評価用
+	std::queue<EVA_LOCATION> comp_candidate;//ゴールの候補地評価用
+	std::vector<SQUARE> candidate;//ゴールの候補地のキュー
+	State init_state;//初期状態
+	SearchStat final_stat;//探索終了状態
+
+	//ゴールが配置可能な場所を配列に収納
+	candidate = level.storeCandidateAll();
+	//ゴールの候補地を採点
+	//全てのゴールを試すまで
+	while (!candidate.empty()) {
+		level.resetStage();
+		//初期設定
+		State create_start_stat;//初期状態
+		SearchStat create_finish_stat;//探索終了状態
+		std::string input_level;
+		//座標の決定
+		SQUARE set_square = candidate.front();
+		candidate.erase(candidate.begin());
+		//ゴール上の荷物を配置
+		if (!level.setBoxOnGoal(set_square)) {
+			//配置に失敗
+			continue;
+		}
+		//生成したステージをインプット
+		input_level = level.outputString();
+
+		//探索用に初期化
+		create_start_stat.state_str = input_level;
+		create_start_stat.move_list = "";
+		create_start_stat.moves = create_start_stat.pushes =
+			create_start_stat.push_lines = create_start_stat.depth =
+			create_start_stat.push_direction = 0;
+
+		//生成したレベルに対して逆に幅優先探索を行う
+		create_finish_stat = choose_search(create_start_stat, BFSR);
+
+		//盤面に変更がありNULLでないとき配置成功
+		if (create_finish_stat.node.state_str != input_level && create_finish_stat.node.state_str != "NULL\n") {
+			level.inputString(create_finish_stat.node.state_str);//ステージを更新
+		}
+		//失敗なら次の組み合わせへ
+		else {
+			continue;
+		}
+		//採点
+		////////////////////////////////
+		/*ステージ探索部分*/
+		////////////////////////////////
+		//levelにインプット
+		level.inputString(create_finish_stat.node.state_str);
+		//アバターを配置
+		level.setPlayer();
+		SQUARE pos_box = level.searchBox();//一次的に荷物の位置を保存
+		//探索用にセット
+		input_level = level.outputString();
+
+		//初期設定
+		State init_state;//初期状態
+		SearchStat final_stat;//探索終了状態
+
+		//初期化
+		init_state.state_str = input_level;
+		init_state.move_list = "";
+		init_state.moves = init_state.pushes =
+			init_state.push_lines = init_state.depth =
+			init_state.push_direction = 0;
+
+		//生成したレベルに対して幅優先探索を行う
+		final_stat = choose_search(init_state, BFS);
+		//クリアチェック
+		if (final_stat.node.move_list.empty()) {
+			std::cout << "生成されたレベルは解答不可能です。" << std::endl;
+			//リセット
+			level.resetStage();
+			continue;//終了
+		}
+		//人の移動回数を表示
+		std::cout << "このレベルの荷物を動かす最小回数は:" << final_stat.node.pushes << std::endl;
+
+		/*比較用に保存*/
+		EVA_LOCATION cur_state;
+		cur_state.setLocationGoal(set_square);
+		level.inputString(final_stat.node.state_str);
+		cur_state.setLocationBox(pos_box);
+		cur_state.stage = init_state.state_str;//レベル
+		cur_state.pushes = final_stat.node.pushes;//プッシュ
+		cur_state.moves = final_stat.node.moves;//ムーブ
+		cur_state.change_lines = final_stat.node.push_lines;//移動の方向転換
+		cur_state.setValue();
+		//配列にレベルと評価を保存
+		comp_candidate.push(cur_state);
+	}
+	std::cout << "ゴール採点終了" << std::endl;
+	if (comp_candidate.empty()) {
+		return result;
+	}
+	std::queue<EVA_LOCATION>list_cand;//ゴールの候補地の組み合わせのリスト
+	//配置可能な場所を高評価順にリスト化
+	list_cand = createQueueCandidateCarefullySelected(comp_candidate);
+	//候補地を組み合わせる
+	std::queue<EVA_LOCATION> cpy_list_cand = list_cand;
+	/*ゴールの配置*/
+	SQUARE best_box = cpy_list_cand.front().outputLocationBox();
+	SQUARE best_goal = cpy_list_cand.front().outputLocationGoal();
+	cpy_list_cand.pop();
+	if (NUMBER_OF_BOX == 2) {
+		while (!cpy_list_cand.empty()) {
+			level.resetStage();
+			level.setBox(best_box);
+			level.setGoal(best_goal);
+			SQUARE second_box = cpy_list_cand.front().outputLocationBox();
+			SQUARE second_goal = cpy_list_cand.front().outputLocationGoal();
+			cpy_list_cand.pop();
+			if (level.setGoal(second_goal)) {
+				if (!level.setBox(second_box)) {
+					continue;
+				}
+			}
+			else {
+				continue;
+			}
+			
+			////////////////////////////////
+			/*ステージ探索部分*/
+			////////////////////////////////
+			//アバターを配置
+			level.setPlayer();
+			//探索用にセット
+			std::string input_level = level.outputString();
+			//初期化
+			init_state.state_str = input_level;
+			init_state.move_list = "";
+			init_state.moves = init_state.pushes =
+				init_state.push_lines = init_state.depth =
+				init_state.push_direction = 0;
+			level.printStage();
+			//生成したレベルに対して幅優先探索を行う
+			final_stat = choose_search(init_state, BFS);
+			//クリアチェック
+			if (final_stat.node.move_list.empty()) {
+				std::cout << "生成されたレベルは解答不可能です。" << std::endl;
+				//リセット
+				level.resetStage();
+				continue;
+			}
+			else {
+				//人の移動回数を表示
+				std::cout << "このレベルの荷物を動かす最小回数は:" << final_stat.node.pushes << std::endl;
+				/*返り値用に保存*/
+				EVALUATION cur_state;
+				cur_state.stage = init_state.state_str;//レベル
+				cur_state.pushes = final_stat.node.pushes;//プッシュ
+				cur_state.moves = final_stat.node.moves;//ムーブ
+				cur_state.change_lines = final_stat.node.push_lines;//移動の方向転換
+				result.push(cur_state);
+				break;//終了
+			}
+		}
+	}
+	else if (NUMBER_OF_BOX == 3) {
+		while (!cpy_list_cand.empty()) {
+			SQUARE second_box = cpy_list_cand.front().outputLocationBox();
+			SQUARE second_goal = cpy_list_cand.front().outputLocationGoal();
+			cpy_list_cand.pop();
+			std::queue<EVA_LOCATION> cpy_cpy_list_cand = cpy_list_cand;
+			while (!cpy_cpy_list_cand.empty()) {
+				level.resetStage();
+				level.setBox(best_box);
+				level.setGoal(best_goal);
+				if (level.setGoal(second_goal)) {
+					if (!level.setBox(second_box)) {
+						break;
+					}
+				}
+				else {
+					break;
+				}
+				SQUARE third_box = cpy_list_cand.front().outputLocationBox();
+				SQUARE third_goal = cpy_list_cand.front().outputLocationGoal();
+				cpy_cpy_list_cand.pop();
+
+				if (level.setGoal(third_goal)) {
+					if (!level.setBox(third_box)) {
+						continue;
+					}
+				}
+				else {
+					continue;
+				}
+				////////////////////////////////
+				/*ステージ探索部分*/
+				////////////////////////////////
+				//アバターを配置
+				level.setPlayer();
+				//探索用にセット
+				std::string input_level = level.outputString();
+				//初期化
+				init_state.state_str = input_level;
+				init_state.move_list = "";
+				init_state.moves = init_state.pushes =
+					init_state.push_lines = init_state.depth =
+					init_state.push_direction = 0;
+
+				//生成したレベルに対して幅優先探索を行う
+				final_stat = choose_search(init_state, BFS);
+				//クリアチェック
+				if (final_stat.node.move_list.empty()) {
+					std::cout << "生成されたレベルは解答不可能です。" << std::endl;
+					//リセット
+					level.resetStage();
+					continue;
+				}
+				else {
+					//人の移動回数を表示
+					std::cout << "このレベルの荷物を動かす最小回数は:" << final_stat.node.pushes << std::endl;
+					/*返り値用に保存*/
+					EVALUATION cur_state;
+					cur_state.stage = init_state.state_str;//レベル
+					cur_state.pushes = final_stat.node.pushes;//プッシュ
+					cur_state.moves = final_stat.node.moves;//ムーブ
+					cur_state.change_lines = final_stat.node.push_lines;//移動の方向転換
+					result.push(cur_state);
+					break;//終了
+				}
+			}
+		}
+	}
+
+	return result;
 }
 //基準点を満たす配置を求める。存在しない場合は総当たりとなる。
 std::queue<EVALUATION> runMyMode(Level level) {
@@ -847,7 +1195,7 @@ int main(int argc, char** argv) {
 			//時間計測開始
 			timespec_get(&start, TIME_UTC);
 			//総当たりで候補を生成
-			compare = runBruteForceModeSpeedUp(level);
+			compare = runCarefullySelectedMode(level);
 			//生成不可能な空部屋であればやり直し
 			if (compare.empty()) {
 				continue;
